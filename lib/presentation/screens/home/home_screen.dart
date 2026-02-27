@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
@@ -26,6 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Medical ID'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Scan Medical ID',
+            onPressed: () => context.push(AppRouter.scanner),
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Settings',
@@ -68,7 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          final profiles = state is ProfileLoaded ? state.profiles : <Profile>[];
+          final profiles =
+              state is ProfileLoaded ? state.profiles : <Profile>[];
 
           if (profiles.isEmpty) {
             return Center(
@@ -110,6 +118,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 onDelete: () => context
                     .read<ProfileBloc>()
                     .add(ProfileDeleteRequested(profiles[index].id)),
+                onShowQr: () => context.push(
+                  AppRouter.qrDisplay,
+                  extra: profiles[index],
+                ),
               );
             },
           );
