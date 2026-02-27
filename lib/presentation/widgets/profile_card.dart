@@ -4,11 +4,13 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 class ProfileCard extends StatelessWidget {
   final Profile profile;
   final VoidCallback onDelete;
+  final VoidCallback onShowQr;
 
   const ProfileCard({
     super.key,
     required this.profile,
     required this.onDelete,
+    required this.onShowQr,
   });
 
   @override
@@ -99,9 +101,7 @@ class ProfileCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 FilledButton.tonalIcon(
-                  onPressed: () {
-                    // Phase 2: show QR
-                  },
+                  onPressed: onShowQr,
                   icon: const Icon(Icons.qr_code, size: 18),
                   label: const Text('QR'),
                 ),
