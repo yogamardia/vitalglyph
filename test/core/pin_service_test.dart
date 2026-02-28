@@ -68,13 +68,11 @@ void main() {
 
     test('different PINs produce different hashes', () async {
       String? hash1, hash2;
-      String? salt1;
 
       when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
-        if (key == 'vitalglyph_pin_salt') salt1 = value;
         if (key == 'vitalglyph_pin_hash') hash1 = value;
       });
       await pinService.setPin('111111');
@@ -83,8 +81,6 @@ void main() {
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
-        // Use same salt to isolate hash difference
-        if (key == 'vitalglyph_pin_salt') salt1 = value;
         if (key == 'vitalglyph_pin_hash') hash2 = value;
       });
       await pinService.setPin('222222');
