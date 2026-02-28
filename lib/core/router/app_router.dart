@@ -9,6 +9,7 @@ import 'package:vitalglyph/presentation/screens/profile_editor/profile_editor_sc
 import 'package:vitalglyph/presentation/screens/qr_display/qr_display_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_scanner/scanned_profile_view.dart';
+import 'package:vitalglyph/presentation/screens/backup/backup_screen.dart';
 import 'package:vitalglyph/presentation/screens/settings/settings_screen.dart';
 
 class AppRouter {
@@ -22,6 +23,7 @@ class AppRouter {
   static const String profileNew = '/profile/new';
   static const String profileEdit = '/profile/edit';
   static const String emergencyCard = '/emergency-card';
+  static const String backup = '/backup';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -74,6 +76,10 @@ class AppRouter {
             exportEmergencyCard: sl<ExportEmergencyCard>(),
           );
         },
+      ),
+      GoRoute(
+        path: backup,
+        builder: (context, state) => const BackupScreen(),
       ),
     ],
   );

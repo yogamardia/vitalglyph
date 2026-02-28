@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
+import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
@@ -11,12 +12,15 @@ import 'package:vitalglyph/data/services/widget_service.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 import 'package:vitalglyph/domain/usecases/create_profile.dart';
 import 'package:vitalglyph/domain/usecases/delete_profile.dart';
+import 'package:vitalglyph/domain/usecases/export_backup.dart';
 import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
+import 'package:vitalglyph/domain/usecases/import_backup.dart';
 import 'package:vitalglyph/domain/usecases/parse_qr_data.dart';
 import 'package:vitalglyph/domain/usecases/update_profile.dart';
 import 'package:vitalglyph/domain/usecases/watch_all_profiles.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
+import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 
 final GetIt sl = GetIt.instance;
@@ -54,6 +58,17 @@ Future<void> configureDependencies() async {
   sl.registerFactory(() => GenerateQrData(sl<HmacService>()));
   sl.registerFactory(() => ParseQrData(sl<HmacService>()));
   sl.registerFactory(() => ExportEmergencyCard(sl<GenerateQrData>()));
+
+  // ── Backup ────────────────────────────────────
+  sl.registerLazySingleton<BackupCryptoService>(() => BackupCryptoService());
+  sl.registerFactory(() => ExportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
+  sl.registerFactory(() => ImportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
+  sl.registerFactory(
+    () => BackupCubit(
+      exportBackup: sl<ExportBackup>(),
+      importBackup: sl<ImportBackup>(),
+    ),
+  );
 
   // ── Widget ────────────────────────────────────
   // Initialize app group for iOS widget data sharing.
