@@ -28,3 +28,7 @@ class UnexpectedFailure extends Failure {
 class PdfFailure extends Failure {
   const PdfFailure([super.message = 'Failed to generate PDF.']);
 }
+
+class BackupFailure extends Failure {
+  const BackupFailure([super.message = 'Backup operation failed.']);
+}
