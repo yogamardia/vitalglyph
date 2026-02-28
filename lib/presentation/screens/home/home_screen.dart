@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
+import 'package:vitalglyph/data/services/widget_service.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
+import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
@@ -40,7 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: BlocBuilder<ProfileBloc, ProfileState>(
+      body: BlocConsumer<ProfileBloc, ProfileState>(
+        listener: (context, state) {
+          if (state is ProfileLoaded) {
+            final widget = sl<WidgetService>();
+            if (state.profiles.isNotEmpty) {
+              widget.updateWithProfile(state.profiles.first);
+            } else {
+              widget.clearWidget();
+            }
+          }
+        },
         builder: (context, state) {
           if (state is ProfileLoading || state is ProfileInitial) {
             return const Center(child: CircularProgressIndicator());
