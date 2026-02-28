@@ -36,9 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Settings',
-            onPressed: () {
-              // Phase 5: settings screen
-            },
+            onPressed: () => context.push(AppRouter.settings),
           ),
         ],
       ),
