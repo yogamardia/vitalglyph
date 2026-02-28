@@ -6,6 +6,7 @@ class ProfileCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onShowQr;
   final VoidCallback onEdit;
+  final VoidCallback onEmergencyCard;
 
   const ProfileCard({
     super.key,
@@ -13,6 +14,7 @@ class ProfileCard extends StatelessWidget {
     required this.onDelete,
     required this.onShowQr,
     required this.onEdit,
+    required this.onEmergencyCard,
   });
 
   @override
@@ -107,6 +109,12 @@ class ProfileCard extends StatelessWidget {
                   label: '${profile.conditions.length} conditions',
                 ),
                 const Spacer(),
+                FilledButton.tonalIcon(
+                  onPressed: onEmergencyCard,
+                  icon: const Icon(Icons.credit_card_outlined, size: 18),
+                  label: const Text('Card'),
+                ),
+                const SizedBox(width: 8),
                 FilledButton.tonalIcon(
                   onPressed: onShowQr,
                   icon: const Icon(Icons.qr_code, size: 18),
