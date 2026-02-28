@@ -64,6 +64,34 @@ enum AllergySeverity {
   }
 }
 
+enum LockTimeout {
+  immediately,
+  after1Min,
+  after5Min,
+  never;
+
+  Duration get duration => switch (this) {
+        LockTimeout.immediately => Duration.zero,
+        LockTimeout.after1Min => const Duration(minutes: 1),
+        LockTimeout.after5Min => const Duration(minutes: 5),
+        LockTimeout.never => const Duration(days: 999),
+      };
+
+  String get displayName => switch (this) {
+        LockTimeout.immediately => 'Immediately',
+        LockTimeout.after1Min => 'After 1 minute',
+        LockTimeout.after5Min => 'After 5 minutes',
+        LockTimeout.never => 'Never',
+      };
+
+  static LockTimeout fromString(String value) {
+    return LockTimeout.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => LockTimeout.immediately,
+    );
+  }
+}
+
 enum BiologicalSex {
   male,
   female,
