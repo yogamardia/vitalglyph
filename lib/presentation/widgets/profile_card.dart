@@ -5,12 +5,14 @@ class ProfileCard extends StatelessWidget {
   final Profile profile;
   final VoidCallback onDelete;
   final VoidCallback onShowQr;
+  final VoidCallback onEdit;
 
   const ProfileCard({
     super.key,
     required this.profile,
     required this.onDelete,
     required this.onShowQr,
+    required this.onEdit,
   });
 
   @override
@@ -57,6 +59,11 @@ class ProfileCard extends StatelessWidget {
                         ),
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: 'Edit profile',
+                  onPressed: onEdit,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
