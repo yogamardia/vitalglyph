@@ -9,6 +9,7 @@ import 'package:vitalglyph/data/repositories/profile_repository_impl.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 import 'package:vitalglyph/domain/usecases/create_profile.dart';
 import 'package:vitalglyph/domain/usecases/delete_profile.dart';
+import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/domain/usecases/parse_qr_data.dart';
 import 'package:vitalglyph/domain/usecases/update_profile.dart';
@@ -50,6 +51,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory(() => DeleteProfile(sl<ProfileRepository>()));
   sl.registerFactory(() => GenerateQrData(sl<HmacService>()));
   sl.registerFactory(() => ParseQrData(sl<HmacService>()));
+  sl.registerFactory(() => ExportEmergencyCard(sl<GenerateQrData>()));
 
   // ── BLoCs ─────────────────────────────────────
   sl.registerFactory(
