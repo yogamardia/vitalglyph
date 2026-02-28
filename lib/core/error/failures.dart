@@ -24,3 +24,7 @@ class ValidationFailure extends Failure {
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure([super.message = 'An unexpected error occurred.']);
 }
+
+class PdfFailure extends Failure {
+  const PdfFailure([super.message = 'Failed to generate PDF.']);
+}
