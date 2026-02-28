@@ -1,5 +1,9 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
+import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
 import 'package:vitalglyph/data/repositories/profile_repository_impl.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
@@ -9,11 +13,25 @@ import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/domain/usecases/parse_qr_data.dart';
 import 'package:vitalglyph/domain/usecases/update_profile.dart';
 import 'package:vitalglyph/domain/usecases/watch_all_profiles.dart';
+import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
 Future<void> configureDependencies() async {
+  // ── Secure Storage ────────────────────────────
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
+
+  // ── Crypto Services ───────────────────────────
+  sl.registerLazySingleton<HmacService>(() => HmacService());
+  sl.registerLazySingleton<PinService>(
+      () => PinService(sl<FlutterSecureStorage>()));
+  sl.registerLazySingleton<AuthSettingsService>(
+      () => AuthSettingsService(sl<FlutterSecureStorage>()));
+  sl.registerLazySingleton<LocalAuthentication>(() => LocalAuthentication());
+
   // ── Database ──────────────────────────────────
   sl.registerSingleton<AppDatabase>(AppDatabase());
 
@@ -24,9 +42,6 @@ Future<void> configureDependencies() async {
   sl.registerSingleton<ProfileRepository>(
     ProfileRepositoryImpl(sl<ProfileDao>()),
   );
-
-  // ── Crypto ────────────────────────────────────
-  sl.registerLazySingleton<HmacService>(() => HmacService());
 
   // ── Use Cases ─────────────────────────────────
   sl.registerFactory(() => WatchAllProfiles(sl<ProfileRepository>()));
@@ -43,6 +58,14 @@ Future<void> configureDependencies() async {
       createProfile: sl<CreateProfile>(),
       updateProfile: sl<UpdateProfile>(),
       deleteProfile: sl<DeleteProfile>(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => AuthCubit(
+      pin: sl<PinService>(),
+      settings: sl<AuthSettingsService>(),
+      localAuth: sl<LocalAuthentication>(),
     ),
   );
 }
