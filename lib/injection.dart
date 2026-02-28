@@ -1,11 +1,13 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
 import 'package:vitalglyph/data/repositories/profile_repository_impl.dart';
+import 'package:vitalglyph/data/services/widget_service.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 import 'package:vitalglyph/domain/usecases/create_profile.dart';
 import 'package:vitalglyph/domain/usecases/delete_profile.dart';
@@ -52,6 +54,13 @@ Future<void> configureDependencies() async {
   sl.registerFactory(() => GenerateQrData(sl<HmacService>()));
   sl.registerFactory(() => ParseQrData(sl<HmacService>()));
   sl.registerFactory(() => ExportEmergencyCard(sl<GenerateQrData>()));
+
+  // ── Widget ────────────────────────────────────
+  // Initialize app group for iOS widget data sharing.
+  await HomeWidget.setAppGroupId('group.com.example.vitalglyph');
+  sl.registerLazySingleton<WidgetService>(
+    () => WidgetService(sl<GenerateQrData>()),
+  );
 
   // ── BLoCs ─────────────────────────────────────
   sl.registerFactory(
