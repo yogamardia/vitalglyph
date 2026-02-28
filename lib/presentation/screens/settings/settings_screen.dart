@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
+import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/screens/auth/pin_setup_screen.dart';
@@ -184,6 +186,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: _toggleBiometric,
                     ),
                 ],
+                const Divider(),
+                _SectionHeader('Data'),
+                ListTile(
+                  title: const Text('Backup & Restore'),
+                  subtitle: const Text('Export or import an encrypted .medid file'),
+                  leading: const Icon(Icons.backup_outlined),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push(AppRouter.backup),
+                ),
                 const Divider(),
                 _SectionHeader('About'),
                 const ListTile(
