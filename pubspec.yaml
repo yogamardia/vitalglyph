@@ -26,6 +26,10 @@ dependencies:
   # Dependency injection
   get_it: ^8.0.3
 
+  # Security
+  flutter_secure_storage: ^10.0.0
+  local_auth: ^3.0.1
+
   # QR Code
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.0.0
