@@ -124,6 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppRouter.profileEdit,
                   extra: profiles[index],
                 ),
+                onEmergencyCard: () => context.push(
+                  AppRouter.emergencyCard,
+                  extra: profiles[index],
+                ),
               );
             },
           );
