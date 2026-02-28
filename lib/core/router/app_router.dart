@@ -5,6 +5,7 @@ import 'package:vitalglyph/presentation/screens/home/home_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_display/qr_display_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_scanner/scanned_profile_view.dart';
+import 'package:vitalglyph/presentation/screens/settings/settings_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -13,6 +14,7 @@ class AppRouter {
   static const String qrDisplay = '/qr';
   static const String scanner = '/scanner';
   static const String scanResult = '/scanner/result';
+  static const String settings = '/settings';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -40,6 +42,10 @@ class AppRouter {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );
