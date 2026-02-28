@@ -120,15 +120,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppRouter.qrDisplay,
                   extra: profiles[index],
                 ),
+                onEdit: () => context.push(
+                  AppRouter.profileEdit,
+                  extra: profiles[index],
+                ),
               );
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Phase 4: open profile editor
-        },
+        onPressed: () => context.push(AppRouter.profileNew),
         icon: const Icon(Icons.person_add_outlined),
         label: const Text('Add Profile'),
       ),
