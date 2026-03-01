@@ -68,52 +68,48 @@ struct VitalglyphWidgetEntryView: View {
     var entry: WidgetEntry
 
     var body: some View {
-        ZStack {
-            Color.white
-
-            VStack(spacing: 4) {
-                // Profile name header
-                Text(entry.profileName)
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.black)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity)
-
-                // QR code — the entire point of the widget
-                Group {
-                    if let qrImage = entry.qrImage {
-                        qrImage
-                            .resizable()
-                            .interpolation(.none)
-                            .aspectRatio(1, contentMode: .fit)
-                    } else {
-                        // Placeholder when no profile is set up
-                        VStack(spacing: 4) {
-                            Image(systemName: "qrcode")
-                                .font(.system(size: 36))
-                                .foregroundColor(.secondary)
-                            Text("Open VitalGlyph\nto set up")
-                                .font(.system(size: 9))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.secondary)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                }
+        VStack(spacing: 4) {
+            // Profile name header
+            Text(entry.profileName)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.black)
+                .lineLimit(1)
+                .truncationMode(.tail)
                 .frame(maxWidth: .infinity)
-                .layoutPriority(1)
 
-                // Blood type footer
-                if !entry.bloodType.isEmpty {
-                    Text("Blood: \(entry.bloodType)")
-                        .font(.system(size: 10))
-                        .foregroundColor(Color(red: 0.22, green: 0.25, blue: 0.30))
-                        .frame(maxWidth: .infinity)
+            // QR code — the entire point of the widget
+            Group {
+                if let qrImage = entry.qrImage {
+                    qrImage
+                        .resizable()
+                        .interpolation(.none)
+                        .aspectRatio(1, contentMode: .fit)
+                } else {
+                    // Placeholder when no profile is set up
+                    VStack(spacing: 4) {
+                        Image(systemName: "qrcode")
+                            .font(.system(size: 36))
+                            .foregroundColor(.secondary)
+                        Text("Open VitalGlyph\nto set up")
+                            .font(.system(size: 9))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .padding(8)
+            .frame(maxWidth: .infinity)
+            .layoutPriority(1)
+
+            // Blood type footer
+            if !entry.bloodType.isEmpty {
+                Text("Blood: \(entry.bloodType)")
+                    .font(.system(size: 10))
+                    .foregroundColor(Color(red: 0.22, green: 0.25, blue: 0.30))
+                    .frame(maxWidth: .infinity)
+            }
         }
+        .padding(8)
     }
 }
 
@@ -124,7 +120,13 @@ struct VitalglyphWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: VitalglyphWidgetProvider()) { entry in
-            VitalglyphWidgetEntryView(entry: entry)
+            if #available(iOS 17.0, *) {
+                VitalglyphWidgetEntryView(entry: entry)
+                    .containerBackground(Color.white, for: .widget)
+            } else {
+                VitalglyphWidgetEntryView(entry: entry)
+                    .background(Color.white)
+            }
         }
         .configurationDisplayName("Medical ID")
         .description("Shows your Medical ID QR code for first responders.")
