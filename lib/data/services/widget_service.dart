@@ -4,7 +4,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 
-const _kAppGroupId = 'group.com.example.vitalglyph';
+const _kAppGroupId = 'group.com.yogamardia.vitalglyph';
 const _kAndroidWidgetName = 'VitalglyphWidgetProvider';
 const _kiOSWidgetName = 'VitalglyphWidget';
 

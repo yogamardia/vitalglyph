@@ -15,8 +15,8 @@ struct WidgetEntry: TimelineEntry {
 struct VitalglyphWidgetProvider: TimelineProvider {
 
     /// The app group ID must match the value set in Flutter via
-    /// `HomeWidget.setAppGroupId('group.com.example.vitalglyph')`.
-    private let appGroupId = "group.com.example.vitalglyph"
+    /// `HomeWidget.setAppGroupId('group.com.yogamardia.vitalglyph')`.
+    private let appGroupId = "group.com.yogamardia.vitalglyph"
 
     func placeholder(in context: Context) -> WidgetEntry {
         WidgetEntry(

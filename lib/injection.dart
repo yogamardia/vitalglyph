@@ -72,7 +72,7 @@ Future<void> configureDependencies() async {
 
   // ── Widget ────────────────────────────────────
   // Initialize app group for iOS widget data sharing.
-  await HomeWidget.setAppGroupId('group.com.example.vitalglyph');
+  await HomeWidget.setAppGroupId('group.com.yogamardia.vitalglyph');
   sl.registerLazySingleton<WidgetService>(
     () => WidgetService(sl<GenerateQrData>()),
   );
