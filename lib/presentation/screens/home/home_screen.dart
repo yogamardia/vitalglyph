@@ -125,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               return ProfileCard(
                 profile: profiles[index],
+                isPrimary: index == 0,
                 onDelete: () => context
                     .read<ProfileBloc>()
                     .add(ProfileDeleteRequested(profiles[index].id)),
