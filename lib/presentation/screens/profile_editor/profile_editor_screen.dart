@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -213,7 +214,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   Widget _buildAppBar(ThemeData theme) {
     final colorScheme = theme.colorScheme;
     return SliverAppBar(
-      expandedHeight: 280,
+      expandedHeight: 220,
       floating: true,
       pinned: true,
       stretch: true,
@@ -394,20 +395,29 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        SwitchListTile(
-          value: _isOrganDonor,
-          onChanged: (v) => setState(() => _isOrganDonor = v),
-          title: Text(
-            'Organ Donor',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
+        Row(
+          children: [
+            Icon(
+              _isOrganDonor
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              size: 20,
+              color: _isOrganDonor ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
             ),
-          ),
-          secondary: Icon(
-            _isOrganDonor ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: _isOrganDonor ? Theme.of(context).colorScheme.error : null,
-          ),
-          contentPadding: EdgeInsets.zero,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Organ Donor',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Switch(
+              value: _isOrganDonor,
+              onChanged: (v) => setState(() => _isOrganDonor = v),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         _CustomTextField(
@@ -645,13 +655,10 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: theme.extension<VitalGlyphColors>()?.cardBorder ??
+              const Color(0xFFE8ECF0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -740,24 +747,18 @@ class _CustomTextFieldState extends State<_CustomTextField> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        color: _isFocused ? colorScheme.surface : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: _isFocused ? colorScheme.surface : colors.inputFill,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _isFocused ? colorScheme.primary : Colors.transparent,
-          width: 2,
+          color: _isFocused
+              ? colorScheme.primary.withValues(alpha: 0.4)
+              : Colors.transparent,
+          width: 1.5,
         ),
-        boxShadow: _isFocused
-            ? [
-                BoxShadow(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                )
-              ]
-            : null,
       ),
       child: TextFormField(
         controller: widget.controller,
@@ -817,9 +818,10 @@ class _CustomDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.extension<VitalGlyphColors>()!;
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: colors.inputFill,
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonFormField<T>(
@@ -971,7 +973,7 @@ class _AllergyDialogState extends State<_AllergyDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(
@@ -1081,7 +1083,7 @@ class _MedicationDialogState extends State<_MedicationDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(
@@ -1180,7 +1182,7 @@ class _ConditionDialogState extends State<_ConditionDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(
@@ -1281,7 +1283,7 @@ class _ContactDialogState extends State<_ContactDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(
