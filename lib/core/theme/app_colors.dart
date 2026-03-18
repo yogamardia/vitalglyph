@@ -30,6 +30,11 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
   final Color tamperWarning;
   final Color tamperWarningBackground;
 
+  // Modern UI tokens
+  final Color cardBorder;
+  final Color surfaceSubtle;
+  final Color inputFill;
+
   const VitalGlyphColors({
     required this.bloodTypeBadge,
     required this.bloodTypeBadgeBackground,
@@ -47,6 +52,9 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     required this.dividerSubtle,
     required this.tamperWarning,
     required this.tamperWarningBackground,
+    required this.cardBorder,
+    required this.surfaceSubtle,
+    required this.inputFill,
   });
 
   static const light = VitalGlyphColors(
@@ -62,10 +70,13 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     mild: Color(0xFF388E3C),
     successGreen: Color(0xFF2E7D32),
     emergencyRed: Color(0xFFD32F2F),
-    primaryAction: Color(0xFF1565C0),
+    primaryAction: Color(0xFF2563EB),
     dividerSubtle: Color(0xFFF0F0F0),
     tamperWarning: Color(0xFFE65100),
     tamperWarningBackground: Color(0xFFFFF3E0),
+    cardBorder: Color(0xFFE8ECF0),
+    surfaceSubtle: Color(0xFFF7F8FA),
+    inputFill: Color(0xFFF2F4F7),
   );
 
   static const dark = VitalGlyphColors(
@@ -81,10 +92,13 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     mild: Color(0xFFA5D6A7),
     successGreen: Color(0xFF66BB6A),
     emergencyRed: Color(0xFFEF5350),
-    primaryAction: Color(0xFF90CAF9),
+    primaryAction: Color(0xFF60A5FA),
     dividerSubtle: Color(0xFF2A2A2A),
     tamperWarning: Color(0xFFFFAB40),
     tamperWarningBackground: Color(0xFF3E2800),
+    cardBorder: Color(0xFF2E3338),
+    surfaceSubtle: Color(0xFF1A1C1E),
+    inputFill: Color(0xFF22262A),
   );
 
   @override
@@ -105,6 +119,9 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     Color? dividerSubtle,
     Color? tamperWarning,
     Color? tamperWarningBackground,
+    Color? cardBorder,
+    Color? surfaceSubtle,
+    Color? inputFill,
   }) {
     return VitalGlyphColors(
       bloodTypeBadge: bloodTypeBadge ?? this.bloodTypeBadge,
@@ -125,6 +142,9 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       tamperWarning: tamperWarning ?? this.tamperWarning,
       tamperWarningBackground:
           tamperWarningBackground ?? this.tamperWarningBackground,
+      cardBorder: cardBorder ?? this.cardBorder,
+      surfaceSubtle: surfaceSubtle ?? this.surfaceSubtle,
+      inputFill: inputFill ?? this.inputFill,
     );
   }
 
@@ -154,6 +174,9 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       tamperWarning: Color.lerp(tamperWarning, other.tamperWarning, t)!,
       tamperWarningBackground: Color.lerp(
           tamperWarningBackground, other.tamperWarningBackground, t)!,
+      cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
+      surfaceSubtle: Color.lerp(surfaceSubtle, other.surfaceSubtle, t)!,
+      inputFill: Color.lerp(inputFill, other.inputFill, t)!,
     );
   }
 }
