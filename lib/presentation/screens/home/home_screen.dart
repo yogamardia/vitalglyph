@@ -17,10 +17,31 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _listController;
+
   @override
   void initState() {
     super.initState();
+    _listController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    context.read<ProfileBloc>().add(const ProfilesWatchStarted());
+  }
+
+  @override
+  void dispose() {
+    _listController.dispose();
+    super.dispose();
+  }
+
+  void _triggerListAnimation() {
+    _listController.forward(from: 0);
+  }
+
+  Future<void> _onRefresh() async {
     context.read<ProfileBloc>().add(const ProfilesWatchStarted());
   }
 
@@ -45,11 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoaded) {
-            final widget = sl<WidgetService>();
+            _triggerListAnimation();
+            final widgetService = sl<WidgetService>();
             if (state.profiles.isNotEmpty) {
-              widget.updateWithProfile(state.profiles.first);
+              widgetService.updateWithProfile(state.profiles.first);
             } else {
-              widget.clearWidget();
+              widgetService.clearWidget();
             }
           }
         },
@@ -65,19 +87,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: Colors.red),
+                    Icon(Icons.error_outline,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.error),
                     const SizedBox(height: 16),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                    ),
+                    Text(state.message, textAlign: TextAlign.center),
                     const SizedBox(height: 16),
-                    ElevatedButton(
+                    FilledButton.icon(
                       onPressed: () => context
                           .read<ProfileBloc>()
                           .add(const ProfilesWatchStarted()),
-                      child: const Text('Retry'),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -89,60 +110,64 @@ class _HomeScreenState extends State<HomeScreen> {
               state is ProfileLoaded ? state.profiles : <Profile>[];
 
           if (profiles.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.medical_information_outlined,
-                      size: 72,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'No profiles yet',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Add a profile to store medical information\nfor yourself or a family member.',
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            return _EmptyState(
+              onAddProfile: () => context.push(AppRouter.profileNew),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
+          return RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              itemCount: profiles.length,
+              itemBuilder: (context, index) {
+                // Staggered entry animation per item
+                final itemStart = (index * 0.1).clamp(0.0, 0.7);
+                final itemEnd = (itemStart + 0.4).clamp(0.0, 1.0);
+                final animation = CurvedAnimation(
+                  parent: _listController,
+                  curve: Interval(itemStart, itemEnd, curve: Curves.easeOut),
+                );
+
+                return AnimatedBuilder(
+                  animation: animation,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 0.15),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: ProfileCard(
+                    profile: profiles[index],
+                    isPrimary: index == 0,
+                    onDelete: () => context
+                        .read<ProfileBloc>()
+                        .add(ProfileDeleteRequested(profiles[index].id)),
+                    onShowQr: () => context.push(
+                      AppRouter.qrDisplay,
+                      extra: profiles[index],
+                    ),
+                    onEdit: () => context.push(
+                      AppRouter.profileEdit,
+                      extra: profiles[index],
+                    ),
+                    onEmergencyCard: () => context.push(
+                      AppRouter.emergencyCard,
+                      extra: profiles[index],
+                    ),
+                  ),
+                );
+              },
             ),
-            itemCount: profiles.length,
-            itemBuilder: (context, index) {
-              return ProfileCard(
-                profile: profiles[index],
-                isPrimary: index == 0,
-                onDelete: () => context
-                    .read<ProfileBloc>()
-                    .add(ProfileDeleteRequested(profiles[index].id)),
-                onShowQr: () => context.push(
-                  AppRouter.qrDisplay,
-                  extra: profiles[index],
-                ),
-                onEdit: () => context.push(
-                  AppRouter.profileEdit,
-                  extra: profiles[index],
-                ),
-                onEmergencyCard: () => context.push(
-                  AppRouter.emergencyCard,
-                  extra: profiles[index],
-                ),
-              );
-            },
           );
         },
       ),
@@ -150,6 +175,64 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () => context.push(AppRouter.profileNew),
         icon: const Icon(Icons.person_add_outlined),
         label: const Text('Add Profile'),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final VoidCallback onAddProfile;
+
+  const _EmptyState({required this.onAddProfile});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.medical_information_outlined,
+                size: 64,
+                color: colorScheme.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(height: 28),
+            Text(
+              'Create Your First Profile',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Store blood type, allergies, medications, and emergency contacts '
+              'so first responders can help you faster.',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: onAddProfile,
+              icon: const Icon(Icons.person_add_outlined),
+              label: const Text('Add Profile'),
+            ),
+          ],
+        ),
       ),
     );
   }
