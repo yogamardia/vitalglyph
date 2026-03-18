@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_state.dart';
+import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
@@ -58,9 +59,7 @@ class _BackupViewState extends State<_BackupView> {
     final file = result.files.single;
     if (file.path == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not access the selected file.')),
-        );
+        AppSnackBar.error(context, 'Could not access the selected file.');
       }
       return;
     }
@@ -75,14 +74,35 @@ class _BackupViewState extends State<_BackupView> {
     context.read<BackupCubit>().export(_exportPassCtrl.text.trim());
   }
 
-  void _onImport(BuildContext context) {
+  Future<void> _onImport(BuildContext context) async {
     if (_selectedFilePath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a .medid backup file.')),
-      );
+      AppSnackBar.warning(context, 'Please select a .medid backup file.');
       return;
     }
     if (!_importFormKey.currentState!.validate()) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Import backup?'),
+        content: const Text(
+          'This will add profiles from the backup. '
+          'Existing profiles with the same ID will be skipped.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Import'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
     context
         .read<BackupCubit>()
         .importFromFile(_selectedFilePath!, _importPassCtrl.text.trim());
@@ -100,9 +120,7 @@ class _BackupViewState extends State<_BackupView> {
             _exportPassCtrl.clear();
             _exportConfirmCtrl.clear();
             context.read<BackupCubit>().reset();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Backup shared successfully.')),
-            );
+            AppSnackBar.success(context, 'Backup shared successfully.');
           } else if (state is BackupImportSuccess) {
             _importPassCtrl.clear();
             setState(() {
@@ -115,17 +133,10 @@ class _BackupViewState extends State<_BackupView> {
                 ? 'No profiles found in backup.'
                 : '${r.imported} profile(s) imported'
                     '${r.skipped > 0 ? ', ${r.skipped} already existed (skipped).' : '.'}';
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(msg)),
-            );
+            AppSnackBar.success(context, msg);
           } else if (state is BackupError) {
             context.read<BackupCubit>().reset();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
+            AppSnackBar.error(context, state.message);
           }
         },
         builder: (context, state) {
