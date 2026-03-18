@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Semantic color tokens for VitalGlyph.
-/// Access via: Theme.of(context).extension<VitalGlyphColors>()!
+/// Access via: `Theme.of(context).extension<VitalGlyphColors>()!`
 @immutable
 class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
   // Blood type badge

@@ -823,7 +823,7 @@ class _CustomDropdown<T> extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         items: items,
         onChanged: onChanged,
         decoration: InputDecoration(
@@ -942,7 +942,7 @@ class _AllergyDialogState extends State<_AllergyDialog> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<AllergySeverity>(
-                value: _severity,
+                initialValue: _severity,
                 decoration: const InputDecoration(labelText: 'Severity'),
                 items: AllergySeverity.values
                     .map(
