@@ -47,3 +47,12 @@ class AuthFailure extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+/// Too many failed attempts — locked out for [remaining] duration.
+class AuthLockedOut extends AuthState {
+  final Duration remaining;
+
+  const AuthLockedOut(this.remaining);
+  @override
+  List<Object?> get props => [remaining];
+}

@@ -10,6 +10,14 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthSettingsService _settings;
   final LocalAuthentication _localAuth;
 
+  int _failedAttempts = 0;
+  DateTime? _lockoutUntil;
+
+  static const int _softLockThreshold = 5;
+  static const int _hardLockThreshold = 10;
+  static const Duration _softLockDuration = Duration(seconds: 30);
+  static const Duration _hardLockDuration = Duration(minutes: 5);
+
   AuthCubit({
     required PinService pin,
     required AuthSettingsService settings,
@@ -67,12 +75,44 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Validate a PIN the user has entered.
   Future<void> authenticateWithPin(String pin) async {
+    // Check if currently locked out.
+    if (_lockoutUntil != null) {
+      final remaining = _lockoutUntil!.difference(DateTime.now());
+      if (remaining > Duration.zero) {
+        emit(AuthLockedOut(remaining));
+        return;
+      } else {
+        _lockoutUntil = null;
+        _failedAttempts = 0;
+      }
+    }
+
     final correct = await _pin.verifyPin(pin);
     if (correct) {
+      _failedAttempts = 0;
+      _lockoutUntil = null;
       emit(const AuthAuthenticated());
     } else {
-      emit(const AuthFailure('Incorrect PIN. Please try again.'));
+      _failedAttempts++;
+      if (_failedAttempts >= _hardLockThreshold) {
+        _lockoutUntil = DateTime.now().add(_hardLockDuration);
+        emit(AuthLockedOut(_hardLockDuration));
+      } else if (_failedAttempts >= _softLockThreshold) {
+        _lockoutUntil = DateTime.now().add(_softLockDuration);
+        emit(AuthLockedOut(_softLockDuration));
+      } else {
+        emit(AuthFailure(
+          'Incorrect PIN. ${_softLockThreshold - _failedAttempts} attempts remaining before lockout.',
+        ));
+      }
     }
+  }
+
+  /// Returns the current lockout remaining duration, or null if not locked out.
+  Duration? get lockoutRemaining {
+    if (_lockoutUntil == null) return null;
+    final remaining = _lockoutUntil!.difference(DateTime.now());
+    return remaining > Duration.zero ? remaining : null;
   }
 
   /// Manually lock the app (e.g., from settings or after timeout).
