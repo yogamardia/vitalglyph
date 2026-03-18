@@ -22,6 +22,7 @@ import 'package:vitalglyph/domain/usecases/watch_all_profiles.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
+import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -94,4 +95,6 @@ Future<void> configureDependencies() async {
       localAuth: sl<LocalAuthentication>(),
     ),
   );
+
+  sl.registerFactory(() => ThemeCubit(sl<FlutterSecureStorage>()));
 }

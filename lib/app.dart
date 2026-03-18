@@ -6,6 +6,7 @@ import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
+import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 import 'package:vitalglyph/presentation/screens/auth/lock_screen.dart';
 
 class App extends StatelessWidget {
@@ -15,6 +16,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<ThemeCubit>(
+          create: (_) => sl<ThemeCubit>()..load(),
+        ),
         BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
         BlocProvider<ProfileBloc>(create: (_) => sl<ProfileBloc>()),
       ],
@@ -30,21 +34,35 @@ class _AppContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _LifecycleObserver(
-      child: MaterialApp.router(
-        title: 'Medical ID',
-        theme: AppTheme.light,
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          return BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              if (state is AuthRequired) {
-                return LockScreen(
-                  canUseBiometric: state.canUseBiometric,
-                  hasPinSet: state.hasPinSet,
-                );
-              }
-              return child ?? const SizedBox();
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: 'Medical ID',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeMode,
+            routerConfig: AppRouter.router,
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              return BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  final isLocked = state is AuthRequired;
+                  return Stack(
+                    children: [
+                      if (child != null)
+                        IgnorePointer(
+                          ignoring: isLocked,
+                          child: child,
+                        ),
+                      if (isLocked)
+                        LockScreen(
+                          canUseBiometric: state.canUseBiometric,
+                          hasPinSet: state.hasPinSet,
+                        ),
+                    ],
+                  );
+                },
+              );
             },
           );
         },
