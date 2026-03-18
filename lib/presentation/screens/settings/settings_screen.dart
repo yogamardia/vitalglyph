@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
@@ -6,11 +7,16 @@ import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 import 'package:vitalglyph/presentation/screens/auth/pin_setup_screen.dart';
+import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
+import 'package:vitalglyph/presentation/widgets/section_group.dart';
+import 'package:vitalglyph/presentation/widgets/settings_tile.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -106,24 +112,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _clearPin() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove PIN?'),
-        content: const Text(
+    final confirm = await AppDialog.showDestructive(
+      context,
+      title: 'Remove PIN?',
+      message:
           'This will disable app lock. You can set a new PIN at any time.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
+      confirmLabel: 'Remove',
     );
     if (confirm != true) return;
     await _pinService.clearPin();
@@ -137,6 +131,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _showTimeoutPicker() async {
+    HapticFeedback.selectionClick();
+    final selected = await AppBottomSheet.show<LockTimeout>(
+      context,
+      title: 'Lock After',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: LockTimeout.values.map((t) {
+          return ListTile(
+            title: Text(t.displayName),
+            trailing: _timeout == t
+                ? Icon(Icons.check_rounded,
+                    color: Theme.of(context).colorScheme.primary, size: 20)
+                : null,
+            onTap: () => Navigator.of(context).pop(t),
+          );
+        }).toList(),
+      ),
+    );
+    if (selected != null && mounted) {
+      await _authSettings.setLockTimeout(selected);
+      setState(() => _timeout = selected);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,25 +165,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildBody() {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     if (_loadError != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,
+              Icon(Icons.error_outline_rounded,
                   size: 48, color: Theme.of(context).colorScheme.error),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               Text(_loadError!,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               FilledButton.icon(
                 onPressed: _load,
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Retry'),
               ),
             ],
@@ -174,83 +195,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     return ListView(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       children: [
-        _SectionHeader('Appearance'),
-        _ThemeSelector(),
-        const Divider(),
-        _SectionHeader('Security'),
-        SwitchListTile(
-          title: const Text('App Lock'),
-          subtitle: Text(
-            _authEnabled
-                ? 'App is locked when you leave'
-                : 'Anyone can open the app',
-          ),
-          value: _authEnabled,
-          onChanged: _toggleAuth,
+        // Appearance
+        SectionGroup(
+          title: 'Appearance',
+          children: [_ThemeSelector()],
         ),
-        if (_authEnabled) ...[
-          ListTile(
-            title: const Text('Lock after'),
-            trailing: DropdownButton<LockTimeout>(
-              value: _timeout,
-              underline: const SizedBox(),
-              items: LockTimeout.values
-                  .map(
-                    (t) => DropdownMenuItem(
-                      value: t,
-                      child: Text(t.displayName),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (t) async {
-                if (t == null) return;
-                await _authSettings.setLockTimeout(t);
-                setState(() => _timeout = t);
-              },
+
+        // Security
+        SectionGroup(
+          title: 'Security',
+          children: [
+            SettingsToggleTile(
+              title: 'App Lock',
+              subtitle: _authEnabled
+                  ? 'App is locked when you leave'
+                  : 'Anyone can open the app',
+              leading: Icons.lock_outline_rounded,
+              value: _authEnabled,
+              onChanged: _toggleAuth,
             ),
-          ),
-          ListTile(
-            title: Text(_hasPin ? 'Change PIN' : 'Set PIN'),
-            leading: const Icon(Icons.pin_outlined),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: _changePin,
-          ),
-          if (_hasPin)
-            ListTile(
-              title: const Text('Remove PIN'),
-              leading: const Icon(Icons.no_encryption_outlined),
-              textColor: Theme.of(context).colorScheme.error,
-              iconColor: Theme.of(context).colorScheme.error,
-              onTap: _clearPin,
+            if (_authEnabled) ...[
+              SettingsTile(
+                title: 'Lock after',
+                subtitle: _timeout.displayName,
+                leading: Icons.timer_outlined,
+                onTap: _showTimeoutPicker,
+              ),
+              SettingsTile(
+                title: _hasPin ? 'Change PIN' : 'Set PIN',
+                leading: Icons.pin_outlined,
+                onTap: _changePin,
+              ),
+              if (_hasPin)
+                SettingsTile(
+                  title: 'Remove PIN',
+                  leading: Icons.no_encryption_outlined,
+                  destructive: true,
+                  onTap: _clearPin,
+                ),
+              if (_biometricAvailable)
+                SettingsToggleTile(
+                  title: 'Use Biometrics',
+                  subtitle: 'Face ID / fingerprint unlock',
+                  leading: Icons.fingerprint_rounded,
+                  value: _biometricEnabled,
+                  onChanged: _toggleBiometric,
+                ),
+            ],
+          ],
+        ),
+
+        // Data
+        SectionGroup(
+          title: 'Data',
+          children: [
+            SettingsTile(
+              title: 'Backup & Restore',
+              subtitle: 'Export or import an encrypted .medid file',
+              leading: Icons.backup_outlined,
+              onTap: () => context.push(AppRouter.backup),
             ),
-          if (_biometricAvailable)
-            SwitchListTile(
-              title: const Text('Use Biometrics'),
-              subtitle: const Text('Face ID / fingerprint unlock'),
-              value: _biometricEnabled,
-              onChanged: _toggleBiometric,
+          ],
+        ),
+
+        // About
+        SectionGroup(
+          title: 'About',
+          children: [
+            const SettingsTile(
+              title: 'Version',
+              trailing: Text(
+                '1.0.0',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
             ),
-        ],
-        const Divider(),
-        _SectionHeader('Data'),
-        ListTile(
-          title: const Text('Backup & Restore'),
-          subtitle: const Text('Export or import an encrypted .medid file'),
-          leading: const Icon(Icons.backup_outlined),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.push(AppRouter.backup),
+            const SettingsTile(
+              title: 'Privacy',
+              subtitle: 'No data ever leaves your device.',
+              leading: Icons.shield_outlined,
+            ),
+          ],
         ),
-        const Divider(),
-        _SectionHeader('About'),
-        const ListTile(
-          title: Text('Version'),
-          trailing: Text('1.0.0'),
-        ),
-        const ListTile(
-          title: Text('Privacy'),
-          subtitle: Text('No data ever leaves your device.'),
-        ),
+
+        const SizedBox(height: AppSpacing.xxl),
       ],
     );
   }
@@ -259,40 +291,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class _ThemeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<VitalGlyphColors>()!;
+
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, mode) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment(
-                value: ThemeMode.system,
-                icon: Icon(Icons.brightness_auto_outlined),
-                label: Text('System'),
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Theme',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                icon: Icon(Icons.light_mode_outlined),
-                label: Text('Light'),
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                icon: Icon(Icons.dark_mode_outlined),
-                label: Text('Dark'),
+              const SizedBox(height: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: colors.inputFill,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Row(
+                  children: [
+                    _ThemeOption(
+                      label: 'System',
+                      icon: Icons.brightness_auto_outlined,
+                      selected: mode == ThemeMode.system,
+                      onTap: () => context.read<ThemeCubit>().setSystem(),
+                    ),
+                    _ThemeOption(
+                      label: 'Light',
+                      icon: Icons.light_mode_outlined,
+                      selected: mode == ThemeMode.light,
+                      onTap: () => context.read<ThemeCubit>().setLight(),
+                    ),
+                    _ThemeOption(
+                      label: 'Dark',
+                      icon: Icons.dark_mode_outlined,
+                      selected: mode == ThemeMode.dark,
+                      onTap: () => context.read<ThemeCubit>().setDark(),
+                    ),
+                  ],
+                ),
               ),
             ],
-            selected: {mode},
-            onSelectionChanged: (selection) {
-              final cubit = context.read<ThemeCubit>();
-              switch (selection.first) {
-                case ThemeMode.light:
-                  cubit.setLight();
-                case ThemeMode.dark:
-                  cubit.setDark();
-                case ThemeMode.system:
-                  cubit.setSystem();
-              }
-            },
           ),
         );
       },
@@ -300,21 +345,64 @@ class _ThemeSelector extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader(this.title);
+class _ThemeOption extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ThemeOption({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-          letterSpacing: 0.8,
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? cs.surface : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ]
+                : null,
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: selected ? cs.primary : cs.onSurfaceVariant,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: selected ? cs.primary : cs.onSurfaceVariant,
+                  fontWeight:
+                      selected ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
