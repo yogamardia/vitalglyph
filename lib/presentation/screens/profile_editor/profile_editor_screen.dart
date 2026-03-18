@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,6 +152,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
         if (!_isSaving) return;
@@ -163,243 +168,131 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(_isEditing ? 'Edit Profile' : 'New Profile'),
-          actions: [
-            if (_isSaving)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
-              )
-            else
-              TextButton(
-                onPressed: _save,
-                child: const Text('Save'),
-              ),
-          ],
-        ),
+        backgroundColor: colorScheme.surfaceContainerLowest,
         body: Form(
           key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildBasicInfoCard(),
-              const SizedBox(height: 16),
-              _buildSubEntityCard<Allergy>(
-                title: 'Allergies',
-                icon: Icons.warning_amber_rounded,
-                items: _allergies,
-                itemBuilder: _allergyTile,
-                onAdd: () async {
-                  final result = await _showAllergyDialog();
-                  if (result != null) setState(() => _allergies.add(result));
-                },
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildAppBar(theme),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    const SizedBox(height: 24),
+                    _buildBasicInfoSection(theme),
+                    const SizedBox(height: 24),
+                    _buildMedicalSection(theme),
+                    const SizedBox(height: 24),
+                    _buildEmergencySection(theme),
+                    const SizedBox(height: 100),
+                  ]),
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildSubEntityCard<Medication>(
-                title: 'Medications',
-                icon: Icons.medication_outlined,
-                items: _medications,
-                itemBuilder: _medicationTile,
-                onAdd: () async {
-                  final result = await _showMedicationDialog();
-                  if (result != null) setState(() => _medications.add(result));
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildSubEntityCard<MedicalCondition>(
-                title: 'Medical Conditions',
-                icon: Icons.monitor_heart_outlined,
-                items: _conditions,
-                itemBuilder: _conditionTile,
-                onAdd: () async {
-                  final result = await _showConditionDialog();
-                  if (result != null) setState(() => _conditions.add(result));
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildSubEntityCard<EmergencyContact>(
-                title: 'Emergency Contacts',
-                icon: Icons.contact_phone_outlined,
-                items: _contacts,
-                itemBuilder: _contactTile,
-                onAdd: () async {
-                  final result = await _showContactDialog();
-                  if (result != null) setState(() => _contacts.add(result));
-                },
-              ),
-              const SizedBox(height: 32),
             ],
           ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _isSaving ? null : _save,
+          label: _isSaving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(_isEditing ? 'Update Profile' : 'Save Profile'),
+          icon: _isSaving ? null : const Icon(Icons.check),
+        ),
       ),
     );
   }
 
-  Widget _buildBasicInfoCard() {
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildAppBar(ThemeData theme) {
+    final colorScheme = theme.colorScheme;
+    return SliverAppBar(
+      expandedHeight: 280,
+      floating: true,
+      pinned: true,
+      stretch: true,
+      backgroundColor: colorScheme.surface,
+      elevation: 0,
+      leading: const BackButton(),
+      actions: [
+        if (_isSaving)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          )
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground,
+        ],
+        centerTitle: true,
+        title: Text(
+          _isEditing ? 'Edit Profile' : 'New Profile',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        background: Stack(
+          fit: StackFit.expand,
           children: [
-            Text(
-              'Basic Information',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Full Name *',
-                prefixIcon: Icon(Icons.person_outline),
-              ),
-              textCapitalization: TextCapitalization.words,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Name is required' : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _dobCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Date of Birth *',
-                prefixIcon: Icon(Icons.calendar_today_outlined),
-                hintText: 'Tap to select',
-              ),
-              readOnly: true,
-              onTap: _pickDateOfBirth,
-              validator: (_) =>
-                  _dateOfBirth == null ? 'Date of birth is required' : null,
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<BloodType?>(
-              initialValue: _bloodType,
-              decoration: const InputDecoration(
-                labelText: 'Blood Type',
-                prefixIcon: Icon(Icons.water_drop_outlined),
-              ),
-              items: [
-                const DropdownMenuItem<BloodType?>(
-                  value: null,
-                  child: Text('Unknown'),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colorScheme.primaryContainer.withValues(alpha: 0.3),
+                    colorScheme.surface,
+                  ],
                 ),
-                ...BloodType.values.map(
-                  (b) => DropdownMenuItem<BloodType?>(
-                    value: b,
-                    child: Text(b.displayName),
-                  ),
-                ),
-              ],
-              onChanged: (b) => _bloodType = b,
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<BiologicalSex?>(
-              initialValue: _biologicalSex,
-              decoration: const InputDecoration(
-                labelText: 'Biological Sex',
-                prefixIcon: Icon(Icons.people_outline),
               ),
-              items: [
-                const DropdownMenuItem<BiologicalSex?>(
-                  value: null,
-                  child: Text('Prefer not to say'),
-                ),
-                ...BiologicalSex.values.map(
-                  (s) => DropdownMenuItem<BiologicalSex?>(
-                    value: s,
-                    child: Text(s.displayName),
-                  ),
-                ),
-              ],
-              onChanged: (s) => _biologicalSex = s,
             ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _heightCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Height (cm)',
-                      prefixIcon: Icon(Icons.height),
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
+            Center(
+              child: Hero(
+                tag: 'profile_image_${widget.profile?.id ?? 'new'}',
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
-                    validator: (v) {
-                      if (v != null && v.isNotEmpty) {
-                        final d = int.tryParse(v);
-                        if (d == null || d < 1 || d > 300) return 'Invalid';
-                      }
-                      return null;
-                    },
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: colorScheme.primaryContainer,
+                    backgroundImage: widget.profile?.photoPath != null
+                        ? FileImage(File(widget.profile!.photoPath!))
+                        : null,
+                    child: widget.profile?.photoPath == null
+                        ? Icon(
+                            Icons.person_add_rounded,
+                            size: 48,
+                            color: colorScheme.onPrimaryContainer,
+                          )
+                        : null,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _weightCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Weight (kg)',
-                      prefixIcon: Icon(Icons.fitness_center),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                    ],
-                    validator: (v) {
-                      if (v != null && v.isNotEmpty) {
-                        final d = double.tryParse(v);
-                        if (d == null || d < 1 || d > 500) return 'Invalid';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            SwitchListTile(
-              value: _isOrganDonor,
-              onChanged: (v) => setState(() => _isOrganDonor = v),
-              title: const Text('Organ Donor'),
-              secondary: const Icon(Icons.favorite_border),
-              contentPadding: EdgeInsets.zero,
-            ),
-            const SizedBox(height: 4),
-            TextFormField(
-              controller: _langCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Primary Language',
-                prefixIcon: Icon(Icons.language),
-                hintText: 'e.g. English',
               ),
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _notesCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Medical Notes',
-                prefixIcon: Icon(Icons.notes),
-                hintText: 'Physician notes, special instructions...',
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              minLines: 2,
-              textCapitalization: TextCapitalization.sentences,
             ),
           ],
         ),
@@ -407,50 +300,236 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     );
   }
 
-  Widget _buildSubEntityCard<T>({
+  Widget _buildBasicInfoSection(ThemeData theme) {
+    return _SectionCard(
+      title: 'Basic Information',
+      icon: Icons.person_outline_rounded,
+      children: [
+        _CustomTextField(
+          controller: _nameCtrl,
+          label: 'Full Name',
+          prefixIcon: Icons.badge_outlined,
+          isRequired: true,
+          textCapitalization: TextCapitalization.words,
+          validator: (v) =>
+              (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+        ),
+        const SizedBox(height: 20),
+        _CustomTextField(
+          controller: _dobCtrl,
+          label: 'Date of Birth',
+          prefixIcon: Icons.calendar_today_rounded,
+          isRequired: true,
+          readOnly: true,
+          onTap: _pickDateOfBirth,
+          validator: (_) =>
+              _dateOfBirth == null ? 'Date of birth is required' : null,
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: _CustomDropdown<BloodType?>(
+                value: _bloodType,
+                label: 'Blood Type',
+                prefixIcon: Icons.water_drop_outlined,
+                items: [
+                  const DropdownMenuItem(value: null, child: Text('Unknown')),
+                  ...BloodType.values.map(
+                    (b) => DropdownMenuItem(
+                      value: b,
+                      child: Text(b.displayName),
+                    ),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _bloodType = v),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _CustomDropdown<BiologicalSex?>(
+                value: _biologicalSex,
+                label: 'Sex',
+                prefixIcon: Icons.people_outline_rounded,
+                items: [
+                  const DropdownMenuItem(
+                      value: null, child: Text('Not set')),
+                  ...BiologicalSex.values.map(
+                    (s) => DropdownMenuItem(
+                      value: s,
+                      child: Text(s.displayName),
+                    ),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _biologicalSex = v),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: _CustomTextField(
+                controller: _heightCtrl,
+                label: 'Height (cm)',
+                prefixIcon: Icons.height_rounded,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _CustomTextField(
+                controller: _weightCtrl,
+                label: 'Weight (kg)',
+                prefixIcon: Icons.monitor_weight_outlined,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SwitchListTile(
+          value: _isOrganDonor,
+          onChanged: (v) => setState(() => _isOrganDonor = v),
+          title: Text(
+            'Organ Donor',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          secondary: Icon(
+            _isOrganDonor ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: _isOrganDonor ? Theme.of(context).colorScheme.error : null,
+          ),
+          contentPadding: EdgeInsets.zero,
+        ),
+        const SizedBox(height: 8),
+        _CustomTextField(
+          controller: _langCtrl,
+          label: 'Primary Language',
+          prefixIcon: Icons.translate_rounded,
+          textCapitalization: TextCapitalization.words,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMedicalSection(ThemeData theme) {
+    return _SectionCard(
+      title: 'Medical Details',
+      icon: Icons.health_and_safety_outlined,
+      children: [
+        _buildSubEntitySection<Allergy>(
+          title: 'Allergies',
+          items: _allergies,
+          itemBuilder: _allergyTile,
+          onAdd: () async {
+            final result = await _showAllergyDialog();
+            if (result != null) setState(() => _allergies.add(result));
+          },
+        ),
+        const Divider(height: 32),
+        _buildSubEntitySection<Medication>(
+          title: 'Medications',
+          items: _medications,
+          itemBuilder: _medicationTile,
+          onAdd: () async {
+            final result = await _showMedicationDialog();
+            if (result != null) setState(() => _medications.add(result));
+          },
+        ),
+        const Divider(height: 32),
+        _buildSubEntitySection<MedicalCondition>(
+          title: 'Conditions',
+          items: _conditions,
+          itemBuilder: _conditionTile,
+          onAdd: () async {
+            final result = await _showConditionDialog();
+            if (result != null) setState(() => _conditions.add(result));
+          },
+        ),
+        const Divider(height: 32),
+        _CustomTextField(
+          controller: _notesCtrl,
+          label: 'Medical Notes',
+          prefixIcon: Icons.notes_rounded,
+          maxLines: 4,
+          minLines: 2,
+          textCapitalization: TextCapitalization.sentences,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmergencySection(ThemeData theme) {
+    return _SectionCard(
+      title: 'Emergency Contacts',
+      icon: Icons.contact_emergency_outlined,
+      children: [
+        _buildSubEntitySection<EmergencyContact>(
+          title: 'Contacts',
+          items: _contacts,
+          itemBuilder: _contactTile,
+          onAdd: () async {
+            final result = await _showContactDialog();
+            if (result != null) setState(() => _contacts.add(result));
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubEntitySection<T>({
     required String title,
-    required IconData icon,
     required List<T> items,
     required Widget Function(T) itemBuilder,
     required VoidCallback onAdd,
   }) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: theme.colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: onAdd,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add'),
-                ),
-              ],
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
             ),
-            if (items.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  'None added',
-                  style: TextStyle(color: theme.hintColor),
-                ),
-              )
-            else
-              ...items.map(itemBuilder),
+            IconButton.filledTonal(
+              onPressed: onAdd,
+              icon: const Icon(Icons.add, size: 20),
+              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+              padding: EdgeInsets.zero,
+            ),
           ],
         ),
-      ),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'No ${title.toLowerCase()} added',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.outline,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          )
+        else
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: itemBuilder(item),
+              )),
+      ],
     );
   }
 
@@ -516,339 +595,245 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     );
   }
 
-  Future<Allergy?> _showAllergyDialog([Allergy? existing]) async {
-    final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final reactionCtrl = TextEditingController(text: existing?.reaction ?? '');
-    var severity = existing?.severity ?? AllergySeverity.mild;
-    final formKey = GlobalKey<FormState>();
-
-    final result = await showDialog<Allergy>(
+  Future<Allergy?> _showAllergyDialog([Allergy? existing]) {
+    return showDialog<Allergy>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(existing == null ? 'Add Allergy' : 'Edit Allergy'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Allergen *'),
-                  textCapitalization: TextCapitalization.words,
-                  autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<AllergySeverity>(
-                  initialValue: severity,
-                  decoration: const InputDecoration(labelText: 'Severity'),
-                  items: AllergySeverity.values
-                      .map(
-                        (s) => DropdownMenuItem(
-                          value: s,
-                          child: Text(s.displayName),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (s) => severity = s ?? severity,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: reactionCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Reaction (optional)',
-                  ),
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (!formKey.currentState!.validate()) return;
-                Navigator.pop(
-                  ctx,
-                  Allergy(
-                    id: existing?.id ?? _uuid.v4(),
-                    name: nameCtrl.text.trim(),
-                    severity: severity,
-                    reaction: reactionCtrl.text.trim().isEmpty
-                        ? null
-                        : reactionCtrl.text.trim(),
-                  ),
-                );
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        ),
-      ),
+      builder: (ctx) => _AllergyDialog(existing: existing),
     );
-
-    nameCtrl.dispose();
-    reactionCtrl.dispose();
-    return result;
   }
 
-  Future<Medication?> _showMedicationDialog([Medication? existing]) async {
-    final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final dosageCtrl = TextEditingController(text: existing?.dosage ?? '');
-    final freqCtrl = TextEditingController(text: existing?.frequency ?? '');
-    final forCtrl = TextEditingController(text: existing?.prescribedFor ?? '');
-    final formKey = GlobalKey<FormState>();
-
-    final result = await showDialog<Medication>(
+  Future<Medication?> _showMedicationDialog([Medication? existing]) {
+    return showDialog<Medication>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(existing == null ? 'Add Medication' : 'Edit Medication'),
-        content: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      builder: (ctx) => _MedicationDialog(existing: existing),
+    );
+  }
+
+  Future<MedicalCondition?> _showConditionDialog([MedicalCondition? existing]) {
+    return showDialog<MedicalCondition>(
+      context: context,
+      builder: (ctx) => _ConditionDialog(existing: existing),
+    );
+  }
+
+  Future<EmergencyContact?> _showContactDialog([EmergencyContact? existing]) {
+    return showDialog<EmergencyContact>(
+      context: context,
+      builder: (ctx) => _ContactDialog(
+        existing: existing,
+        nextPriority: _contacts.length + 1,
+      ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Row(
               children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration:
-                      const InputDecoration(labelText: 'Medication Name *'),
-                  textCapitalization: TextCapitalization.words,
-                  autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: dosageCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Dosage',
-                    hintText: 'e.g. 500mg',
+                Icon(icon, size: 24, color: theme.colorScheme.primary),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: freqCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Frequency',
-                    hintText: 'e.g. 2x daily',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: forCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Prescribed For',
-                    hintText: 'e.g. Hypertension',
-                  ),
-                  textCapitalization: TextCapitalization.sentences,
                 ),
               ],
             ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              Navigator.pop(
-                ctx,
-                Medication(
-                  id: existing?.id ?? _uuid.v4(),
-                  name: nameCtrl.text.trim(),
-                  dosage: dosageCtrl.text.trim().isEmpty
-                      ? null
-                      : dosageCtrl.text.trim(),
-                  frequency:
-                      freqCtrl.text.trim().isEmpty ? null : freqCtrl.text.trim(),
-                  prescribedFor:
-                      forCtrl.text.trim().isEmpty ? null : forCtrl.text.trim(),
-                ),
-              );
-            },
-            child: const Text('Save'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            ),
           ),
         ],
       ),
     );
+  }
+}
 
-    nameCtrl.dispose();
-    dosageCtrl.dispose();
-    freqCtrl.dispose();
-    forCtrl.dispose();
-    return result;
+class _CustomTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData? prefixIcon;
+  final bool readOnly;
+  final bool isRequired;
+  final VoidCallback? onTap;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextCapitalization textCapitalization;
+  final int? maxLines;
+  final int? minLines;
+
+  const _CustomTextField({
+    required this.controller,
+    required this.label,
+    this.prefixIcon,
+    this.readOnly = false,
+    this.isRequired = false,
+    this.onTap,
+    this.validator,
+    this.keyboardType,
+    this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
+    this.maxLines = 1,
+    this.minLines,
+  });
+
+  @override
+  State<_CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<_CustomTextField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() => _isFocused = _focusNode.hasFocus);
+    });
   }
 
-  Future<MedicalCondition?> _showConditionDialog([
-    MedicalCondition? existing,
-  ]) async {
-    final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final dateCtrl =
-        TextEditingController(text: existing?.diagnosedDate ?? '');
-    final notesCtrl = TextEditingController(text: existing?.notes ?? '');
-    final formKey = GlobalKey<FormState>();
-
-    final result = await showDialog<MedicalCondition>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(existing == null ? 'Add Condition' : 'Edit Condition'),
-        content: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration:
-                      const InputDecoration(labelText: 'Condition Name *'),
-                  textCapitalization: TextCapitalization.words,
-                  autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: dateCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Diagnosed Date',
-                    hintText: 'e.g. 2020 or Jan 2020',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: notesCtrl,
-                  decoration: const InputDecoration(labelText: 'Notes'),
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLines: 2,
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              Navigator.pop(
-                ctx,
-                MedicalCondition(
-                  id: existing?.id ?? _uuid.v4(),
-                  name: nameCtrl.text.trim(),
-                  diagnosedDate: dateCtrl.text.trim().isEmpty
-                      ? null
-                      : dateCtrl.text.trim(),
-                  notes: notesCtrl.text.trim().isEmpty
-                      ? null
-                      : notesCtrl.text.trim(),
-                ),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-
-    nameCtrl.dispose();
-    dateCtrl.dispose();
-    notesCtrl.dispose();
-    return result;
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
-  Future<EmergencyContact?> _showContactDialog([
-    EmergencyContact? existing,
-  ]) async {
-    final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final phoneCtrl = TextEditingController(text: existing?.phone ?? '');
-    final relCtrl = TextEditingController(text: existing?.relationship ?? '');
-    final formKey = GlobalKey<FormState>();
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    final result = await showDialog<EmergencyContact>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          existing == null ? 'Add Emergency Contact' : 'Edit Contact',
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: _isFocused ? colorScheme.surface : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _isFocused ? colorScheme.primary : Colors.transparent,
+          width: 2,
         ),
-        content: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Name *'),
-                  textCapitalization: TextCapitalization.words,
-                  autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: phoneCtrl,
-                  decoration: const InputDecoration(labelText: 'Phone *'),
-                  keyboardType: TextInputType.phone,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: relCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Relationship',
-                    hintText: 'e.g. Spouse, Parent',
+        boxShadow: _isFocused
+            ? [
+                BoxShadow(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              ]
+            : null,
+      ),
+      child: TextFormField(
+        controller: widget.controller,
+        focusNode: _focusNode,
+        readOnly: widget.readOnly,
+        onTap: widget.onTap,
+        validator: widget.validator,
+        keyboardType: widget.keyboardType,
+        inputFormatters: widget.inputFormatters,
+        textCapitalization: widget.textCapitalization,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        style: theme.textTheme.bodyLarge,
+        decoration: InputDecoration(
+          label: widget.isRequired
+              ? RichText(
+                  text: TextSpan(
+                    text: widget.label,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(color: colorScheme.error),
+                      ),
+                    ],
                   ),
-                  textCapitalization: TextCapitalization.words,
-                ),
-              ],
-            ),
-          ),
+                )
+              : null,
+          labelText: widget.isRequired ? null : widget.label,
+          prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              Navigator.pop(
-                ctx,
-                EmergencyContact(
-                  id: existing?.id ?? _uuid.v4(),
-                  name: nameCtrl.text.trim(),
-                  phone: phoneCtrl.text.trim(),
-                  relationship: relCtrl.text.trim().isEmpty
-                      ? null
-                      : relCtrl.text.trim(),
-                  priority: existing?.priority ?? (_contacts.length + 1),
-                ),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
+  }
+}
 
-    nameCtrl.dispose();
-    phoneCtrl.dispose();
-    relCtrl.dispose();
-    return result;
+class _CustomDropdown<T> extends StatelessWidget {
+  final T value;
+  final String label;
+  final IconData? prefixIcon;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?> onChanged;
+
+  const _CustomDropdown({
+    required this.value,
+    required this.label,
+    this.prefixIcon,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: DropdownButtonFormField<T>(
+        value: value,
+        items: items,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        ),
+      ),
+    );
   }
 }
 
@@ -867,42 +852,454 @@ class _SubEntityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: Theme.of(context).textTheme.bodySmall,
-            )
-          : null,
-      trailing: SizedBox(
-        width: 80,
-        child: Row(
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              )
+            : null,
+        trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit_outlined),
-              iconSize: 20,
+              icon: const Icon(Icons.edit_outlined, size: 20),
               onPressed: onEdit,
-              tooltip: 'Edit',
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              visualDensity: VisualDensity.compact,
             ),
             IconButton(
-              icon: Icon(
-                Icons.delete_outline,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              iconSize: 20,
+              icon: Icon(Icons.delete_outline, size: 20, color: theme.colorScheme.error),
               onPressed: onDelete,
-              tooltip: 'Remove',
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              visualDensity: VisualDensity.compact,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AllergyDialog extends StatefulWidget {
+  final Allergy? existing;
+  const _AllergyDialog({this.existing});
+
+  @override
+  State<_AllergyDialog> createState() => _AllergyDialogState();
+}
+
+class _AllergyDialogState extends State<_AllergyDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _reactionCtrl;
+  late AllergySeverity _severity;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _reactionCtrl = TextEditingController(text: widget.existing?.reaction ?? '');
+    _severity = widget.existing?.severity ?? AllergySeverity.mild;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _reactionCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.existing == null ? 'Add Allergy' : 'Edit Allergy'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(labelText: 'Allergen *'),
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<AllergySeverity>(
+                value: _severity,
+                decoration: const InputDecoration(labelText: 'Severity'),
+                items: AllergySeverity.values
+                    .map(
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(s.displayName),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (s) => setState(() => _severity = s ?? _severity),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _reactionCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Reaction (optional)',
+                ),
+                textCapitalization: TextCapitalization.sentences,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(
+              context,
+              Allergy(
+                id: widget.existing?.id ?? _uuid.v4(),
+                name: _nameCtrl.text.trim(),
+                severity: _severity,
+                reaction: _reactionCtrl.text.trim().isEmpty
+                    ? null
+                    : _reactionCtrl.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _MedicationDialog extends StatefulWidget {
+  final Medication? existing;
+  const _MedicationDialog({this.existing});
+
+  @override
+  State<_MedicationDialog> createState() => _MedicationDialogState();
+}
+
+class _MedicationDialogState extends State<_MedicationDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _dosageCtrl;
+  late final TextEditingController _freqCtrl;
+  late final TextEditingController _forCtrl;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _dosageCtrl = TextEditingController(text: widget.existing?.dosage ?? '');
+    _freqCtrl = TextEditingController(text: widget.existing?.frequency ?? '');
+    _forCtrl =
+        TextEditingController(text: widget.existing?.prescribedFor ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _dosageCtrl.dispose();
+    _freqCtrl.dispose();
+    _forCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title:
+          Text(widget.existing == null ? 'Add Medication' : 'Edit Medication'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                decoration:
+                    const InputDecoration(labelText: 'Medication Name *'),
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _dosageCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Dosage',
+                  hintText: 'e.g. 500mg',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _freqCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Frequency',
+                  hintText: 'e.g. 2x daily',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _forCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Prescribed For',
+                  hintText: 'e.g. Hypertension',
+                ),
+                textCapitalization: TextCapitalization.sentences,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(
+              context,
+              Medication(
+                id: widget.existing?.id ?? _uuid.v4(),
+                name: _nameCtrl.text.trim(),
+                dosage: _dosageCtrl.text.trim().isEmpty
+                    ? null
+                    : _dosageCtrl.text.trim(),
+                frequency:
+                    _freqCtrl.text.trim().isEmpty ? null : _freqCtrl.text.trim(),
+                prescribedFor:
+                    _forCtrl.text.trim().isEmpty ? null : _forCtrl.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ConditionDialog extends StatefulWidget {
+  final MedicalCondition? existing;
+  const _ConditionDialog({this.existing});
+
+  @override
+  State<_ConditionDialog> createState() => _ConditionDialogState();
+}
+
+class _ConditionDialogState extends State<_ConditionDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _dateCtrl;
+  late final TextEditingController _notesCtrl;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _dateCtrl =
+        TextEditingController(text: widget.existing?.diagnosedDate ?? '');
+    _notesCtrl = TextEditingController(text: widget.existing?.notes ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _dateCtrl.dispose();
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.existing == null ? 'Add Condition' : 'Edit Condition'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                decoration:
+                    const InputDecoration(labelText: 'Condition Name *'),
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _dateCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Diagnosed Date',
+                  hintText: 'e.g. 2020 or Jan 2020',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _notesCtrl,
+                decoration: const InputDecoration(labelText: 'Notes'),
+                textCapitalization: TextCapitalization.sentences,
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(
+              context,
+              MedicalCondition(
+                id: widget.existing?.id ?? _uuid.v4(),
+                name: _nameCtrl.text.trim(),
+                diagnosedDate: _dateCtrl.text.trim().isEmpty
+                    ? null
+                    : _dateCtrl.text.trim(),
+                notes: _notesCtrl.text.trim().isEmpty
+                    ? null
+                    : _notesCtrl.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ContactDialog extends StatefulWidget {
+  final EmergencyContact? existing;
+  final int nextPriority;
+  const _ContactDialog({this.existing, this.nextPriority = 1});
+
+  @override
+  State<_ContactDialog> createState() => _ContactDialogState();
+}
+
+class _ContactDialogState extends State<_ContactDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _phoneCtrl;
+  late final TextEditingController _relCtrl;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _phoneCtrl = TextEditingController(text: widget.existing?.phone ?? '');
+    _relCtrl = TextEditingController(text: widget.existing?.relationship ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _relCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.existing == null ? 'Add Emergency Contact' : 'Edit Contact',
+      ),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(labelText: 'Name *'),
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _phoneCtrl,
+                decoration: const InputDecoration(labelText: 'Phone *'),
+                keyboardType: TextInputType.phone,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _relCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Relationship',
+                  hintText: 'e.g. Spouse, Parent',
+                ),
+                textCapitalization: TextCapitalization.words,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(
+              context,
+              EmergencyContact(
+                id: widget.existing?.id ?? _uuid.v4(),
+                name: _nameCtrl.text.trim(),
+                phone: _phoneCtrl.text.trim(),
+                relationship: _relCtrl.text.trim().isEmpty
+                    ? null
+                    : _relCtrl.text.trim(),
+                priority: widget.existing?.priority ?? widget.nextPriority,
+              ),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }

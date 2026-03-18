@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 
 /// Emergency-optimised read-only view of a scanned Medical ID.
@@ -10,10 +11,12 @@ class ScannedProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Medical ID'),
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: colors.emergencyRed,
         foregroundColor: Colors.white,
       ),
       body: ListView(
@@ -25,9 +28,9 @@ class ScannedProfileView extends StatelessWidget {
             const SizedBox(height: 12),
             _SectionCard(
               title: 'ALLERGIES',
-              titleColor: Colors.red.shade700,
+              titleColor: colors.emergencyRed,
               icon: Icons.warning_amber_rounded,
-              iconColor: Colors.red.shade700,
+              iconColor: colors.emergencyRed,
               children: profile.allergies
                   .map((a) => _AllergyRow(allergy: a))
                   .toList(),
@@ -73,28 +76,33 @@ class ScannedProfileView extends StatelessWidget {
 class _TamperWarning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade100,
-        border: Border.all(color: Colors.orange.shade700),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.security, color: Colors.orange.shade700),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Signature invalid — data may have been tampered with. Verify with patient directly.',
-              style: TextStyle(
-                color: Colors.orange.shade900,
-                fontWeight: FontWeight.w600,
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+    return Semantics(
+      liveRegion: true,
+      label: 'Warning: Signature invalid — data may have been tampered with.',
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.tamperWarningBackground,
+          border: Border.all(color: colors.tamperWarning),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.security, color: colors.tamperWarning),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Signature invalid — data may have been tampered with. Verify with patient directly.',
+                style: TextStyle(
+                  color: colors.tamperWarning,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -108,6 +116,9 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -127,10 +138,10 @@ class _HeaderCard extends StatelessWidget {
               _InfoRow(
                 label: 'Blood Type',
                 value: profile.bloodType!,
-                valueStyle: const TextStyle(
+                valueStyle: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                  color: colors.bloodTypeBadge,
                 ),
               ),
             if (profile.biologicalSex != null)
@@ -147,7 +158,9 @@ class _HeaderCard extends StatelessWidget {
               value: profile.isOrganDonor ? 'YES' : 'NO',
               valueStyle: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: profile.isOrganDonor ? Colors.green : Colors.black87,
+                color: profile.isOrganDonor
+                    ? colors.successGreen
+                    : colorScheme.onSurface,
               ),
             ),
           ],
@@ -173,6 +186,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -182,7 +196,8 @@ class _InfoRow extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(
+                  color: colorScheme.outline, fontSize: 13),
             ),
           ),
           Expanded(
@@ -218,6 +233,8 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final defaultColor = colorScheme.onSurfaceVariant;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -226,14 +243,17 @@ class _SectionCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 18, color: iconColor ?? Colors.black54),
+                ExcludeSemantics(
+                  child: Icon(icon,
+                      size: 18, color: iconColor ?? defaultColor),
+                ),
                 const SizedBox(width: 6),
                 Text(
                   title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
-                    color: titleColor ?? Colors.black54,
+                    color: titleColor ?? defaultColor,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -255,11 +275,13 @@ class _AllergyRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
     final severityColor = switch (allergy.severity.toLowerCase()) {
-      'lifethreatening' => Colors.red.shade900,
-      'severe' => Colors.red,
-      'moderate' => Colors.orange,
-      _ => Colors.yellow.shade800,
+      'lifethreatening' => colors.lifeThreatening,
+      'severe' => colors.severe,
+      'moderate' => colors.moderate,
+      _ => colors.mild,
     };
 
     return Padding(
@@ -268,11 +290,13 @@ class _AllergyRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: severityColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: severityColor.withValues(alpha: 0.5)),
+              border: Border.all(
+                  color: severityColor.withValues(alpha: 0.5)),
             ),
             child: Text(
               allergy.severity.toUpperCase(),
@@ -298,7 +322,9 @@ class _AllergyRow extends StatelessWidget {
                 if (allergy.reaction != null)
                   Text(
                     allergy.reaction!,
-                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.outline,
+                        fontSize: 13),
                   ),
               ],
             ),
@@ -338,11 +364,13 @@ class _ContactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          const Icon(Icons.person_outline, size: 20, color: Colors.grey),
+          Icon(Icons.person_outline,
+              size: 20, color: colorScheme.outline),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -359,7 +387,8 @@ class _ContactRow extends StatelessWidget {
                   contact.relationship != null
                       ? '${contact.phone} · ${contact.relationship}'
                       : contact.phone,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  style: TextStyle(
+                      color: colorScheme.outline, fontSize: 13),
                 ),
               ],
             ),

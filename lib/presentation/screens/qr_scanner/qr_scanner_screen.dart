@@ -56,7 +56,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -94,12 +94,16 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           ),
           // Viewfinder overlay
           Center(
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(12),
+            child: Semantics(
+              label: 'Camera viewfinder',
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  // Keep white — needed for contrast against dark camera feed
+                  border: Border.all(color: Colors.white, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -110,6 +114,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             child: Text(
               'Point at a Medical ID QR code',
               textAlign: TextAlign.center,
+              // Keep white70 — text overlays camera feed (dark background)
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
           ),

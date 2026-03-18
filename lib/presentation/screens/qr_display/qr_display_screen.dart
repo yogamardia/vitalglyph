@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/injection.dart';
@@ -42,8 +43,11 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final qrSize = (size.width.clamp(0.0, size.height) * 0.8).clamp(200.0, 600.0);
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      // Keep white background — required for QR code readability
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -55,6 +59,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
+                // Keep black87 — QR screen always has white background
                 color: Colors.black87,
                 letterSpacing: 1.2,
               ),
@@ -65,30 +70,34 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
               'SCAN FOR MEDICAL INFORMATION',
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.red.shade700,
+                color: colors.emergencyRed,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 24),
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black12, width: 1),
-                  borderRadius: BorderRadius.circular(8),
+            Semantics(
+              label: 'QR code with medical info for ${widget.profile.name}',
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    // Keep white — QR modules must be black on white
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black12, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: QrCodeWidget(data: _qrData, size: qrSize),
                 ),
-                child: QrCodeWidget(data: _qrData, size: qrSize),
               ),
             ),
             const SizedBox(height: 24),
             if (widget.profile.bloodType != null) ...[
               _EmergencyPill(
                 icon: Icons.bloodtype,
-                label:
-                    'Blood Type: ${widget.profile.bloodType!.displayName}',
-                color: Colors.red,
+                label: 'Blood Type: ${widget.profile.bloodType!.displayName}',
+                color: colors.bloodTypeBadge,
+                background: colors.bloodTypeBadgeBackground,
               ),
               const SizedBox(height: 8),
             ],
@@ -97,14 +106,16 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                 icon: Icons.warning_amber_rounded,
                 label:
                     '⚠ ${widget.profile.allergies.length} Allerg${widget.profile.allergies.length == 1 ? 'y' : 'ies'}',
-                color: Colors.orange,
+                color: colors.allergyTag,
+                background: colors.allergyTagBackground,
               ),
             const SizedBox(height: 32),
             TextButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.close),
               label: const Text('Close'),
-              style: TextButton.styleFrom(foregroundColor: Colors.black54),
+              style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -117,11 +128,13 @@ class _EmergencyPill extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final Color background;
 
   const _EmergencyPill({
     required this.icon,
     required this.label,
     required this.color,
+    required this.background,
   });
 
   @override
@@ -129,7 +142,7 @@ class _EmergencyPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: background,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
