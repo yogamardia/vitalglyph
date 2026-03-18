@@ -826,6 +826,7 @@ class _CustomDropdown<T> extends StatelessWidget {
       ),
       child: DropdownButtonFormField<T>(
         initialValue: value,
+        isExpanded: true,
         items: items,
         onChanged: onChanged,
         decoration: InputDecoration(
