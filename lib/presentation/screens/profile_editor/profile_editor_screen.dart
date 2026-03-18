@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -159,12 +160,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
       listener: (context, state) {
         if (!_isSaving) return;
         if (state is ProfileLoaded) {
+          HapticFeedback.mediumImpact();
           context.pop();
         } else if (state is ProfileError) {
           setState(() => _isSaving = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          AppSnackBar.error(context, state.message);
         }
       },
       child: Scaffold(

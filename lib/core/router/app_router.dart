@@ -1,11 +1,13 @@
 import 'package:go_router/go_router.dart';
 import 'package:vitalglyph/core/router/page_transitions.dart';
+import 'package:vitalglyph/core/services/app_preferences.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/screens/emergency_card/emergency_card_screen.dart';
 import 'package:vitalglyph/presentation/screens/home/home_screen.dart';
+import 'package:vitalglyph/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:vitalglyph/presentation/screens/profile_editor/profile_editor_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_display/qr_display_screen.dart';
 import 'package:vitalglyph/presentation/screens/qr_scanner/qr_scanner_screen.dart';
@@ -17,6 +19,7 @@ class AppRouter {
   AppRouter._();
 
   static const String home = '/';
+  static const String onboarding = '/onboarding';
   static const String qrDisplay = '/qr';
   static const String scanner = '/scanner';
   static const String scanResult = '/scanner/result';
@@ -28,7 +31,20 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
+    redirect: (context, state) async {
+      if (state.matchedLocation == onboarding) return null;
+      final seen = await sl<AppPreferences>().hasSeenOnboarding();
+      if (!seen) return onboarding;
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: onboarding,
+        pageBuilder: (context, state) => PageTransitions.fade(
+          state: state,
+          child: const OnboardingScreen(),
+        ),
+      ),
       GoRoute(
         path: home,
         builder: (context, state) => const HomeScreen(),

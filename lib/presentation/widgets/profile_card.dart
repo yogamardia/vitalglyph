@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/allergy.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
@@ -317,6 +318,7 @@ class ProfileCard extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
+              HapticFeedback.mediumImpact();
               onDelete();
             },
             style: TextButton.styleFrom(
