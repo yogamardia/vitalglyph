@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 
 /// Emergency-optimised read-only view of a scanned Medical ID.
@@ -81,24 +82,42 @@ class _TamperWarning extends StatelessWidget {
       liveRegion: true,
       label: 'Warning: Signature invalid — data may have been tampered with.',
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: AppSpacing.md),
         decoration: BoxDecoration(
           color: colors.tamperWarningBackground,
-          border: Border.all(color: colors.tamperWarning),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.security, color: colors.tamperWarning),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Signature invalid — data may have been tampered with. Verify with patient directly.',
-                style: TextStyle(
-                  color: colors.tamperWarning,
-                  fontWeight: FontWeight.w600,
+            Container(
+              width: 4,
+              constraints: const BoxConstraints(minHeight: 52),
+              decoration: BoxDecoration(
+                color: colors.tamperWarning,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(AppRadius.md),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.security, color: colors.tamperWarning, size: 18),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'Signature invalid — data may have been tampered with. Verify with patient directly.',
+                      style: TextStyle(
+                        color: colors.tamperWarning,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

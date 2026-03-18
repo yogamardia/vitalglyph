@@ -85,7 +85,14 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                     // Keep white — QR modules must be black on white
                     color: Colors.white,
                     border: Border.all(color: Colors.black12, width: 1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: QrCodeWidget(data: _qrData, size: qrSize),
                 ),
