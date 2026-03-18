@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:vitalglyph/core/router/page_transitions.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
@@ -32,54 +33,82 @@ class AppRouter {
         path: home,
         builder: (context, state) => const HomeScreen(),
       ),
+      // Immersive fade — QR display takeover
       GoRoute(
         path: qrDisplay,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final profile = state.extra! as Profile;
-          return QrDisplayScreen(profile: profile);
+          return PageTransitions.fade(
+            state: state,
+            child: QrDisplayScreen(profile: profile),
+          );
         },
       ),
+      // Fade for scanner + shared-axis for result
       GoRoute(
         path: scanner,
-        builder: (context, state) => const QrScannerScreen(),
+        pageBuilder: (context, state) => PageTransitions.fade(
+          state: state,
+          child: const QrScannerScreen(),
+        ),
         routes: [
           GoRoute(
             path: 'result',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final scanned = state.extra! as ScannedProfile;
-              return ScannedProfileView(profile: scanned);
+              return PageTransitions.slideRight(
+                state: state,
+                child: ScannedProfileView(profile: scanned),
+              );
             },
           ),
         ],
       ),
+      // Horizontal shared-axis for settings / backup
       GoRoute(
         path: settings,
-        builder: (context, state) => const SettingsScreen(),
+        pageBuilder: (context, state) => PageTransitions.slideRight(
+          state: state,
+          child: const SettingsScreen(),
+        ),
       ),
+      // Bottom-to-top for editor (fullscreen dialog feel)
       GoRoute(
         path: profileNew,
-        builder: (context, state) => const ProfileEditorScreen(),
+        pageBuilder: (context, state) => PageTransitions.slideUp(
+          state: state,
+          child: const ProfileEditorScreen(),
+        ),
       ),
       GoRoute(
         path: profileEdit,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final profile = state.extra! as Profile;
-          return ProfileEditorScreen(profile: profile);
+          return PageTransitions.slideUp(
+            state: state,
+            child: ProfileEditorScreen(profile: profile),
+          );
         },
       ),
       GoRoute(
         path: emergencyCard,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final profile = state.extra! as Profile;
-          return EmergencyCardScreen(
-            profile: profile,
-            exportEmergencyCard: sl<ExportEmergencyCard>(),
+          return PageTransitions.slideRight(
+            state: state,
+            child: EmergencyCardScreen(
+              profile: profile,
+              exportEmergencyCard: sl<ExportEmergencyCard>(),
+            ),
           );
         },
       ),
       GoRoute(
         path: backup,
-        builder: (context, state) => const BackupScreen(),
+        pageBuilder: (context, state) => PageTransitions.slideRight(
+          state: state,
+          child: const BackupScreen(),
+        ),
       ),
     ],
   );
