@@ -101,7 +101,7 @@ void main() {
       },
       build: buildCubit,
       act: (c) => c.authenticateWithPin('000000'),
-      expect: () => [const AuthFailure('Incorrect PIN. Please try again.')],
+      expect: () => [const AuthFailure('Incorrect PIN. 4 attempts remaining before lockout.')],
     );
   });
 
