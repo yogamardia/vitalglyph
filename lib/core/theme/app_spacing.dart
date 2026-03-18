@@ -1,4 +1,4 @@
-// Spacing, radius, and sizing constants for VitalGlyph.
+// Spacing, radius, sizing, and animation duration constants for VitalGlyph.
 
 class AppSpacing {
   AppSpacing._();
@@ -21,8 +21,15 @@ class AppRadius {
 
 class AppSizing {
   AppSizing._();
-  static const double numPadButtonWidth = 96;
-  static const double numPadButtonHeight = 80;
-  static const double pinDot = 20;
+  static const double numPadButtonWidth = 100;
+  static const double numPadButtonHeight = 84;
+  static const double pinDot = 14;
   static const double minTouchTarget = 48;
+}
+
+class AppDuration {
+  AppDuration._();
+  static const fast = Duration(milliseconds: 150);
+  static const medium = Duration(milliseconds: 250);
+  static const slow = Duration(milliseconds: 400);
 }
