@@ -43,6 +43,31 @@ class PageTransitions {
     );
   }
 
+  /// Scale + fade — modern card-style entry (detail views).
+  static CustomTransitionPage<T> scaleUp<T>({
+    required GoRouterState state,
+    required Widget child,
+  }) {
+    return CustomTransitionPage<T>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 250),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final scaleTween = Tween(begin: 0.95, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOutCubic));
+        final fadeTween = Tween(begin: 0.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOut));
+        return ScaleTransition(
+          scale: animation.drive(scaleTween),
+          child: FadeTransition(
+            opacity: animation.drive(fadeTween),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   /// Horizontal shared-axis slide (settings / backup / scan result).
   static CustomTransitionPage<T> slideRight<T>({
     required GoRouterState state,
