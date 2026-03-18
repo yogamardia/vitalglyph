@@ -170,8 +170,8 @@ class _LockScreenState extends State<LockScreen>
                 label: 'Medical ID locked',
                 excludeSemantics: true,
                 child: Icon(
-                  Icons.lock_outline,
-                  size: 48,
+                  Icons.shield_outlined,
+                  size: 52,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
@@ -288,19 +288,22 @@ class _PinDots extends StatelessWidget {
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: filled ? 1.0 : 0.0),
           duration: const Duration(milliseconds: 200),
-          curve: Curves.elasticOut,
+          curve: Curves.easeOutBack,
           builder: (context, value, _) {
-            return Container(
-              width: 16,
-              height: 16,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color.lerp(Colors.transparent, color, value),
-                border: Border.all(
-                  color: Color.lerp(
-                      Theme.of(context).colorScheme.outline, color, value)!,
-                  width: 2,
+            return Transform.scale(
+              scale: filled ? (0.8 + 0.2 * value) : 1.0,
+              child: Container(
+                width: 14,
+                height: 14,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color.lerp(Colors.transparent, color, value),
+                  border: Border.all(
+                    color: Color.lerp(
+                        Theme.of(context).colorScheme.outline, color, value)!,
+                    width: 2,
+                  ),
                 ),
               ),
             );
@@ -388,7 +391,7 @@ class _NumPad extends StatelessWidget {
   }
 
   Widget _buildBioButton(BuildContext context) {
-    if (onBiometric == null) return const SizedBox(width: 96, height: 80);
+    if (onBiometric == null) return const SizedBox(width: 100, height: 84);
     return Semantics(
       button: true,
       label: 'use biometrics',
@@ -414,14 +417,17 @@ class _PadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(48),
+        borderRadius: BorderRadius.circular(50),
+        highlightColor: cs.primaryContainer.withValues(alpha: 0.5),
+        splashColor: cs.primaryContainer.withValues(alpha: 0.3),
         child: SizedBox(
-          width: 96,
-          height: 80,
+          width: 100,
+          height: 84,
           child: Center(child: child),
         ),
       ),
