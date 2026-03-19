@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Emergency-optimised read-only view of a scanned Medical ID.
-/// Large fonts, high contrast, colour-coded allergy severity.
 class ScannedProfileView extends StatelessWidget {
   final ScannedProfile profile;
 
@@ -14,115 +15,139 @@ class ScannedProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<VitalGlyphColors>()!;
 
-    return Scaffold(
+    return GradientScaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Medical ID'),
-        backgroundColor: colors.emergencyRed,
+        title: const Text('Medical ID Result'),
+        backgroundColor: colors.emergencyRed.withValues(alpha: 0.9),
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (!profile.signatureValid) _TamperWarning(),
-          _HeaderCard(profile: profile),
-          if (profile.allergies.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'ALLERGIES',
-              titleColor: colors.emergencyRed,
-              icon: Icons.warning_amber_rounded,
-              iconColor: colors.emergencyRed,
-              children: profile.allergies
-                  .map((a) => _AllergyRow(allergy: a))
-                  .toList(),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colors.emergencyRed.withValues(alpha: 0.05),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 48),
+          children: [
+            if (!profile.signatureValid) _TamperWarning(),
+            _HeaderCard(profile: profile),
+            if (profile.allergies.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _SectionCard(
+                title: 'ALLERGIES',
+                titleColor: colors.emergencyRed,
+                icon: Icons.warning_amber_rounded,
+                iconColor: colors.emergencyRed,
+                children: profile.allergies
+                    .map((a) => _AllergyRow(allergy: a))
+                    .toList(),
+              ),
+            ],
+            if (profile.medications.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _SectionCard(
+                title: 'MEDICATIONS',
+                icon: Icons.medication_rounded,
+                children: profile.medications
+                    .map((m) => _BulletRow(text: m))
+                    .toList(),
+              ),
+            ],
+            if (profile.conditions.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _SectionCard(
+                title: 'MEDICAL CONDITIONS',
+                icon: Icons.monitor_heart_rounded,
+                children: profile.conditions
+                    .map((c) => _BulletRow(text: c))
+                    .toList(),
+              ),
+            ],
+            if (profile.emergencyContacts.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _SectionCard(
+                title: 'EMERGENCY CONTACTS',
+                icon: Icons.contact_phone_rounded,
+                children: profile.emergencyContacts
+                    .map((ec) => _ContactRow(contact: ec))
+                    .toList(),
+              ),
+            ],
           ],
-          if (profile.medications.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'MEDICATIONS',
-              icon: Icons.medication_outlined,
-              children: profile.medications
-                  .map((m) => _BulletRow(text: m))
-                  .toList(),
-            ),
-          ],
-          if (profile.conditions.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'CONDITIONS',
-              icon: Icons.monitor_heart_outlined,
-              children: profile.conditions
-                  .map((c) => _BulletRow(text: c))
-                  .toList(),
-            ),
-          ],
-          if (profile.emergencyContacts.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'EMERGENCY CONTACTS',
-              icon: Icons.call_outlined,
-              children: profile.emergencyContacts
-                  .map((ec) => _ContactRow(contact: ec))
-                  .toList(),
-            ),
-          ],
-          const SizedBox(height: 24),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _TamperWarning extends StatelessWidget {
+class _TamperWarning extends StatefulWidget {
+  @override
+  State<_TamperWarning> createState() => _TamperWarningState();
+}
+
+class _TamperWarningState extends State<_TamperWarning> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<VitalGlyphColors>()!;
-    return Semantics(
-      liveRegion: true,
-      label: 'Warning: Signature invalid — data may have been tampered with.',
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppSpacing.md),
-        decoration: BoxDecoration(
-          color: colors.tamperWarningBackground,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 4,
-              constraints: const BoxConstraints(minHeight: 52),
-              decoration: BoxDecoration(
-                color: colors.tamperWarning,
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(AppRadius.md),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.security, color: colors.tamperWarning, size: 18),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      'Signature invalid — data may have been tampered with. Verify with patient directly.',
-                      style: TextStyle(
-                        color: colors.tamperWarning,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return GlassContainer(
+          margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+          backgroundColor: colors.tamperWarningBackground.withValues(alpha: 0.4),
+          borderColor: colors.tamperWarning.withValues(alpha: _animation.value),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                Icon(Icons.gpp_maybe_rounded, color: colors.tamperWarning),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'SIGNATURE INVALID: DATA MAY BE TAMPERED. VERIFY MANUALLY.',
+                    style: TextStyle(
+                      color: colors.tamperWarning,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -135,31 +160,47 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.glassSurface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: colors.cardBorder,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               profile.name,
               style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
+                color: cs.onSurface,
+                letterSpacing: -1,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.xl),
             if (profile.dateOfBirth != null)
-              _InfoRow(label: 'Date of Birth', value: profile.dateOfBirth!),
+              _InfoRow(label: 'Born', value: profile.dateOfBirth!),
             if (profile.bloodType != null)
               _InfoRow(
                 label: 'Blood Type',
                 value: profile.bloodType!,
-                valueStyle: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                valueStyle: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
                   color: colors.bloodTypeBadge,
                 ),
               ),
@@ -176,10 +217,10 @@ class _HeaderCard extends StatelessWidget {
               label: 'Organ Donor',
               value: profile.isOrganDonor ? 'YES' : 'NO',
               valueStyle: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: profile.isOrganDonor
                     ? colors.successGreen
-                    : colorScheme.onSurface,
+                    : cs.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -205,27 +246,31 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
           SizedBox(
-            width: 100,
+            width: 110,
             child: Text(
-              label,
-              style: TextStyle(
-                  color: colorScheme.outline, fontSize: 13),
+              label.toUpperCase(),
+              style: theme.textTheme.labelMedium?.copyWith(
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5),
             ),
           ),
           Expanded(
             child: Text(
               value,
               style: valueStyle ??
-                  const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                  theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface,
                   ),
             ),
           ),
@@ -252,36 +297,58 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final defaultColor = colorScheme.onSurfaceVariant;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ExcludeSemantics(
-                  child: Icon(icon,
-                      size: 18, color: iconColor ?? defaultColor),
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
+    final defaultColor = cs.onSurfaceVariant;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.glassSurface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: colors.cardBorder,
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: (titleColor ?? defaultColor).withValues(alpha: 0.05),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+              border: Border(
+                bottom: BorderSide(
+                  color: (titleColor ?? defaultColor).withValues(alpha: 0.1),
+                  width: 1,
                 ),
-                const SizedBox(width: 6),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: iconColor ?? defaultColor),
+                const SizedBox(width: 12),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                     color: titleColor ?? defaultColor,
-                    letterSpacing: 0.5,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            ...children,
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -304,29 +371,12 @@ class _AllergyRow extends StatelessWidget {
     };
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: severityColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                  color: severityColor.withValues(alpha: 0.5)),
-            ),
-            child: Text(
-              allergy.severity.toUpperCase(),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: severityColor,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
+          _SeverityBadge(label: allergy.severity, color: severityColor),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,21 +384,54 @@ class _AllergyRow extends StatelessWidget {
                 Text(
                   allergy.name,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
                   ),
                 ),
                 if (allergy.reaction != null)
                   Text(
                     allergy.reaction!,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.outline,
-                        fontSize: 13),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SeverityBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _SeverityBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(
+          color: color.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+          color: color,
+          letterSpacing: 0.8,
+        ),
       ),
     );
   }
@@ -361,14 +444,30 @@ class _BulletRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• ', style: TextStyle(fontSize: 16)),
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 15)),
+            child: Text(
+              text,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
           ),
         ],
       ),
@@ -383,31 +482,39 @@ class _ContactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(Icons.person_outline,
-              size: 20, color: colorScheme.outline),
-          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: cs.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.person_rounded, size: 20, color: cs.primary),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   contact.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 Text(
                   contact.relationship != null
                       ? '${contact.phone} · ${contact.relationship}'
                       : contact.phone,
-                  style: TextStyle(
-                      color: colorScheme.outline, fontSize: 13),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),

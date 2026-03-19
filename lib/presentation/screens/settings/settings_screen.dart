@@ -13,9 +13,11 @@ import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 import 'package:vitalglyph/presentation/screens/auth/pin_setup_screen.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
+import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
-import 'package:vitalglyph/presentation/widgets/section_group.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 import 'package:vitalglyph/presentation/widgets/settings_tile.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -139,13 +141,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: LockTimeout.values.map((t) {
-          return ListTile(
-            title: Text(t.displayName),
-            trailing: _timeout == t
-                ? Icon(Icons.check_rounded,
-                    color: Theme.of(context).colorScheme.primary, size: 20)
-                : null,
-            onTap: () => Navigator.of(context).pop(t),
+          return BottomSheetOption(
+            value: t,
+            label: t.displayName,
+            isSelected: _timeout == t,
+            onTap: (val) => Navigator.of(context).pop(val),
           );
         }).toList(),
       ),
@@ -158,8 +158,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+    return GradientScaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: _buildBody(),
     );
   }
@@ -195,24 +199,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxl),
       children: [
         // Appearance
-        SectionGroup(
-          title: 'Appearance',
-          children: [_ThemeSelector()],
+        BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, mode) => AppSectionCard(
+            title: 'Appearance',
+            icon: Icons.palette_outlined,
+            padding: EdgeInsets.zero,
+            children: [
+              _ThemeSelectorInternal(mode: mode),
+            ],
+          ),
         ),
 
         // Security
-        SectionGroup(
+        AppSectionCard(
           title: 'Security',
+          icon: Icons.security_rounded,
+          showDividers: true,
+          padding: EdgeInsets.zero,
           children: [
             SettingsToggleTile(
               title: 'App Lock',
               subtitle: _authEnabled
                   ? 'App is locked when you leave'
                   : 'Anyone can open the app',
-              leading: Icons.lock_outline_rounded,
               value: _authEnabled,
               onChanged: _toggleAuth,
             ),
@@ -239,7 +251,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsToggleTile(
                   title: 'Use Biometrics',
                   subtitle: 'Face ID / fingerprint unlock',
-                  leading: Icons.fingerprint_rounded,
                   value: _biometricEnabled,
                   onChanged: _toggleBiometric,
                 ),
@@ -248,21 +259,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
 
         // Data
-        SectionGroup(
+        AppSectionCard(
           title: 'Data',
+          icon: Icons.storage_rounded,
+          showDividers: true,
+          padding: EdgeInsets.zero,
           children: [
             SettingsTile(
               title: 'Backup & Restore',
               subtitle: 'Export or import an encrypted .medid file',
-              leading: Icons.backup_outlined,
               onTap: () => context.push(AppRouter.backup),
             ),
           ],
         ),
 
         // About
-        SectionGroup(
+        AppSectionCard(
           title: 'About',
+          icon: Icons.info_outline_rounded,
+          showDividers: true,
+          padding: EdgeInsets.zero,
           children: [
             const SettingsTile(
               title: 'Version',
@@ -271,13 +287,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             const SettingsTile(
               title: 'Privacy',
               subtitle: 'No data ever leaves your device.',
-              leading: Icons.shield_outlined,
             ),
           ],
         ),
@@ -288,60 +304,87 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-class _ThemeSelector extends StatelessWidget {
+class _ThemeSelectorInternal extends StatelessWidget {
+  final ThemeMode mode;
+
+  const _ThemeSelectorInternal({required this.mode});
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<VitalGlyphColors>()!;
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+    final cs = Theme.of(context).colorScheme;
 
-    return BlocBuilder<ThemeCubit, ThemeMode>(
-      builder: (context, mode) {
-        return Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Theme',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Container(
-                padding: const EdgeInsets.all(4),
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: colors.inputFill,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: colors.cardBorder,
+          width: 1,
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Sliding highlight
+          AnimatedAlign(
+            duration: AppDuration.medium,
+            curve: Curves.easeOutQuart,
+            alignment: _getAlignment(mode),
+            child: FractionallySizedBox(
+              widthFactor: 1 / 3,
+              child: Container(
+                height: 44,
                 decoration: BoxDecoration(
-                  color: colors.inputFill,
+                  color: cs.surface,
                   borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-                child: Row(
-                  children: [
-                    _ThemeOption(
-                      label: 'System',
-                      icon: Icons.brightness_auto_outlined,
-                      selected: mode == ThemeMode.system,
-                      onTap: () => context.read<ThemeCubit>().setSystem(),
-                    ),
-                    _ThemeOption(
-                      label: 'Light',
-                      icon: Icons.light_mode_outlined,
-                      selected: mode == ThemeMode.light,
-                      onTap: () => context.read<ThemeCubit>().setLight(),
-                    ),
-                    _ThemeOption(
-                      label: 'Dark',
-                      icon: Icons.dark_mode_outlined,
-                      selected: mode == ThemeMode.dark,
-                      onTap: () => context.read<ThemeCubit>().setDark(),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
               ),
+            ),
+          ),
+          Row(
+            children: [
+              _ThemeOption(
+                label: 'System',
+                icon: Icons.brightness_auto_rounded,
+                selected: mode == ThemeMode.system,
+                onTap: () => context.read<ThemeCubit>().setSystem(),
+              ),
+              _ThemeOption(
+                label: 'Light',
+                icon: Icons.light_mode_rounded,
+                selected: mode == ThemeMode.light,
+                onTap: () => context.read<ThemeCubit>().setLight(),
+              ),
+              _ThemeOption(
+                label: 'Dark',
+                icon: Icons.dark_mode_rounded,
+                selected: mode == ThemeMode.dark,
+                onTap: () => context.read<ThemeCubit>().setDark(),
+              ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
+  }
+
+  static Alignment _getAlignment(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.system:
+        return Alignment.centerLeft;
+      case ThemeMode.light:
+        return Alignment.center;
+      case ThemeMode.dark:
+        return Alignment.centerRight;
+    }
   }
 }
 
@@ -369,36 +412,23 @@ class _ThemeOption extends StatelessWidget {
           HapticFeedback.selectionClick();
           onTap();
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: selected ? cs.surface : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    )
-                  ]
-                : null,
-          ),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                size: 18,
-                color: selected ? cs.primary : cs.onSurfaceVariant,
+                size: 20,
+                color: selected ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: selected ? cs.primary : cs.onSurfaceVariant,
-                  fontWeight:
-                      selected ? FontWeight.w600 : FontWeight.w400,
+                  color: selected ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.7),
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                 ),
               ),
             ],

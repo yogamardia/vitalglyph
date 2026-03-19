@@ -1,10 +1,12 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 class EmergencyCardScreen extends StatefulWidget {
   final Profile profile;
@@ -46,9 +48,11 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GradientScaffold(
       appBar: AppBar(
         title: Text('${widget.profile.name} — Emergency Card'),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
       ),
       body: FutureBuilder<Uint8List>(
         future: _pdfFuture,
@@ -81,60 +85,125 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
   }
 }
 
-class _LoadingSkeleton extends StatelessWidget {
+class _LoadingSkeleton extends StatefulWidget {
+  @override
+  State<_LoadingSkeleton> createState() => _LoadingSkeletonState();
+}
+
+class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
     final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          Center(
-            child: Column(
-              children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 16),
-                Text(
-                  'Generating emergency card…',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: cs.outline,
-                  ),
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, _) {
+        final gradient = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: const [0.0, 0.5, 1.0],
+          colors: [
+            colors.glassBackground,
+            colors.glassBackground.withValues(alpha: 0.2),
+            colors.glassBackground,
+          ],
+          transform: _SlidingGradientTransform(_animation.value),
+        );
+
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              Center(
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Generating Emergency Card…',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: cs.onSurface.withValues(alpha: 0.6),
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 48),
+              _SkeletonBlock(width: double.infinity, height: 32, gradient: gradient),
+              const SizedBox(height: 16),
+              _SkeletonBlock(width: 180, height: 20, gradient: gradient),
+              const SizedBox(height: 32),
+              _SkeletonBlock(width: double.infinity, height: 140, gradient: gradient),
+              const SizedBox(height: 16),
+              _SkeletonBlock(width: double.infinity, height: 100, gradient: gradient),
+            ],
           ),
-          const SizedBox(height: 32),
-          // Skeleton shimmer blocks matching card layout
-          _SkeletonBlock(width: double.infinity, height: 24),
-          const SizedBox(height: 12),
-          _SkeletonBlock(width: 160, height: 16),
-          const SizedBox(height: 24),
-          _SkeletonBlock(width: double.infinity, height: 120),
-          const SizedBox(height: 12),
-          _SkeletonBlock(width: double.infinity, height: 80),
-        ],
-      ),
+        );
+      },
     );
+  }
+}
+
+class _SlidingGradientTransform extends GradientTransform {
+  final double slidePercent;
+  const _SlidingGradientTransform(this.slidePercent);
+
+  @override
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
+    return Matrix4.translationValues(bounds.width * slidePercent, 0, 0);
   }
 }
 
 class _SkeletonBlock extends StatelessWidget {
   final double width;
   final double height;
+  final Gradient gradient;
 
-  const _SkeletonBlock({required this.width, required this.height});
+  const _SkeletonBlock({
+    required this.width,
+    required this.height,
+    required this.gradient,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Container(
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+    return GlassContainer(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+      enableBlur: false,
+      backgroundColor: colors.glassSurface.withValues(alpha: 0.3),
+      borderColor: colors.glassBorder.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(12),
+      child: ShaderMask(
+        blendMode: BlendMode.srcATop,
+        shaderCallback: (bounds) => gradient.createShader(bounds),
+        child: Container(color: Colors.white),
       ),
     );
   }
@@ -148,38 +217,46 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: cs.error),
-                const SizedBox(height: 16),
-                Text(
-                  'Failed to generate emergency card',
-                  style: theme.textTheme.titleMedium,
-                  textAlign: TextAlign.center,
+        child: GlassContainer(
+          padding: const EdgeInsets.all(32),
+          backgroundColor: colors.glassSurface,
+          borderColor: colors.glassBorder,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline_rounded, size: 56, color: cs.error),
+              const SizedBox(height: 24),
+              Text(
+                'Failed to generate card',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  height: 1.5,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  message,
-                  style: theme.textTheme.bodySmall?.copyWith(color: cs.outline),
-                  textAlign: TextAlign.center,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Try Again'),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Try Again'),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

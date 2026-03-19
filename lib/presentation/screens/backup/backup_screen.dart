@@ -6,10 +6,12 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_state.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
+import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:vitalglyph/presentation/widgets/app_text_field.dart';
-import 'package:vitalglyph/presentation/widgets/section_group.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
@@ -94,8 +96,12 @@ class _BackupViewState extends State<_BackupView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Backup & Restore')),
+    return GradientScaffold(
+      appBar: AppBar(
+        title: const Text('Backup & Restore'),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: BlocConsumer<BackupCubit, BackupState>(
         listener: (context, state) {
           if (state is BackupExportSuccess) {
@@ -127,11 +133,12 @@ class _BackupViewState extends State<_BackupView> {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
             children: [
               // Export section
-              SectionGroup(
+              AppSectionCard(
                 title: 'Export',
+                icon: Icons.upload_rounded,
                 children: [
                   _InfoBanner(
-                    icon: Icons.upload_outlined,
+                    icon: Icons.cloud_upload_rounded,
                     text: 'Creates an encrypted .medid file containing all your profiles. '
                         'You can save it to Files, AirDrop it, or share it anywhere.',
                   ),
@@ -170,22 +177,12 @@ class _BackupViewState extends State<_BackupView> {
                             },
                           ),
                           const SizedBox(height: AppSpacing.lg),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: loading ? null : () => _onExport(context),
-                              icon: loading
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Icon(Icons.ios_share_outlined),
-                              label: const Text('Export Backup'),
-                            ),
+                          AppButton.primary(
+                            onPressed: loading ? null : () => _onExport(context),
+                            isLoading: loading,
+                            icon: Icons.ios_share_rounded,
+                            label: 'Export Backup',
+                            fullWidth: true,
                           ),
                         ],
                       ),
@@ -195,11 +192,12 @@ class _BackupViewState extends State<_BackupView> {
               ),
 
               // Restore section
-              SectionGroup(
+              AppSectionCard(
                 title: 'Restore',
+                icon: Icons.download_rounded,
                 children: [
                   _InfoBanner(
-                    icon: Icons.download_outlined,
+                    icon: Icons.settings_backup_restore_rounded,
                     text: 'Select a .medid backup file and enter its passphrase. '
                         'Profiles that already exist on this device will be skipped.',
                   ),
@@ -212,16 +210,9 @@ class _BackupViewState extends State<_BackupView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          OutlinedButton.icon(
-                            onPressed: loading ? null : _pickFile,
-                            icon: const Icon(Icons.folder_open_outlined),
-                            label: Text(
-                              _selectedFileName ?? 'Pick backup file (.medid)',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 48),
-                            ),
+                          _FilePickerButton(
+                            fileName: _selectedFileName,
+                            onTap: loading ? null : _pickFile,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
@@ -236,22 +227,12 @@ class _BackupViewState extends State<_BackupView> {
                             },
                           ),
                           const SizedBox(height: AppSpacing.lg),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: loading ? null : () => _onImport(context),
-                              icon: loading
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Icon(Icons.restore_outlined),
-                              label: const Text('Import Backup'),
-                            ),
+                          AppButton.primary(
+                            onPressed: loading ? null : () => _onImport(context),
+                            isLoading: loading,
+                            icon: Icons.restore_rounded,
+                            label: 'Import Backup',
+                            fullWidth: true,
                           ),
                         ],
                       ),
@@ -269,7 +250,24 @@ class _BackupViewState extends State<_BackupView> {
   }
 }
 
-/// Soft info banner with a colored left accent bar.
+class _FilePickerButton extends StatelessWidget {
+  final String? fileName;
+  final VoidCallback? onTap;
+
+  const _FilePickerButton({this.fileName, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppButton.secondary(
+      onPressed: onTap,
+      icon: Icons.folder_open_rounded,
+      label: fileName ?? 'Pick backup file (.medid)',
+      fullWidth: true,
+    );
+  }
+}
+
+/// Soft info banner with a gradient accent bar and glass background.
 class _InfoBanner extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -283,43 +281,48 @@ class _InfoBanner extends StatelessWidget {
     final colors = theme.extension<VitalGlyphColors>()!;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(
-        AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.md,
-      ),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       decoration: BoxDecoration(
         color: colors.inputFill,
         borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: colors.cardBorder,
+          width: 1,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 4,
-            height: double.infinity,
-            constraints: const BoxConstraints(minHeight: 48),
+            height: 64,
             decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.5),
+              color: cs.primary,
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(AppRadius.md),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, size: 18, color: cs.primary),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    text,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: cs.onSurfaceVariant,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(icon, size: 20, color: cs.primary),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text(
+                      text,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: cs.onSurface,
+                        height: 1.5,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

@@ -1,11 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Factory helpers for [CustomTransitionPage] used in go_router [pageBuilder].
+/// Factory helpers for [CustomTransitionPage] with premium animations.
 class PageTransitions {
   PageTransitions._();
 
-  /// Bottom-to-top slide — fullscreen dialog feel (editor screens).
+  /// Bottom-to-top slide with spring physics and background fade.
   static CustomTransitionPage<T> slideUp<T>({
     required GoRouterState state,
     required Widget child,
@@ -13,20 +14,28 @@ class PageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final tween = Tween(
+        final position = Tween<Offset>(
           begin: const Offset(0.0, 1.0),
           end: Offset.zero,
-        ).chain(CurveTween(curve: Curves.easeOut));
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        ));
+
         return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
+          position: position,
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
         );
       },
     );
   }
 
-  /// Fade — immersive takeover (QR display / scanner).
+  /// Fade with subtle scale component.
   static CustomTransitionPage<T> fade<T>({
     required GoRouterState state,
     required Widget child,
@@ -35,15 +44,19 @@ class PageTransitions {
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final scale = Tween(begin: 0.97, end: 1.0).animate(animation);
         return FadeTransition(
-          opacity: CurveTween(curve: Curves.easeIn).animate(animation),
-          child: child,
+          opacity: animation,
+          child: ScaleTransition(
+            scale: scale,
+            child: child,
+          ),
         );
       },
     );
   }
 
-  /// Scale + fade — modern card-style entry (detail views).
+  /// Scale + fade with spring overshoot.
   static CustomTransitionPage<T> scaleUp<T>({
     required GoRouterState state,
     required Widget child,
@@ -51,16 +64,16 @@ class PageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
-      transitionDuration: const Duration(milliseconds: 250),
+      transitionDuration: const Duration(milliseconds: 300),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scaleTween = Tween(begin: 0.95, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeOutCubic));
-        final fadeTween = Tween(begin: 0.0, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeOut));
+        final scale = Tween(begin: 0.9, end: 1.0).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        ));
         return ScaleTransition(
-          scale: animation.drive(scaleTween),
+          scale: scale,
           child: FadeTransition(
-            opacity: animation.drive(fadeTween),
+            opacity: animation,
             child: child,
           ),
         );
@@ -68,7 +81,7 @@ class PageTransitions {
     );
   }
 
-  /// Horizontal shared-axis slide (settings / backup / scan result).
+  /// Horizontal slide with parallax and exit fade.
   static CustomTransitionPage<T> slideRight<T>({
     required GoRouterState state,
     required Widget child,
@@ -76,21 +89,73 @@ class PageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
+      transitionDuration: const Duration(milliseconds: 400),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final tween = Tween(
+        final enterTween = Tween<Offset>(
           begin: const Offset(1.0, 0.0),
           end: Offset.zero,
-        ).chain(CurveTween(curve: Curves.easeOut));
-        final secondary = Tween(
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        ));
+
+        final exitTween = Tween<Offset>(
           begin: Offset.zero,
-          end: const Offset(-0.25, 0.0),
-        ).chain(CurveTween(curve: Curves.easeOut));
+          end: const Offset(-0.15, 0.0),
+        ).animate(CurvedAnimation(
+          parent: secondaryAnimation,
+          curve: Curves.easeOut,
+        ));
+
+        final exitOpacity = Tween<double>(
+          begin: 1.0,
+          end: 0.8,
+        ).animate(secondaryAnimation);
+
         return SlideTransition(
-          position: animation.drive(tween),
+          position: enterTween,
           child: SlideTransition(
-            position: secondaryAnimation.drive(secondary),
-            child: child,
+            position: exitTween,
+            child: FadeTransition(
+              opacity: exitOpacity,
+              child: child,
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  /// Scale + fade + blur — translucent frosted entry (settings / backup).
+  static CustomTransitionPage<T> glassFade<T>({
+    required GoRouterState state,
+    required Widget child,
+  }) {
+    return CustomTransitionPage<T>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final scale = Tween(begin: 0.95, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+        );
+        final blur = Tween(begin: 15.0, end: 0.0).animate(animation);
+
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: blur.value, sigmaY: blur.value),
+              child: FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: scale,
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: child,
         );
       },
     );

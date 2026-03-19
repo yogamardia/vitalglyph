@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 
-/// A shared text input widget used across the app.
-/// Consistent styling: filled background, borderless at rest, focus border.
+/// A shared text input widget with glassmorphism styling and focus animations.
 class AppTextField extends StatefulWidget {
   final String label;
   final TextEditingController? controller;
@@ -47,11 +46,31 @@ class AppTextField extends StatefulWidget {
 
 class _AppTextFieldState extends State<AppTextField> {
   late bool _obscureText;
+  late FocusNode _focusNode;
+  bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
     _obscureText = widget.obscureText;
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    } else {
+      _focusNode.removeListener(_onFocusChange);
+    }
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
   }
 
   @override
@@ -60,40 +79,73 @@ class _AppTextFieldState extends State<AppTextField> {
     final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
 
-    return TextFormField(
-      controller: widget.controller,
-      initialValue: widget.initialValue,
-      validator: widget.validator,
-      obscureText: _obscureText,
-      keyboardType: widget.keyboardType,
-      maxLines: _obscureText ? 1 : widget.maxLines,
-      minLines: widget.minLines,
-      onChanged: widget.onChanged,
-      enabled: widget.enabled,
-      textCapitalization: widget.textCapitalization,
-      inputFormatters: widget.inputFormatters,
-      focusNode: widget.focusNode,
-      style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurface),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hintText,
-        fillColor: widget.enabled ? colors.inputFill : colors.inputFill.withValues(alpha: 0.5),
-        labelStyle: theme.textTheme.bodyMedium?.copyWith(
-          color: cs.onSurfaceVariant,
+    return AnimatedContainer(
+      duration: AppDuration.fast,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: [
+          if (_isFocused)
+            BoxShadow(
+              color: cs.primary.withValues(alpha: 0.1),
+              blurRadius: 16,
+              spreadRadius: 0,
+              offset: const Offset(0, 4),
+            ),
+        ],
+      ),
+      child: TextFormField(
+        controller: widget.controller,
+        initialValue: widget.initialValue,
+        validator: widget.validator,
+        obscureText: _obscureText,
+        keyboardType: widget.keyboardType,
+        maxLines: _obscureText ? 1 : widget.maxLines,
+        minLines: widget.minLines,
+        onChanged: widget.onChanged,
+        enabled: widget.enabled,
+        textCapitalization: widget.textCapitalization,
+        inputFormatters: widget.inputFormatters,
+        focusNode: _focusNode,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: cs.onSurface,
+          fontWeight: FontWeight.w500,
         ),
-        suffixIcon: widget.obscureText
-            ? IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                  size: 20,
-                  color: cs.onSurfaceVariant,
-                ),
-                onPressed: () => setState(() => _obscureText = !_obscureText),
-              )
-            : widget.suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          hintText: widget.hintText,
+          fillColor: widget.enabled ? colors.inputFill : colors.inputFill.withValues(alpha: 0.5),
+          labelStyle: theme.textTheme.bodyMedium?.copyWith(
+            color: _isFocused ? cs.primary : cs.onSurfaceVariant,
+            fontWeight: _isFocused ? FontWeight.w700 : FontWeight.w500,
+          ),
+          suffixIcon: widget.obscureText
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    size: 20,
+                    color: cs.onSurfaceVariant,
+                  ),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                )
+              : widget.suffixIcon,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: BorderSide(
+              color: cs.primary,
+              width: 1.5,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: BorderSide(
+              color: colors.cardBorder,
+              width: 1.5,
+            ),
+          ),
         ),
       ),
     );

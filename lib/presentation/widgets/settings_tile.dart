@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 
 /// A modern settings row that replaces stock ListTile.
 class SettingsTile extends StatelessWidget {
@@ -31,72 +32,74 @@ class SettingsTile extends StatelessWidget {
     final titleColor = destructive ? cs.error : cs.onSurface;
     final iconColor = destructive ? cs.error : cs.primary;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap != null
-            ? () {
-                HapticFeedback.selectionClick();
-                onTap!();
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              if (leading != null) ...[
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
+    return AnimatedPress(
+      onTap: onTap != null
+          ? () {
+              HapticFeedback.selectionClick();
+              onTap!();
+            }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
+        child: Row(
+          children: [
+            if (leading != null) ...[
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  color: destructive
+                      ? cs.error.withValues(alpha: 0.1)
+                      : colors.surfaceSubtle,
+                  border: Border.all(
                     color: destructive
                         ? cs.error.withValues(alpha: 0.1)
-                        : colors.inputFill,
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                        : colors.cardBorder,
+                    width: 1,
                   ),
-                  child: Icon(leading, size: 18, color: iconColor),
                 ),
-                const SizedBox(width: AppSpacing.md),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                child: Icon(leading, size: 20, color: iconColor),
+              ),
+              const SizedBox(width: AppSpacing.md),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: titleColor,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
                     Text(
-                      title,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: titleColor,
-                        fontWeight: FontWeight.w500,
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-              if (trailing != null) ...[
-                const SizedBox(width: AppSpacing.sm),
-                trailing!,
-              ] else if (onTap != null) ...[
-                const SizedBox(width: AppSpacing.sm),
-                Icon(
-                  Icons.chevron_right,
-                  size: 18,
-                  color: cs.onSurfaceVariant.withValues(alpha: 0.5),
-                ),
-              ],
+            ),
+            if (trailing != null) ...[
+              const SizedBox(width: AppSpacing.sm),
+              trailing!,
+            ] else if (onTap != null) ...[
+              const SizedBox(width: AppSpacing.sm),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: cs.onSurfaceVariant.withValues(alpha: 0.4),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -127,68 +130,68 @@ class SettingsToggleTile extends StatelessWidget {
     final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onChanged != null
-            ? () {
-                HapticFeedback.selectionClick();
-                onChanged!(!value);
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              if (leading != null) ...[
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: colors.inputFill,
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+    return AnimatedPress(
+      onTap: onChanged != null
+          ? () {
+              HapticFeedback.selectionClick();
+              onChanged!(!value);
+            }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
+        child: Row(
+          children: [
+            if (leading != null) ...[
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  color: colors.surfaceSubtle,
+                  border: Border.all(
+                    color: colors.cardBorder,
+                    width: 1,
                   ),
-                  child: Icon(leading, size: 18, color: cs.primary),
                 ),
-                const SizedBox(width: AppSpacing.md),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                child: Icon(leading, size: 20, color: cs.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
                     Text(
-                      title,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: cs.onSurface,
-                        fontWeight: FontWeight.w500,
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-              Switch(
-                value: value,
-                onChanged: onChanged != null
-                    ? (v) {
-                        HapticFeedback.selectionClick();
-                        onChanged!(v);
-                      }
-                    : null,
-              ),
-            ],
-          ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged != null
+                  ? (v) {
+                      HapticFeedback.selectionClick();
+                      onChanged!(v);
+                    }
+                  : null,
+            ),
+          ],
         ),
       ),
     );

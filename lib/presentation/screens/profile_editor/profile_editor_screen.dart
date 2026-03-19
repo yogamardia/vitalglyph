@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
+import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +19,8 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 const _uuid = Uuid();
 
@@ -110,9 +115,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   void _save() {
     if (!_formKey.currentState!.validate()) return;
     if (_dateOfBirth == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a date of birth')),
-      );
+      AppSnackBar.warning(context, 'Please select a date of birth');
       return;
     }
     setState(() => _isSaving = true);
@@ -155,7 +158,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
@@ -168,8 +170,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           AppSnackBar.error(context, state.message);
         }
       },
-      child: Scaffold(
-        backgroundColor: colorScheme.surfaceContainerLowest,
+      child: GradientScaffold(
         body: Form(
           key: _formKey,
           child: CustomScrollView(
@@ -186,54 +187,39 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     _buildMedicalSection(theme),
                     const SizedBox(height: 24),
                     _buildEmergencySection(theme),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 120),
                   ]),
                 ),
               ),
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _isSaving ? null : _save,
-          label: _isSaving
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : Text(_isEditing ? 'Update Profile' : 'Save Profile'),
-          icon: _isSaving ? null : const Icon(Icons.check),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: AppButton.primary(
+            onPressed: _isSaving ? null : _save,
+            isLoading: _isSaving,
+            label: _isEditing ? 'Update Profile' : 'Save Profile',
+            icon: Icons.check_rounded,
+            fullWidth: true,
+          ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
 
   Widget _buildAppBar(ThemeData theme) {
-    final colorScheme = theme.colorScheme;
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
     return SliverAppBar(
       expandedHeight: 220,
       floating: true,
       pinned: true,
       stretch: true,
-      backgroundColor: colorScheme.surface,
+      backgroundColor: cs.surface,
       elevation: 0,
       leading: const BackButton(),
-      actions: [
-        if (_isSaving)
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          )
-      ],
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [
           StretchMode.zoomBackground,
@@ -242,9 +228,10 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         centerTitle: true,
         title: Text(
           _isEditing ? 'Edit Profile' : 'New Profile',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: cs.onSurface,
+            letterSpacing: -0.5,
           ),
         ),
         background: Stack(
@@ -256,8 +243,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    colorScheme.primaryContainer.withValues(alpha: 0.3),
-                    colorScheme.surface,
+                    colors.surfaceSubtle,
+                    cs.surface,
                   ],
                 ),
               ),
@@ -266,29 +253,33 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               child: Hero(
                 tag: 'profile_image_${widget.profile?.id ?? 'new'}',
                 child: Container(
-                  width: 120,
-                  height: 120,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
+                    border: Border.all(
+                      color: colors.cardBorder,
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
                   child: CircleAvatar(
-                    backgroundColor: colorScheme.primaryContainer,
+                    radius: 50,
+                    backgroundColor: colors.inputFill,
                     backgroundImage: widget.profile?.photoPath != null
                         ? FileImage(File(widget.profile!.photoPath!))
                         : null,
                     child: widget.profile?.photoPath == null
                         ? Icon(
                             Icons.person_add_rounded,
-                            size: 48,
-                            color: colorScheme.onPrimaryContainer,
+                            size: 40,
+                            color: cs.primary.withValues(alpha: 0.5),
                           )
                         : null,
                   ),
@@ -302,14 +293,14 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 
   Widget _buildBasicInfoSection(ThemeData theme) {
-    return _SectionCard(
+    return AppSectionCard(
       title: 'Basic Information',
-      icon: Icons.person_outline_rounded,
+      icon: Icons.person_rounded,
       children: [
         _CustomTextField(
           controller: _nameCtrl,
           label: 'Full Name',
-          prefixIcon: Icons.badge_outlined,
+          prefixIcon: Icons.badge_rounded,
           isRequired: true,
           textCapitalization: TextCapitalization.words,
           validator: (v) =>
@@ -333,7 +324,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               child: _CustomDropdown<BloodType?>(
                 value: _bloodType,
                 label: 'Blood Type',
-                prefixIcon: Icons.water_drop_outlined,
+                prefixIcon: Icons.water_drop_rounded,
                 items: [
                   const DropdownMenuItem(value: null, child: Text('Unknown')),
                   ...BloodType.values.map(
@@ -351,7 +342,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               child: _CustomDropdown<BiologicalSex?>(
                 value: _biologicalSex,
                 label: 'Sex',
-                prefixIcon: Icons.people_outline_rounded,
+                prefixIcon: Icons.people_rounded,
                 items: [
                   const DropdownMenuItem(
                       value: null, child: Text('Not set')),
@@ -384,7 +375,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               child: _CustomTextField(
                 controller: _weightCtrl,
                 label: 'Weight (kg)',
-                prefixIcon: Icons.monitor_weight_outlined,
+                prefixIcon: Icons.monitor_weight_rounded,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
@@ -409,7 +400,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               child: Text(
                 'Organ Donor',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -431,9 +422,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 
   Widget _buildMedicalSection(ThemeData theme) {
-    return _SectionCard(
+    return AppSectionCard(
       title: 'Medical Details',
-      icon: Icons.health_and_safety_outlined,
+      icon: Icons.health_and_safety_rounded,
       children: [
         _buildSubEntitySection<Allergy>(
           title: 'Allergies',
@@ -444,7 +435,10 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             if (result != null) setState(() => _allergies.add(result));
           },
         ),
-        const Divider(height: 32),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Divider(height: 1),
+        ),
         _buildSubEntitySection<Medication>(
           title: 'Medications',
           items: _medications,
@@ -454,9 +448,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             if (result != null) setState(() => _medications.add(result));
           },
         ),
-        const Divider(height: 32),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Divider(height: 1),
+        ),
         _buildSubEntitySection<MedicalCondition>(
-          title: 'Conditions',
+          title: 'Medical Conditions',
           items: _conditions,
           itemBuilder: _conditionTile,
           onAdd: () async {
@@ -464,7 +461,10 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             if (result != null) setState(() => _conditions.add(result));
           },
         ),
-        const Divider(height: 32),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Divider(height: 1),
+        ),
         _CustomTextField(
           controller: _notesCtrl,
           label: 'Medical Notes',
@@ -478,9 +478,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 
   Widget _buildEmergencySection(ThemeData theme) {
-    return _SectionCard(
+    return AppSectionCard(
       title: 'Emergency Contacts',
-      icon: Icons.contact_emergency_outlined,
+      icon: Icons.contact_emergency_rounded,
       children: [
         _buildSubEntitySection<EmergencyContact>(
           title: 'Contacts',
@@ -502,6 +502,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     required VoidCallback onAdd,
   }) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -511,32 +512,27 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             Text(
               title,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w800,
+                color: cs.primary,
               ),
             ),
-            IconButton.filledTonal(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add, size: 20),
-              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-              padding: EdgeInsets.zero,
-            ),
+            _AddButton(onPressed: onAdd),
           ],
         ),
         if (items.isEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 12),
             child: Text(
-              'No ${title.toLowerCase()} added',
+              'No ${title.toLowerCase()} added yet.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.outline,
+                color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                 fontStyle: FontStyle.italic,
               ),
             ),
           )
         else
           ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: 12),
                 child: itemBuilder(item),
               )),
       ],
@@ -637,59 +633,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 }
 
-class _SectionCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<Widget> children;
-
-  const _SectionCard({
-    required this.title,
-    required this.icon,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: theme.extension<VitalGlyphColors>()?.cardBorder ??
-              const Color(0xFFE8ECF0),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-            child: Row(
-              children: [
-                Icon(icon, size: 24, color: theme.colorScheme.primary),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: children,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -745,20 +688,26 @@ class _CustomTextFieldState extends State<_CustomTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
 
-    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: AppDuration.fast,
       decoration: BoxDecoration(
-        color: _isFocused ? colorScheme.surface : colors.inputFill,
-        borderRadius: BorderRadius.circular(16),
+        color: _isFocused ? cs.surface : colors.inputFill,
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: _isFocused
-              ? colorScheme.primary.withValues(alpha: 0.4)
-              : Colors.transparent,
+          color: _isFocused ? cs.primary : colors.cardBorder,
           width: 1.5,
         ),
+        boxShadow: [
+          if (_isFocused)
+            BoxShadow(
+              color: cs.primary.withValues(alpha: 0.1),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+        ],
       ),
       child: TextFormField(
         controller: widget.controller,
@@ -771,29 +720,43 @@ class _CustomTextFieldState extends State<_CustomTextField> {
         textCapitalization: widget.textCapitalization,
         maxLines: widget.maxLines,
         minLines: widget.minLines,
-        style: theme.textTheme.bodyLarge,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: cs.onSurface,
+        ),
         decoration: InputDecoration(
           label: widget.isRequired
               ? RichText(
                   text: TextSpan(
                     text: widget.label,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _isFocused ? cs.primary : cs.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
                     ),
                     children: [
                       TextSpan(
                         text: ' *',
-                        style: TextStyle(color: colorScheme.error),
+                        style: TextStyle(
+                          color: cs.error,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ],
                   ),
                 )
               : null,
           labelText: widget.isRequired ? null : widget.label,
-          prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+          prefixIcon: widget.prefixIcon != null
+              ? Icon(
+                  widget.prefixIcon,
+                  size: 20,
+                  color: _isFocused ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.5),
+                )
+              : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -818,21 +781,27 @@ class _CustomDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
     return Container(
       decoration: BoxDecoration(
         color: colors.inputFill,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: colors.cardBorder, width: 1.5),
       ),
       child: DropdownButtonFormField<T>(
         initialValue: value,
         isExpanded: true,
         items: items,
         onChanged: onChanged,
+        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+          labelStyle: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         ),
       ),
@@ -856,41 +825,85 @@ class _SubEntityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        color: colors.surfaceSubtle,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: colors.cardBorder,
+          width: 1,
+        ),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-        title: Text(
-          title,
-          style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.outline,
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 48,
+            decoration: BoxDecoration(
+              color: cs.primary,
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(2)),
+            ),
+          ),
+          Expanded(
+            child: ListTile(
+              contentPadding: const EdgeInsets.only(left: 16, right: 4),
+              title: Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  height: 1.1,
                 ),
-              )
-            : null,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 20),
-              onPressed: onEdit,
-              visualDensity: VisualDensity.compact,
+              ),
+              subtitle: subtitle != null
+                  ? Text(
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : null,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit_rounded, size: 20, color: cs.primary),
+                    onPressed: onEdit,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete_outline_rounded, size: 20, color: cs.error),
+                    onPressed: onDelete,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
             ),
-            IconButton(
-              icon: Icon(Icons.delete_outline, size: 20, color: theme.colorScheme.error),
-              onPressed: onDelete,
-              visualDensity: VisualDensity.compact,
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const _AddButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: const Icon(Icons.add_rounded, size: 16),
+      label: const Text('Add'),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(80, 32),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        side: BorderSide(color: colors.cardBorder, width: 1.5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       ),
     );
   }
@@ -927,71 +940,94 @@ class _AllergyDialogState extends State<_AllergyDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.existing == null ? 'Add Allergy' : 'Edit Allergy'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Allergen *'),
-                textCapitalization: TextCapitalization.words,
-                autofocus: true,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<AllergySeverity>(
-                initialValue: _severity,
-                decoration: const InputDecoration(labelText: 'Severity'),
-                items: AllergySeverity.values
-                    .map(
-                      (s) => DropdownMenuItem(
-                        value: s,
-                        child: Text(s.displayName),
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colors.glassSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.existing == null ? 'Add Allergy' : 'Edit Allergy',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
                       ),
-                    )
-                    .toList(),
-                onChanged: (s) => setState(() => _severity = s ?? _severity),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _reactionCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Reaction (optional)',
                 ),
-                textCapitalization: TextCapitalization.sentences,
-              ),
-            ],
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Allergen *'),
+                  textCapitalization: TextCapitalization.words,
+                  autofocus: true,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<AllergySeverity>(
+                  initialValue: _severity,
+                  decoration: const InputDecoration(labelText: 'Severity'),
+                  items: AllergySeverity.values
+                      .map(
+                        (s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(s.displayName),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (s) => setState(() => _severity = s ?? _severity),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _reactionCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Reaction (optional)',
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    AppButton.primary(
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        Navigator.pop(
+                          context,
+                          Allergy(
+                            id: widget.existing?.id ?? _uuid.v4(),
+                            name: _nameCtrl.text.trim(),
+                            severity: _severity,
+                            reaction: _reactionCtrl.text.trim().isEmpty
+                                ? null
+                                : _reactionCtrl.text.trim(),
+                          ),
+                        );
+                      },
+                      label: 'Save',
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            Navigator.pop(
-              context,
-              Allergy(
-                id: widget.existing?.id ?? _uuid.v4(),
-                name: _nameCtrl.text.trim(),
-                severity: _severity,
-                reaction: _reactionCtrl.text.trim().isEmpty
-                    ? null
-                    : _reactionCtrl.text.trim(),
-              ),
-            );
-          },
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }
@@ -1032,79 +1068,102 @@ class _MedicationDialogState extends State<_MedicationDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title:
-          Text(widget.existing == null ? 'Add Medication' : 'Edit Medication'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _nameCtrl,
-                decoration:
-                    const InputDecoration(labelText: 'Medication Name *'),
-                textCapitalization: TextCapitalization.words,
-                autofocus: true,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _dosageCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Dosage',
-                  hintText: 'e.g. 500mg',
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colors.glassSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.existing == null ? 'Add Medication' : 'Edit Medication',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _freqCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Frequency',
-                  hintText: 'e.g. 2x daily',
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Medication Name *'),
+                  textCapitalization: TextCapitalization.words,
+                  autofocus: true,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _forCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Prescribed For',
-                  hintText: 'e.g. Hypertension',
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _dosageCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Dosage',
+                    hintText: 'e.g. 500mg',
+                  ),
                 ),
-                textCapitalization: TextCapitalization.sentences,
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _freqCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Frequency',
+                    hintText: 'e.g. 2x daily',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _forCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Prescribed For',
+                    hintText: 'e.g. Hypertension',
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    AppButton.primary(
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        Navigator.pop(
+                          context,
+                          Medication(
+                            id: widget.existing?.id ?? _uuid.v4(),
+                            name: _nameCtrl.text.trim(),
+                            dosage: _dosageCtrl.text.trim().isEmpty
+                                ? null
+                                : _dosageCtrl.text.trim(),
+                            frequency: _freqCtrl.text.trim().isEmpty
+                                ? null
+                                : _freqCtrl.text.trim(),
+                            prescribedFor: _forCtrl.text.trim().isEmpty
+                                ? null
+                                : _forCtrl.text.trim(),
+                          ),
+                        );
+                      },
+                      label: 'Save',
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            Navigator.pop(
-              context,
-              Medication(
-                id: widget.existing?.id ?? _uuid.v4(),
-                name: _nameCtrl.text.trim(),
-                dosage: _dosageCtrl.text.trim().isEmpty
-                    ? null
-                    : _dosageCtrl.text.trim(),
-                frequency:
-                    _freqCtrl.text.trim().isEmpty ? null : _freqCtrl.text.trim(),
-                prescribedFor:
-                    _forCtrl.text.trim().isEmpty ? null : _forCtrl.text.trim(),
-              ),
-            );
-          },
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }
@@ -1142,67 +1201,89 @@ class _ConditionDialogState extends State<_ConditionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.existing == null ? 'Add Condition' : 'Edit Condition'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _nameCtrl,
-                decoration:
-                    const InputDecoration(labelText: 'Condition Name *'),
-                textCapitalization: TextCapitalization.words,
-                autofocus: true,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _dateCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Diagnosed Date',
-                  hintText: 'e.g. 2020 or Jan 2020',
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colors.glassSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.existing == null ? 'Add Condition' : 'Edit Condition',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _notesCtrl,
-                decoration: const InputDecoration(labelText: 'Notes'),
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 2,
-              ),
-            ],
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Condition Name *'),
+                  textCapitalization: TextCapitalization.words,
+                  autofocus: true,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _dateCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Diagnosed Date',
+                    hintText: 'e.g. 2020 or Jan 2020',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _notesCtrl,
+                  decoration: const InputDecoration(labelText: 'Notes'),
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    AppButton.primary(
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        Navigator.pop(
+                          context,
+                          MedicalCondition(
+                            id: widget.existing?.id ?? _uuid.v4(),
+                            name: _nameCtrl.text.trim(),
+                            diagnosedDate: _dateCtrl.text.trim().isEmpty
+                                ? null
+                                : _dateCtrl.text.trim(),
+                            notes: _notesCtrl.text.trim().isEmpty
+                                ? null
+                                : _notesCtrl.text.trim(),
+                          ),
+                        );
+                      },
+                      label: 'Save',
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            Navigator.pop(
-              context,
-              MedicalCondition(
-                id: widget.existing?.id ?? _uuid.v4(),
-                name: _nameCtrl.text.trim(),
-                diagnosedDate: _dateCtrl.text.trim().isEmpty
-                    ? null
-                    : _dateCtrl.text.trim(),
-                notes: _notesCtrl.text.trim().isEmpty
-                    ? null
-                    : _notesCtrl.text.trim(),
-              ),
-            );
-          },
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }
@@ -1240,69 +1321,90 @@ class _ContactDialogState extends State<_ContactDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        widget.existing == null ? 'Add Emergency Contact' : 'Edit Contact',
-      ),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Name *'),
-                textCapitalization: TextCapitalization.words,
-                autofocus: true,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Phone *'),
-                keyboardType: TextInputType.phone,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _relCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Relationship',
-                  hintText: 'e.g. Spouse, Parent',
+    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colors.glassSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.existing == null ? 'Add Emergency Contact' : 'Edit Contact',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
                 ),
-                textCapitalization: TextCapitalization.words,
-              ),
-            ],
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Name *'),
+                  textCapitalization: TextCapitalization.words,
+                  autofocus: true,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _phoneCtrl,
+                  decoration: const InputDecoration(labelText: 'Phone *'),
+                  keyboardType: TextInputType.phone,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _relCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Relationship',
+                    hintText: 'e.g. Spouse, Parent',
+                  ),
+                  textCapitalization: TextCapitalization.words,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    AppButton.primary(
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        Navigator.pop(
+                          context,
+                          EmergencyContact(
+                            id: widget.existing?.id ?? _uuid.v4(),
+                            name: _nameCtrl.text.trim(),
+                            phone: _phoneCtrl.text.trim(),
+                            relationship: _relCtrl.text.trim().isEmpty
+                                ? null
+                                : _relCtrl.text.trim(),
+                            priority: widget.existing?.priority ?? widget.nextPriority,
+                          ),
+                        );
+                      },
+                      label: 'Save',
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            Navigator.pop(
-              context,
-              EmergencyContact(
-                id: widget.existing?.id ?? _uuid.v4(),
-                name: _nameCtrl.text.trim(),
-                phone: _phoneCtrl.text.trim(),
-                relationship: _relCtrl.text.trim().isEmpty
-                    ? null
-                    : _relCtrl.text.trim(),
-                priority: widget.existing?.priority ?? widget.nextPriority,
-              ),
-            );
-          },
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

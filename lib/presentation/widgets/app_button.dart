@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 
-enum AppButtonVariant { primary, secondary, ghost }
+enum AppButtonVariant { primary, secondary, ghost, danger }
 
-/// Standardized button widget with loading state support.
-/// Variants: primary (filled pill), secondary (outlined pill), ghost (text only).
+/// Standardized button widget with loading state support and premium animations.
 class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -12,34 +14,17 @@ class AppButton extends StatelessWidget {
   final bool fullWidth;
   final AppButtonVariant variant;
 
-  const AppButton._primary({
+  const AppButton._({
     super.key,
     required this.label,
     required this.onPressed,
     required this.isLoading,
+    required this.variant,
     this.icon,
     this.fullWidth = false,
-  }) : variant = AppButtonVariant.primary;
+  });
 
-  const AppButton._secondary({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    required this.isLoading,
-    this.icon,
-    this.fullWidth = false,
-  }) : variant = AppButtonVariant.secondary;
-
-  const AppButton._ghost({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    required this.isLoading,
-    this.icon,
-    this.fullWidth = false,
-  }) : variant = AppButtonVariant.ghost;
-
-  /// Filled pill button (primary action).
+  /// Filled pill button with gradient (primary action).
   static AppButton primary({
     Key? key,
     required String label,
@@ -48,16 +33,17 @@ class AppButton extends StatelessWidget {
     IconData? icon,
     bool fullWidth = false,
   }) =>
-      AppButton._primary(
+      AppButton._(
         key: key,
         label: label,
         onPressed: onPressed,
         isLoading: isLoading,
         icon: icon,
         fullWidth: fullWidth,
+        variant: AppButtonVariant.primary,
       );
 
-  /// Outlined pill button (secondary action).
+  /// Outlined pill button with glass border (secondary action).
   static AppButton secondary({
     Key? key,
     required String label,
@@ -66,13 +52,14 @@ class AppButton extends StatelessWidget {
     IconData? icon,
     bool fullWidth = false,
   }) =>
-      AppButton._secondary(
+      AppButton._(
         key: key,
         label: label,
         onPressed: onPressed,
         isLoading: isLoading,
         icon: icon,
         fullWidth: fullWidth,
+        variant: AppButtonVariant.secondary,
       );
 
   /// Text-only button (ghost action).
@@ -84,69 +71,163 @@ class AppButton extends StatelessWidget {
     IconData? icon,
     bool fullWidth = false,
   }) =>
-      AppButton._ghost(
+      AppButton._(
         key: key,
         label: label,
         onPressed: onPressed,
         isLoading: isLoading,
         icon: icon,
         fullWidth: fullWidth,
+        variant: AppButtonVariant.ghost,
+      );
+
+  /// Red gradient button (destructive action).
+  static AppButton danger({
+    Key? key,
+    required String label,
+    VoidCallback? onPressed,
+    bool isLoading = false,
+    IconData? icon,
+    bool fullWidth = false,
+  }) =>
+      AppButton._(
+        key: key,
+        label: label,
+        onPressed: onPressed,
+        isLoading: isLoading,
+        icon: icon,
+        fullWidth: fullWidth,
+        variant: AppButtonVariant.danger,
       );
 
   @override
   Widget build(BuildContext context) {
-    final child = _buildChild(context);
-    late Widget button;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
+
+    final isEnabled = onPressed != null && !isLoading;
+
+    return AnimatedPress(
+      onTap: isEnabled ? onPressed : null,
+      enableGlow: variant == AppButtonVariant.primary && isEnabled,
+      child: Container(
+        width: fullWidth ? double.infinity : null,
+        height: 52,
+        decoration: _buildDecoration(cs, colors, isEnabled),
+        child: Center(
+          child: _buildChild(context, cs, colors),
+        ),
+      ),
+    );
+  }
+
+  Decoration _buildDecoration(
+      ColorScheme cs, VitalGlyphColors colors, bool isEnabled) {
+    final borderRadius = BorderRadius.circular(AppRadius.lg);
 
     switch (variant) {
       case AppButtonVariant.primary:
-        button = FilledButton(
-          onPressed: isLoading ? null : onPressed,
-          child: child,
+        return BoxDecoration(
+          borderRadius: borderRadius,
+          color: isEnabled ? cs.primary : cs.primary.withValues(alpha: 0.5),
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: cs.primary.withValues(alpha: 0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                    spreadRadius: -4,
+                  )
+                ]
+              : null,
+        );
+      case AppButtonVariant.danger:
+        return BoxDecoration(
+          borderRadius: borderRadius,
+          color: isEnabled ? colors.emergencyRed : colors.emergencyRed.withValues(alpha: 0.5),
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: colors.emergencyRed.withValues(alpha: 0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                    spreadRadius: -4,
+                  )
+                ]
+              : null,
         );
       case AppButtonVariant.secondary:
-        button = OutlinedButton(
-          onPressed: isLoading ? null : onPressed,
-          child: child,
+        return BoxDecoration(
+          borderRadius: borderRadius,
+          border: Border.all(
+            color: isEnabled ? colors.cardBorder : colors.cardBorder.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          color: isEnabled ? colors.surfaceSubtle : null,
         );
       case AppButtonVariant.ghost:
-        button = TextButton(
-          onPressed: isLoading ? null : onPressed,
-          child: child,
-        );
+        return const BoxDecoration();
     }
-
-    if (fullWidth) {
-      return SizedBox(width: double.infinity, child: button);
-    }
-    return button;
   }
 
-  Widget _buildChild(BuildContext context) {
+  Widget _buildChild(BuildContext context, ColorScheme cs, VitalGlyphColors colors) {
+    final textColor = _getTextColor(cs, colors);
+
     if (isLoading) {
-      return SizedBox(
-        width: 18,
-        height: 18,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          color: variant == AppButtonVariant.primary
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.primary,
+      // Shimmer loading state placeholder - using a simple fade for now
+      return TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.4, end: 1.0),
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeInOut,
+        builder: (context, value, child) => Opacity(
+          opacity: value,
+          child: Container(
+            width: 80,
+            height: 8,
+            decoration: BoxDecoration(
+              color: textColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+        onEnd: () {}, // Simple loop effect can be added if stateful
+      );
+    }
+
+    final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w700,
+        );
+
+    if (icon != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 20, color: textColor),
+            const SizedBox(width: AppSpacing.sm),
+            Text(label, style: textStyle),
+          ],
         ),
       );
     }
 
-    if (icon != null) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      );
-    }
+    return Text(label, style: textStyle);
+  }
 
-    return Text(label);
+  Color _getTextColor(ColorScheme cs, VitalGlyphColors colors) {
+    if (onPressed == null && !isLoading) {
+      return cs.onSurface.withValues(alpha: 0.38);
+    }
+    switch (variant) {
+      case AppButtonVariant.primary:
+      case AppButtonVariant.danger:
+        return Colors.white;
+      case AppButtonVariant.secondary:
+      case AppButtonVariant.ghost:
+        return variant == AppButtonVariant.danger ? colors.emergencyRed : cs.primary;
+    }
   }
 }

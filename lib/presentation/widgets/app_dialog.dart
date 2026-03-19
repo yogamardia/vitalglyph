@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/presentation/widgets/animated_press.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 /// Custom dialog that replaces AlertDialog throughout the app.
 class AppDialog extends StatelessWidget {
@@ -36,6 +39,7 @@ class AppDialog extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => AppDialog(
         title: title,
         message: message,
@@ -58,6 +62,7 @@ class AppDialog extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => AppDialog(
         title: title,
         message: message,
@@ -78,37 +83,50 @@ class AppDialog extends StatelessWidget {
 
     return Dialog(
       elevation: 0,
-      backgroundColor: cs.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        side: BorderSide(color: colors.cardBorder),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xxl),
+        decoration: BoxDecoration(
+          color: colors.glassSurface,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(
+            color: colors.cardBorder,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 40,
+              offset: const Offset(0, 20),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1,
               ),
             ),
             if (message != null) ...[
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 message!,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: cs.onSurfaceVariant,
+                  height: 1.6,
                 ),
               ),
             ],
             if (content != null) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.xl),
               content!,
             ],
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.xxl),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -116,16 +134,10 @@ class AppDialog extends StatelessWidget {
                   onPressed: onCancel ?? () => Navigator.of(context).pop(false),
                   child: Text(cancelLabel),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(
+                const SizedBox(width: AppSpacing.md),
+                AppButton.primary(
+                  label: confirmLabel,
                   onPressed: onConfirm ?? () => Navigator.of(context).pop(true),
-                  style: isDestructive
-                      ? FilledButton.styleFrom(
-                          backgroundColor: cs.error,
-                          foregroundColor: cs.onError,
-                        )
-                      : null,
-                  child: Text(confirmLabel),
                 ),
               ],
             ),
@@ -161,6 +173,8 @@ class AppBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: isScrollControlled,
       useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.2),
       builder: (_) => AppBottomSheet(
         title: title,
         padding: padding,
@@ -173,53 +187,75 @@ class AppBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
 
-    return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag handle
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.md),
-            child: Container(
-              width: 36,
+    return GlassContainer(
+      blurSigma: 25,
+      backgroundColor: colors.glassSurface,
+      borderColor: colors.glassBorder.withValues(alpha: 0.5),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.xxxl),
+      ),
+      padding: EdgeInsets.zero,
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Top gradient edge
+            Container(
               height: 4,
               decoration: BoxDecoration(
-                color: cs.onSurfaceVariant.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                gradient: LinearGradient(
+                  colors: [
+                    cs.primary.withValues(alpha: 0.1),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
-          ),
-          if (title != null) ...[
+            // Drag handle
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                AppSpacing.lg,
-                AppSpacing.xl,
-                AppSpacing.sm,
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  title!,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
+            ),
+            if (title != null) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  AppSpacing.lg,
+                  AppSpacing.xl,
+                  AppSpacing.sm,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title!,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
+            ],
+            Padding(
+              padding: padding ??
+                  const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.sm,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                  ),
+              child: child,
             ),
           ],
-          Padding(
-            padding: padding ??
-                const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                ),
-            child: child,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -255,22 +291,40 @@ class BottomSheetOption<T> extends StatelessWidget {
             ? cs.primary
             : cs.onSurface;
 
-    return ListTile(
-      leading: icon != null ? Icon(icon, color: color) : null,
-      title: Text(
-        label,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: color,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-        ),
-      ),
-      trailing: isSelected
-          ? Icon(Icons.check_rounded, color: cs.primary, size: 20)
-          : null,
+    return AnimatedPress(
       onTap: () {
         Navigator.of(context).pop(value);
         onTap(value);
       },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          color: isSelected ? cs.primary.withValues(alpha: 0.05) : null,
+        ),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: AppSpacing.md),
+            ],
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: color,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_rounded, color: cs.primary, size: 22),
+          ],
+        ),
+      ),
     );
   }
 }

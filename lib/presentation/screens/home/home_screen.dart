@@ -5,11 +5,12 @@ import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/data/services/widget_service.dart';
-import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 import 'package:vitalglyph/presentation/widgets/profile_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     _listController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: AppDuration.spring,
     );
     context.read<ProfileBloc>().add(const ProfilesWatchStarted());
   }
@@ -39,34 +40,31 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        context.push(AppRouter.scanner);
+        break;
+      case 1:
+        context.push(AppRouter.profileNew);
+        break;
+      case 2:
+        context.push(AppRouter.settings);
+        break;
+    }
+  }
+
   void _triggerListAnimation() {
     _listController.forward(from: 0);
   }
 
-  Future<void> _onRefresh() async {
-    context.read<ProfileBloc>().add(const ProfilesWatchStarted());
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: AppSpacing.lg,
-        title: const Text('Medical ID'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner_rounded),
-            tooltip: 'Scan Medical ID',
-            onPressed: () => context.push(AppRouter.scanner),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
-            onPressed: () => context.push(AppRouter.settings),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-        ],
-      ),
+    final theme = Theme.of(context);
+    final colors = theme.extension<VitalGlyphColors>()!;
+    final cs = theme.colorScheme;
+
+    return GradientScaffold(
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoaded) {
@@ -80,92 +78,273 @@ class _HomeScreenState extends State<HomeScreen>
           }
         },
         builder: (context, state) {
-          if (state is ProfileLoading || state is ProfileInitial) {
-            return const _ShimmerLoading();
-          }
-
-          if (state is ProfileError) {
-            return _ErrorState(
-              message: state.message,
-              onRetry: () => context
-                  .read<ProfileBloc>()
-                  .add(const ProfilesWatchStarted()),
-            );
-          }
-
-          final profiles =
-              state is ProfileLoaded ? state.profiles : <Profile>[];
-
-          if (profiles.isEmpty) {
-            return _EmptyState(
-              onAddProfile: () => context.push(AppRouter.profileNew),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: _onRefresh,
-            color: Theme.of(context).colorScheme.primary,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.md,
-              ),
-              itemCount: profiles.length,
-              itemBuilder: (context, index) {
-                final itemStart = (index * 0.1).clamp(0.0, 0.7);
-                final itemEnd = (itemStart + 0.4).clamp(0.0, 1.0);
-                final animation = CurvedAnimation(
-                  parent: _listController,
-                  curve: Interval(itemStart, itemEnd, curve: Curves.easeOut),
-                );
-
-                return AnimatedBuilder(
-                  animation: animation,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.1),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
+          return CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 140,
+                floating: true,
+                pinned: true,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: const EdgeInsetsDirectional.only(
+                    start: AppSpacing.xl,
+                    bottom: 20,
+                  ),
+                  centerTitle: false,
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'VITALGLYPH',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: cs.primary,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 3,
+                        ),
                       ),
-                    );
-                  },
-                  child: ProfileCard(
-                    profile: profiles[index],
-                    isPrimary: index == 0,
-                    onDelete: () => context
+                      const SizedBox(height: 4),
+                      Text(
+                        'Medical ID',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w900,
+                          height: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (state is ProfileLoading || state is ProfileInitial)
+                const SliverFillRemaining(
+                  child: _ShimmerLoading(),
+                )
+              else if (state is ProfileError)
+                SliverFillRemaining(
+                  child: _ErrorState(
+                    message: state.message,
+                    onRetry: () => context
                         .read<ProfileBloc>()
-                        .add(ProfileDeleteRequested(profiles[index].id)),
-                    onShowQr: () => context.push(
-                      AppRouter.qrDisplay,
-                      extra: profiles[index],
-                    ),
-                    onEdit: () => context.push(
-                      AppRouter.profileEdit,
-                      extra: profiles[index],
-                    ),
-                    onEmergencyCard: () => context.push(
-                      AppRouter.emergencyCard,
-                      extra: profiles[index],
+                        .add(const ProfilesWatchStarted()),
+                  ),
+                )
+              else if (state is ProfileLoaded && state.profiles.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyState(
+                    onAddProfile: () => context.push(AppRouter.profileNew),
+                  ),
+                )
+              else if (state is ProfileLoaded)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    120, // Increased bottom padding for nav bar clearance
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final profiles = state.profiles;
+                        final itemStart = (index * 0.1).clamp(0.0, 0.7);
+                        final itemEnd = (itemStart + 0.4).clamp(0.0, 1.0);
+                        final animation = CurvedAnimation(
+                          parent: _listController,
+                          curve: Interval(itemStart, itemEnd,
+                              curve: Curves.easeOutCubic),
+                        );
+
+                        return AnimatedBuilder(
+                          animation: animation,
+                          builder: (context, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 30 * (1.0 - animation.value)),
+                              child: Opacity(
+                                opacity: animation.value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                            child: ProfileCard(
+                              profile: profiles[index],
+                              isPrimary: index == 0,
+                              onDelete: () => context
+                                  .read<ProfileBloc>()
+                                  .add(ProfileDeleteRequested(profiles[index].id)),
+                              onShowQr: () => context.push(
+                                AppRouter.qrDisplay,
+                                extra: profiles[index],
+                              ),
+                              onEdit: () => context.push(
+                                AppRouter.profileEdit,
+                                extra: profiles[index],
+                              ),
+                              onEmergencyCard: () => context.push(
+                                AppRouter.emergencyCard,
+                                extra: profiles[index],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      childCount: state.profiles.length,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRouter.profileNew),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New Profile'),
+      bottomNavigationBar: _ModernBottomNavBar(
+        onTap: _onItemTapped,
+        colors: colors,
       ),
     );
   }
 }
+
+class _ModernBottomNavBar extends StatelessWidget {
+  final ValueChanged<int> onTap;
+  final VitalGlyphColors colors;
+
+  const _ModernBottomNavBar({
+    required this.onTap,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.glassSurface,
+        border: Border(
+          top: BorderSide(
+            color: colors.cardBorder,
+            width: 1.5,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -8),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 80,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavBarItem(
+                icon: Icons.qr_code_scanner_rounded,
+                label: 'Scan',
+                onTap: () => onTap(0),
+                cs: cs,
+              ),
+              _NavBarItem(
+                icon: Icons.add_rounded,
+                label: 'New Profile',
+                onTap: () => onTap(1),
+                cs: cs,
+                isAction: true,
+              ),
+              _NavBarItem(
+                icon: Icons.settings_rounded,
+                label: 'Settings',
+                onTap: () => onTap(2),
+                cs: cs,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final ColorScheme cs;
+  final bool isAction;
+
+  const _NavBarItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.cs,
+    this.isAction = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = cs.onSurfaceVariant.withValues(alpha: 0.5);
+    
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isAction)
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: cs.primary,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                boxShadow: [
+                  BoxShadow(
+                    color: cs.primary.withValues(alpha: 0.2),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
+            )
+          else ...[
+            Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 
 class _ShimmerLoading extends StatefulWidget {
   const _ShimmerLoading();
@@ -184,9 +363,9 @@ class _ShimmerLoadingState extends State<_ShimmerLoading>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1.5, end: 2.5).animate(
+    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -200,32 +379,28 @@ class _ShimmerLoadingState extends State<_ShimmerLoading>
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<VitalGlyphColors>()!;
-    final cs = Theme.of(context).colorScheme;
 
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
         final gradient = LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           stops: const [0.0, 0.5, 1.0],
           colors: [
-            colors.surfaceSubtle,
-            cs.surface,
-            colors.surfaceSubtle,
+            colors.shimmerBase.withValues(alpha: 0.5),
+            colors.shimmerHighlight.withValues(alpha: 0.8),
+            colors.shimmerBase.withValues(alpha: 0.5),
           ],
           transform: _SlidingGradientTransform(_animation.value),
         );
 
         return ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            _ShimmerCard(gradient: gradient, colors: colors),
+            _ShimmerSkeleton(gradient: gradient, colors: colors),
             const SizedBox(height: AppSpacing.lg),
-            _ShimmerCard(gradient: gradient, colors: colors),
+            _ShimmerSkeleton(gradient: gradient, colors: colors),
           ],
         );
       },
@@ -243,28 +418,71 @@ class _SlidingGradientTransform extends GradientTransform {
   }
 }
 
-class _ShimmerCard extends StatelessWidget {
+class _ShimmerSkeleton extends StatelessWidget {
   final Gradient gradient;
   final VitalGlyphColors colors;
 
-  const _ShimmerCard({required this.gradient, required this.colors});
+  const _ShimmerSkeleton({required this.gradient, required this.colors});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: colors.surfaceSubtle,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        border: Border.all(color: colors.cardBorder),
-      ),
+    return GlassContainer(
+      enableBlur: false,
+      backgroundColor: colors.glassSurface.withValues(alpha: 0.4),
+      borderColor: colors.glassBorder.withValues(alpha: 0.2),
       child: ShaderMask(
         blendMode: BlendMode.srcATop,
         shaderCallback: (bounds) => gradient.createShader(bounds),
-        child: Container(
-          decoration: BoxDecoration(
-            color: colors.surfaceSubtle,
-            borderRadius: BorderRadius.circular(AppRadius.xxl),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 68,
+                    height: 68,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 140,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 100,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -281,133 +499,247 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.extension<VitalGlyphColors>()!;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded,
-                size: 48, color: theme.colorScheme.error),
-            const SizedBox(height: AppSpacing.lg),
-            Text(message,
+        child: GlassContainer(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          backgroundColor: colors.glassSurface,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline_rounded,
+                  size: 48, color: theme.colorScheme.error),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                message,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-            ),
-          ],
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _EmptyState extends StatelessWidget {
+class _EmptyState extends StatefulWidget {
   final VoidCallback onAddProfile;
 
   const _EmptyState({required this.onAddProfile});
 
   @override
+  State<_EmptyState> createState() => _EmptyStateState();
+}
+
+class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin {
+  late AnimationController _floatController;
+  late Animation<double> _floatAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _floatAnimation = Tween<double>(begin: 0, end: -12).animate(
+      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Composed card illustration
-            SizedBox(
-              width: 120,
-              height: 90,
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _floatAnimation,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _floatAnimation.value),
+                child: child,
+              );
+            },
+            child: SizedBox(
+              width: 140,
+              height: 100,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
+                  // Decorative pulsing dots
+                  for (int i = 0; i < 3; i++)
+                    _PulsingDot(index: i, colors: colors),
+                  
                   Transform.rotate(
-                    angle: -0.15,
+                    angle: -0.12,
                     child: Container(
-                      width: 90,
-                      height: 60,
+                      width: 100,
+                      height: 70,
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer
-                            .withValues(alpha: 0.5),
+                        color: cs.primary.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(AppRadius.md),
-                        border: Border.all(color: colors.cardBorder),
+                        border: Border.all(
+                          color: colors.cardBorder,
+                          width: 1,
+                        ),
                       ),
                     ),
                   ),
                   Transform.rotate(
                     angle: 0.08,
                     child: Container(
-                      width: 90,
-                      height: 60,
+                      width: 100,
+                      height: 70,
                       decoration: BoxDecoration(
-                        color:
-                            colorScheme.primaryContainer.withValues(alpha: 0.7),
+                        color: cs.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         border: Border.all(
-                          color: colorScheme.primary.withValues(alpha: 0.3),
+                          color: cs.primary.withValues(alpha: 0.2),
+                          width: 1,
                         ),
                       ),
                     ),
                   ),
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: colorScheme.primary,
+                      color: cs.primary,
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
                     child: const Icon(
                       Icons.add_rounded,
                       color: Colors.white,
-                      size: 22,
+                      size: 28,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            Text(
-              'Create Your First Profile',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+          Text(
+            'Create Your First Profile',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Store blood type, allergies, medications, and emergency contacts '
-              'so first responders can help you faster.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Store blood type, allergies, medications, and emergency contacts '
+            'so first responders can help you faster.',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: cs.onSurfaceVariant.withValues(alpha: 0.8),
+              height: 1.5,
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Your medical data stays on your device.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-              ),
-              textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          FilledButton.icon(
+            onPressed: widget.onAddProfile,
+            icon: const Icon(Icons.person_add_rounded),
+            label: const Text('Add Profile'),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            FilledButton.icon(
-              onPressed: onAddProfile,
-              icon: const Icon(Icons.person_add_outlined),
-              label: const Text('Add Profile'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _PulsingDot extends StatefulWidget {
+  final int index;
+  final VitalGlyphColors colors;
+
+  const _PulsingDot({required this.index, required this.colors});
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    
+    // Delay each dot
+    Future.delayed(Duration(milliseconds: widget.index * 600), () {
+      if (mounted) _controller.forward();
+    });
+
+    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final offsets = [
+      const Offset(-60, -40),
+      const Offset(60, -30),
+      const Offset(40, 40),
+    ];
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: offsets[widget.index],
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: widget.colors.glowPrimary.withValues(alpha: _animation.value),
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      },
     );
   }
 }

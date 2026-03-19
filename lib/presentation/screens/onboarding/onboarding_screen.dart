@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/core/services/app_preferences.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -15,31 +18,48 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _controller = PageController();
+  double _scrollOffset = 0;
   int _currentPage = 0;
 
   static const _pages = [
     _PageData(
-      icon: Icons.medical_information_outlined,
-      companions: [Icons.water_drop_outlined, Icons.medication_outlined],
+      icon: Icons.medical_information_rounded,
+      companions: [Icons.water_drop_rounded, Icons.medication_rounded],
       title: 'Your Medical ID, Always Ready',
       body:
-          'Store your critical medical information — blood type, allergies, medications, and emergency contacts — in one secure place.',
+          'Store critical medical information — blood type, allergies, medications, and emergency contacts — in one secure place.',
+      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
     ),
     _PageData(
-      icon: Icons.qr_code_scanner_outlined,
-      companions: [Icons.phone_android_outlined, Icons.local_hospital_outlined],
+      icon: Icons.qr_code_scanner_rounded,
+      companions: [Icons.phone_iphone_rounded, Icons.local_hospital_rounded],
       title: 'Instant Access via QR Code',
       body:
           'First responders can scan your QR code to access your medical information in seconds, even without internet.',
+      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
     ),
     _PageData(
-      icon: Icons.shield_outlined,
-      companions: [Icons.lock_outline_rounded, Icons.wifi_off_outlined],
+      icon: Icons.shield_rounded,
+      companions: [Icons.lock_rounded, Icons.wifi_off_rounded],
       title: 'Private & Offline by Design',
       body:
           'All data stays on your device. Nothing is sent to servers. You control who sees your information.',
+      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {
+        _scrollOffset = _controller.page ?? 0;
+      });
+    });
+  }
 
   Future<void> _finish() async {
     await sl<AppPreferences>().setOnboardingSeen();
@@ -54,100 +74,128 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isLast = _currentPage == _pages.length - 1;
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Skip button
-            Padding(
-              padding: const EdgeInsets.only(
-                top: AppSpacing.sm,
-                right: AppSpacing.md,
+      body: Stack(
+        children: [
+          // Background Gradients
+          for (int i = 0; i < _pages.length; i++)
+            Opacity(
+              opacity: (1.0 - (_scrollOffset - i).abs()).clamp(0.0, 1.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark ? _pages[i].darkGradient : _pages[i].gradient,
+                  ),
+                ),
               ),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: TextButton(
-                  onPressed: _finish,
-                  child: Text(
-                    'Skip',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+            ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                // Skip button
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: AppSpacing.sm,
+                    right: AppSpacing.md,
+                  ),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: _finish,
+                      child: Text(
+                        'Skip',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: cs.onSurface.withValues(alpha: 0.6),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
 
-            // Page content
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: _pages.length,
-                onPageChanged: (i) {
-                  HapticFeedback.selectionClick();
-                  setState(() => _currentPage = i);
-                },
-                itemBuilder: (context, i) => _OnboardingPageView(data: _pages[i]),
-              ),
-            ),
-
-            // Thinner pill page indicator dots
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_pages.length, (i) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOut,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: _currentPage == i ? 32 : 8,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: _currentPage == i
-                        ? colorScheme.primary
-                        : colorScheme.outline.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+                // Page content
+                Expanded(
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: _pages.length,
+                    onPageChanged: (i) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _currentPage = i);
+                    },
+                    itemBuilder: (context, i) => _OnboardingPageView(data: _pages[i]),
                   ),
-                );
-              }),
-            ),
-
-            const SizedBox(height: AppSpacing.xl),
-
-            // Next / Get Started button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              child: SizedBox(
-                width: double.infinity,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: isLast
-                      ? FilledButton(
-                          key: const ValueKey('get_started'),
-                          onPressed: _finish,
-                          child: const Text('Get Started'),
-                        )
-                      : FilledButton(
-                          key: const ValueKey('next'),
-                          onPressed: () {
-                            HapticFeedback.selectionClick();
-                            _controller.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut,
-                            );
-                          },
-                          child: const Text('Next'),
-                        ),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: AppSpacing.xxl),
-          ],
-        ),
+                // Premium page indicator
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_pages.length, (i) {
+                    final active = _currentPage == i;
+                    return AnimatedContainer(
+                      duration: AppDuration.medium,
+                      curve: Curves.easeOutCubic,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: active ? 32 : 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: active
+                            ? cs.primary
+                            : cs.onSurface.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          if (active)
+                            BoxShadow(
+                              color: cs.primary.withValues(alpha: 0.4),
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Next / Get Started button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: isLast
+                        ? AppButton.primary(
+                            key: const ValueKey('get_started'),
+                            label: 'Get Started',
+                            onPressed: _finish,
+                            fullWidth: true,
+                          )
+                        : AppButton.primary(
+                            key: const ValueKey('next'),
+                            label: 'Next',
+                            onPressed: () {
+                              _controller.nextPage(
+                                duration: const Duration(milliseconds: 600),
+                                curve: Curves.easeOutQuart,
+                              );
+                            },
+                            fullWidth: true,
+                          ),
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xxxl),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -158,79 +206,115 @@ class _PageData {
   final List<IconData> companions;
   final String title;
   final String body;
+  final List<Color> gradient;
+  final List<Color> darkGradient;
 
   const _PageData({
     required this.icon,
     required this.companions,
     required this.title,
     required this.body,
+    required this.gradient,
+    required this.darkGradient,
   });
 }
 
-class _OnboardingPageView extends StatelessWidget {
+class _OnboardingPageView extends StatefulWidget {
   final _PageData data;
 
   const _OnboardingPageView({required this.data});
 
   @override
+  State<_OnboardingPageView> createState() => _OnboardingPageViewState();
+}
+
+class _OnboardingPageViewState extends State<_OnboardingPageView>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _floatController;
+  late Animation<double> _floatAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _floatAnimation = Tween<double>(begin: 0, end: -10).animate(
+      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final colors = theme.extension<VitalGlyphColors>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Composed icon illustration
+          // Composed icon illustration with animations
           SizedBox(
-            width: 160,
-            height: 140,
+            width: 200,
+            height: 180,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Companion icons at angles
-                Positioned(
-                  left: 0,
-                  top: 12,
-                  child: _CompanionIcon(
-                    icon: data.companions[0],
-                    color: colorScheme.primaryContainer,
-                    iconColor: colorScheme.primary.withValues(alpha: 0.6),
-                    angle: -0.3,
-                    size: 52,
-                  ),
+                // Companion icons with glass backgrounds and floating animations
+                _FloatingCompanion(
+                  icon: widget.data.companions[0],
+                  offset: const Offset(-70, -30),
+                  angle: -0.2,
+                  delay: 0,
+                  colors: colors,
+                  cs: cs,
                 ),
-                Positioned(
-                  right: 0,
-                  top: 20,
-                  child: _CompanionIcon(
-                    icon: data.companions[1],
-                    color: colorScheme.secondaryContainer,
-                    iconColor: colorScheme.secondary.withValues(alpha: 0.6),
-                    angle: 0.2,
-                    size: 48,
-                  ),
+                _FloatingCompanion(
+                  icon: widget.data.companions[1],
+                  offset: const Offset(70, 20),
+                  angle: 0.15,
+                  delay: 1000,
+                  colors: colors,
+                  cs: cs,
                 ),
-                // Central icon
-                Container(
-                  width: 88,
-                  height: 88,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    data.icon,
-                    size: 44,
-                    color: colorScheme.onPrimaryContainer,
+
+                // Central icon with glow ring and floating animation
+                AnimatedBuilder(
+                  animation: _floatAnimation,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(0, _floatAnimation.value),
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withValues(alpha: 0.4),
+                          blurRadius: 40,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      widget.data.icon,
+                      size: 48,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -238,18 +322,18 @@ class _OnboardingPageView extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xxl),
           Text(
-            data.title,
+            widget.data.title,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.lg),
           Text(
-            data.body,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              height: 1.5,
+            widget.data.body,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: cs.onSurface.withValues(alpha: 0.7),
+              height: 1.6,
             ),
             textAlign: TextAlign.center,
           ),
@@ -259,33 +343,80 @@ class _OnboardingPageView extends StatelessWidget {
   }
 }
 
-class _CompanionIcon extends StatelessWidget {
+class _FloatingCompanion extends StatefulWidget {
   final IconData icon;
-  final Color color;
-  final Color iconColor;
+  final Offset offset;
   final double angle;
-  final double size;
+  final int delay;
+  final VitalGlyphColors colors;
+  final ColorScheme cs;
 
-  const _CompanionIcon({
+  const _FloatingCompanion({
     required this.icon,
-    required this.color,
-    required this.iconColor,
+    required this.offset,
     required this.angle,
-    required this.size,
+    required this.delay,
+    required this.colors,
+    required this.cs,
   });
 
   @override
+  State<_FloatingCompanion> createState() => _FloatingCompanionState();
+}
+
+class _FloatingCompanionState extends State<_FloatingCompanion>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    );
+
+    Future.delayed(Duration(milliseconds: widget.delay), () {
+      if (mounted) _controller.repeat(reverse: true);
+    });
+
+    _animation = Tween<double>(begin: 0, end: -12).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: angle,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(AppRadius.md),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: widget.offset + Offset(0, _animation.value),
+          child: child,
+        );
+      },
+      child: Transform.rotate(
+        angle: widget.angle,
+        child: GlassContainer(
+          width: 56,
+          height: 56,
+          blurSigma: 10,
+          backgroundColor: widget.colors.glassSurface.withValues(alpha: 0.8),
+          borderColor: widget.colors.glassBorder,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Icon(
+            widget.icon,
+            size: 26,
+            color: widget.cs.primary.withValues(alpha: 0.7),
+          ),
         ),
-        child: Icon(icon, size: size * 0.45, color: iconColor),
       ),
     );
   }

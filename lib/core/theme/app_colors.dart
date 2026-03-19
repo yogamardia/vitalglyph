@@ -35,6 +35,16 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
   final Color surfaceSubtle;
   final Color inputFill;
 
+  // Glassmorphism & Gradients
+  final Color glassBackground;
+  final Color glassBorder;
+  final Color glassSurface;
+  final Color gradientStart;
+  final Color gradientEnd;
+  final Color glowPrimary;
+  final Color shimmerBase;
+  final Color shimmerHighlight;
+
   const VitalGlyphColors({
     required this.bloodTypeBadge,
     required this.bloodTypeBadgeBackground,
@@ -55,50 +65,74 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     required this.cardBorder,
     required this.surfaceSubtle,
     required this.inputFill,
+    required this.glassBackground,
+    required this.glassBorder,
+    required this.glassSurface,
+    required this.gradientStart,
+    required this.gradientEnd,
+    required this.glowPrimary,
+    required this.shimmerBase,
+    required this.shimmerHighlight,
   });
 
   static const light = VitalGlyphColors(
-    bloodTypeBadge: Color(0xFFB71C1C),
-    bloodTypeBadgeBackground: Color(0xFFFFF1F1),
-    bloodTypeBadgeBorder: Color(0xFFFFE1E1),
-    allergyTag: Color(0xFFC2410C),
-    allergyTagBackground: Color(0xFFFFF7ED),
-    allergyTagBorder: Color(0xFFFFEDD5),
-    lifeThreatening: Color(0xFFB71C1C),
-    severe: Color(0xFFE64A19),
-    moderate: Color(0xFFF57C00),
-    mild: Color(0xFF388E3C),
-    successGreen: Color(0xFF2E7D32),
-    emergencyRed: Color(0xFFD32F2F),
-    primaryAction: Color(0xFF2563EB),
-    dividerSubtle: Color(0xFFF0F0F0),
-    tamperWarning: Color(0xFFE65100),
-    tamperWarningBackground: Color(0xFFFFF3E0),
-    cardBorder: Color(0xFFE8ECF0),
-    surfaceSubtle: Color(0xFFF7F8FA),
-    inputFill: Color(0xFFF2F4F7),
+    bloodTypeBadge: Color(0xFF991B1B), // Refined Red 800
+    bloodTypeBadgeBackground: Color(0xFFFEF2F2), // Red 50
+    bloodTypeBadgeBorder: Color(0xFFFEE2E2), // Red 100
+    allergyTag: Color(0xFF92400E), // Amber 800
+    allergyTagBackground: Color(0xFFFFFBEB), // Amber 50
+    allergyTagBorder: Color(0xFFFEF3C7), // Amber 100
+    lifeThreatening: Color(0xFF991B1B),
+    severe: Color(0xFFC2410C),
+    moderate: Color(0xFFD97706),
+    mild: Color(0xFF15803D),
+    successGreen: Color(0xFF166534),
+    emergencyRed: Color(0xFFB91C1C),
+    primaryAction: Color(0xFF0F172A), // Deep Obsidian Slate 900
+    dividerSubtle: Color(0xFFF1F5F9), // Slate 100
+    tamperWarning: Color(0xFF9A3412),
+    tamperWarningBackground: Color(0xFFFFF7ED),
+    cardBorder: Color(0xFFE2E8F0), // Slate 200
+    surfaceSubtle: Color(0xFFF8FAFC), // Slate 50
+    inputFill: Color(0xFFF1F5F9), // Slate 100
+    glassBackground: Color(0x050F172A),
+    glassBorder: Color(0x0F0F172A),
+    glassSurface: Color(0xFAFFFFFF),
+    gradientStart: Color(0xFFFFFFFF),
+    gradientEnd: Color(0xFFF1F5F9),
+    glowPrimary: Color(0x1A0F172A),
+    shimmerBase: Color(0xFFF1F5F9),
+    shimmerHighlight: Color(0xFFF8FAFC),
   );
 
   static const dark = VitalGlyphColors(
-    bloodTypeBadge: Color(0xFFEF9A9A),
-    bloodTypeBadgeBackground: Color(0xFF3E1010),
-    bloodTypeBadgeBorder: Color(0xFF5C1A1A),
-    allergyTag: Color(0xFFFFAB76),
-    allergyTagBackground: Color(0xFF3E2010),
-    allergyTagBorder: Color(0xFF5C3010),
-    lifeThreatening: Color(0xFFEF9A9A),
-    severe: Color(0xFFFFAB76),
-    moderate: Color(0xFFFFCC80),
-    mild: Color(0xFFA5D6A7),
-    successGreen: Color(0xFF66BB6A),
-    emergencyRed: Color(0xFFEF5350),
-    primaryAction: Color(0xFF60A5FA),
-    dividerSubtle: Color(0xFF2A2A2A),
-    tamperWarning: Color(0xFFFFAB40),
-    tamperWarningBackground: Color(0xFF3E2800),
-    cardBorder: Color(0xFF2E3338),
-    surfaceSubtle: Color(0xFF1A1C1E),
-    inputFill: Color(0xFF22262A),
+    bloodTypeBadge: Color(0xFFF87171), // Red 400
+    bloodTypeBadgeBackground: Color(0xFF450A0A), // Red 950
+    bloodTypeBadgeBorder: Color(0xFF7F1D1D), // Red 900
+    allergyTag: Color(0xFFFBBF24), // Amber 400
+    allergyTagBackground: Color(0xFF451A03), // Amber 950
+    allergyTagBorder: Color(0xFF78350F), // Amber 900
+    lifeThreatening: Color(0xFFF87171),
+    severe: Color(0xFFFB923C),
+    moderate: Color(0xFFFCD34D),
+    mild: Color(0xFF4ADE80),
+    successGreen: Color(0xFF4ADE80),
+    emergencyRed: Color(0xFFEF4444),
+    primaryAction: Color(0xFFF8FAFC), // Slate 50
+    dividerSubtle: Color(0xFF1E293B), // Slate 800
+    tamperWarning: Color(0xFFFB923C),
+    tamperWarningBackground: Color(0xFF431407),
+    cardBorder: Color(0xFF334155), // Slate 700
+    surfaceSubtle: Color(0xFF0F172A), // Slate 900
+    inputFill: Color(0xFF1E293B), // Slate 800
+    glassBackground: Color(0x1AF8FAFC),
+    glassBorder: Color(0x33F8FAFC),
+    glassSurface: Color(0xFA020617), // Slate 950
+    gradientStart: Color(0xFF020617),
+    gradientEnd: Color(0xFF0F172A),
+    glowPrimary: Color(0x33F8FAFC),
+    shimmerBase: Color(0xFF1E293B),
+    shimmerHighlight: Color(0xFF334155),
   );
 
   @override
@@ -122,6 +156,14 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     Color? cardBorder,
     Color? surfaceSubtle,
     Color? inputFill,
+    Color? glassBackground,
+    Color? glassBorder,
+    Color? glassSurface,
+    Color? gradientStart,
+    Color? gradientEnd,
+    Color? glowPrimary,
+    Color? shimmerBase,
+    Color? shimmerHighlight,
   }) {
     return VitalGlyphColors(
       bloodTypeBadge: bloodTypeBadge ?? this.bloodTypeBadge,
@@ -145,6 +187,14 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       cardBorder: cardBorder ?? this.cardBorder,
       surfaceSubtle: surfaceSubtle ?? this.surfaceSubtle,
       inputFill: inputFill ?? this.inputFill,
+      glassBackground: glassBackground ?? this.glassBackground,
+      glassBorder: glassBorder ?? this.glassBorder,
+      glassSurface: glassSurface ?? this.glassSurface,
+      gradientStart: gradientStart ?? this.gradientStart,
+      gradientEnd: gradientEnd ?? this.gradientEnd,
+      glowPrimary: glowPrimary ?? this.glowPrimary,
+      shimmerBase: shimmerBase ?? this.shimmerBase,
+      shimmerHighlight: shimmerHighlight ?? this.shimmerHighlight,
     );
   }
 
@@ -162,8 +212,7 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
           Color.lerp(allergyTagBackground, other.allergyTagBackground, t)!,
       allergyTagBorder:
           Color.lerp(allergyTagBorder, other.allergyTagBorder, t)!,
-      lifeThreatening:
-          Color.lerp(lifeThreatening, other.lifeThreatening, t)!,
+      lifeThreatening: Color.lerp(lifeThreatening, other.lifeThreatening, t)!,
       severe: Color.lerp(severe, other.severe, t)!,
       moderate: Color.lerp(moderate, other.moderate, t)!,
       mild: Color.lerp(mild, other.mild, t)!,
@@ -177,6 +226,15 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
       surfaceSubtle: Color.lerp(surfaceSubtle, other.surfaceSubtle, t)!,
       inputFill: Color.lerp(inputFill, other.inputFill, t)!,
+      glassBackground: Color.lerp(glassBackground, other.glassBackground, t)!,
+      glassBorder: Color.lerp(glassBorder, other.glassBorder, t)!,
+      glassSurface: Color.lerp(glassSurface, other.glassSurface, t)!,
+      gradientStart: Color.lerp(gradientStart, other.gradientStart, t)!,
+      gradientEnd: Color.lerp(gradientEnd, other.gradientEnd, t)!,
+      glowPrimary: Color.lerp(glowPrimary, other.glowPrimary, t)!,
+      shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,
+      shimmerHighlight:
+          Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,
     );
   }
 }

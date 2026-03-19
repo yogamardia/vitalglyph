@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
-/// Consistent app-wide SnackBar helpers.
+/// Consistent app-wide SnackBar helpers with premium glassmorphism styling.
 class AppSnackBar {
   AppSnackBar._();
 
@@ -9,8 +11,8 @@ class AppSnackBar {
     _show(
       context,
       message: message,
-      icon: Icons.check_circle_outline,
-      colorResolver: (colors, cs) => colors.successGreen,
+      icon: Icons.check_circle_rounded,
+      iconColor: Theme.of(context).extension<VitalGlyphColors>()!.successGreen,
     );
   }
 
@@ -18,8 +20,8 @@ class AppSnackBar {
     _show(
       context,
       message: message,
-      icon: Icons.error_outline,
-      colorResolver: (colors, cs) => cs.error,
+      icon: Icons.error_rounded,
+      iconColor: Theme.of(context).colorScheme.error,
     );
   }
 
@@ -27,8 +29,8 @@ class AppSnackBar {
     _show(
       context,
       message: message,
-      icon: Icons.info_outline,
-      colorResolver: (colors, cs) => cs.primary,
+      icon: Icons.info_rounded,
+      iconColor: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -36,8 +38,8 @@ class AppSnackBar {
     _show(
       context,
       message: message,
-      icon: Icons.warning_amber_outlined,
-      colorResolver: (colors, cs) => colors.tamperWarning,
+      icon: Icons.warning_rounded,
+      iconColor: Theme.of(context).extension<VitalGlyphColors>()!.tamperWarning,
     );
   }
 
@@ -45,29 +47,73 @@ class AppSnackBar {
     BuildContext context, {
     required String message,
     required IconData icon,
-    required Color Function(VitalGlyphColors, ColorScheme) colorResolver,
+    required Color iconColor,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final colors = Theme.of(context).extension<VitalGlyphColors>()!;
-    final cs = Theme.of(context).colorScheme;
-    final color = colorResolver(colors, cs);
+    final glassBg = isDark 
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final textColor = isDark ? const Color(0xFF020617) : Colors.white;
+    final borderColor = isDark 
+        ? Colors.black.withValues(alpha: 0.1) 
+        : Colors.white.withValues(alpha: 0.1);
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: cs.inverseSurface,
-          content: Row(
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  message,
-                  style: TextStyle(color: cs.onInverseSurface),
-                ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          content: Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: glassBg,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(
+                color: borderColor,
+                width: 1,
               ),
-            ],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.lg,
+            ),
+            child: Row(
+              children: [
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.elasticOut,
+                  builder: (context, value, child) => Transform.scale(
+                    scale: value,
+                    child: child,
+                  ),
+                  child: Icon(icon, color: iconColor, size: 22),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: textColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
