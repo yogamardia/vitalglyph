@@ -4,6 +4,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
+import 'package:vitalglyph/core/crypto/encryption_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
@@ -40,9 +41,11 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<AuthSettingsService>(
       () => AuthSettingsService(sl<FlutterSecureStorage>()));
   sl.registerLazySingleton<LocalAuthentication>(() => LocalAuthentication());
+  sl.registerLazySingleton<EncryptionService>(
+      () => EncryptionService(sl<FlutterSecureStorage>()));
 
   // ── Database ──────────────────────────────────
-  sl.registerSingleton<AppDatabase>(AppDatabase());
+  sl.registerSingleton<AppDatabase>(AppDatabase(sl<EncryptionService>()));
 
   // ── DAOs ──────────────────────────────────────
   sl.registerSingleton<ProfileDao>(sl<AppDatabase>().profileDao);

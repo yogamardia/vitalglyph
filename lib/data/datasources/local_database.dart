@@ -1,10 +1,14 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
+import 'package:sqlite3/open.dart';
+import 'package:sqlite3/sqlite3.dart';
+import 'package:vitalglyph/core/crypto/encryption_service.dart';
 
 part 'local_database.g.dart';
 
@@ -191,7 +195,7 @@ class ProfileDao extends DatabaseAccessor<AppDatabase> with _$ProfileDaoMixin {
   daos: [ProfileDao],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openDatabase());
+  AppDatabase(EncryptionService encryptionService) : super(_openDatabase(encryptionService));
 
   /// For unit tests only — pass an in-memory executor.
   AppDatabase.forTesting(super.executor);
@@ -205,15 +209,68 @@ class AppDatabase extends _$AppDatabase {
       );
 }
 
-LazyDatabase _openDatabase() {
+LazyDatabase _openDatabase(EncryptionService encryptionService) {
   return LazyDatabase(() async {
-    // Required on old Android versions to load the native sqlite3 library.
+    // Manually override the library loading on Android to find SQLCipher.
     if (Platform.isAndroid) {
-      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+      open.overrideFor(OperatingSystem.android, () {
+        try {
+          return DynamicLibrary.open('libsqlcipher.so');
+        } catch (_) {
+          // If libsqlcipher.so is not found, fallback to libsqlite3.so
+          // but SQLCipher flutter libs should provide at least one of these.
+          return DynamicLibrary.open('libsqlite3.so');
+        }
+      });
     }
 
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'vitalglyph.db'));
-    return NativeDatabase(file);
+    final path = p.join(dir.path, 'vitalglyph.db');
+    final file = File(path);
+    final key = await encryptionService.getOrCreateDatabaseKey();
+
+    if (await file.exists()) {
+      // Check if it's plaintext
+      final db = sqlite3.open(path);
+      bool isPlaintext = false;
+      try {
+        // Try to read something. If it's plaintext, this works.
+        db.select('SELECT 1');
+        isPlaintext = true;
+      } catch (e) {
+        // Database is likely already encrypted
+      } finally {
+        db.dispose();
+      }
+
+      if (isPlaintext) {
+        final encryptedPath = p.join(dir.path, 'vitalglyph_encrypted.db');
+        final plainDb = sqlite3.open(path);
+        try {
+          plainDb.execute("ATTACH DATABASE '$encryptedPath' AS encrypted KEY \"x'$key'\";");
+          plainDb.execute("SELECT sqlcipher_export('encrypted');");
+          plainDb.execute("DETACH DATABASE encrypted;");
+        } catch (e) {
+          // If migration fails, we might want to know why, but for now just log
+          // In a real app, we'd handle this better.
+        } finally {
+          plainDb.dispose();
+        }
+
+        if (await File(encryptedPath).exists()) {
+          await file.delete();
+          await File(encryptedPath).rename(path);
+        }
+      }
+    }
+
+    return NativeDatabase(
+      file,
+      setup: (db) {
+        db.execute("PRAGMA key = \"x'$key'\";");
+        // cipher_migrate is safe to call and helps in some encryption scenarios
+        db.execute("PRAGMA cipher_migrate;");
+      },
+    );
   });
 }

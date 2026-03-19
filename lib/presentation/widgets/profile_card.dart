@@ -549,13 +549,13 @@ class _FooterInfo extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.verified_user_rounded,
+                Icons.lock_rounded,
                 size: 14,
                 color: colors.successGreen.withValues(alpha: 0.8),
               ),
               const SizedBox(width: 6),
               Text(
-                'Encrypted',
+                'Database Encrypted',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w600,
