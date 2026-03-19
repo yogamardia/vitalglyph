@@ -45,7 +45,8 @@ Future<void> configureDependencies() async {
       () => EncryptionService(sl<FlutterSecureStorage>()));
 
   // ── Database ──────────────────────────────────
-  sl.registerSingleton<AppDatabase>(AppDatabase(sl<EncryptionService>()));
+  final dbKey = await sl<EncryptionService>().getOrCreateDatabaseKey();
+  sl.registerSingleton<AppDatabase>(AppDatabase(dbKey));
 
   // ── DAOs ──────────────────────────────────────
   sl.registerSingleton<ProfileDao>(sl<AppDatabase>().profileDao);

@@ -13,7 +13,8 @@ dependencies:
 
   # Database
   drift: ^2.21.0
-  sqlcipher_flutter_libs: ^0.7.0
+  sqlcipher_flutter_libs: '>=0.6.0 <0.7.0'
+  sqlite3: ^2.4.0
   path_provider: ^2.1.5
 
   # State management
