@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:vitalglyph/core/services/screen_protection_service.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
+import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/qr_code_widget.dart';
@@ -28,12 +32,16 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
     _qrData = sl<GenerateQrData>()(widget.profile);
     WakelockPlus.enable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    // Disable screen protection so the QR code can be scanned or screenshotted for emergency use.
+    ScreenProtectionService.disable();
   }
 
   @override
   void dispose() {
     WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // Re-enable screen protection when leaving the QR display.
+    ScreenProtectionService.enable();
     super.dispose();
   }
 
@@ -43,9 +51,18 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
     final qrSize = (size.width.clamp(0.0, size.height) * 0.75).clamp(200.0, 500.0);
     final colors = Theme.of(context).extension<VitalGlyphColors>()!;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is! AuthRequired) {
+          // Re-disable protection when unlocked, as we are still on QrDisplayScreen.
+          // This handles the case where the app was locked (which enables protection)
+          // and then unlocked while this screen was still active.
+          ScreenProtectionService.disable();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -137,6 +154,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 }

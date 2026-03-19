@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
+import 'package:vitalglyph/core/services/screen_protection_service.dart';
 import 'package:vitalglyph/core/theme/app_theme.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
@@ -44,24 +45,32 @@ class _AppContent extends StatelessWidget {
             routerConfig: AppRouter.router,
             debugShowCheckedModeBanner: false,
             builder: (context, child) {
-              return BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  final isLocked = state is AuthRequired;
-                  return Stack(
-                    children: [
-                      if (child != null)
-                        IgnorePointer(
-                          ignoring: isLocked,
-                          child: child,
-                        ),
-                      if (isLocked)
-                        LockScreen(
-                          canUseBiometric: state.canUseBiometric,
-                          hasPinSet: state.hasPinSet,
-                        ),
-                    ],
-                  );
+              return BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthRequired) {
+                    // Always re-enable protection when the app is locked.
+                    ScreenProtectionService.enable();
+                  }
                 },
+                child: BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    final isLocked = state is AuthRequired;
+                    return Stack(
+                      children: [
+                        if (child != null)
+                          IgnorePointer(
+                            ignoring: isLocked,
+                            child: child,
+                          ),
+                        if (isLocked)
+                          LockScreen(
+                            canUseBiometric: state.canUseBiometric,
+                            hasPinSet: state.hasPinSet,
+                          ),
+                      ],
+                    );
+                  },
+                ),
               );
             },
           );
@@ -90,6 +99,8 @@ class _LifecycleObserverState extends State<_LifecycleObserver>
     WidgetsBinding.instance.addObserver(this);
     // Check auth on startup (may show lock screen if enabled).
     context.read<AuthCubit>().checkAuthRequired();
+    // Enable screen protection globally.
+    ScreenProtectionService.enable();
   }
 
   @override
