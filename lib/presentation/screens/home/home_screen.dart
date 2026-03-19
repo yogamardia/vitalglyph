@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen>
                 flexibleSpace: FlexibleSpaceBar(
                   titlePadding: const EdgeInsetsDirectional.only(
                     start: AppSpacing.xl,
-                    bottom: 20,
+                    bottom: AppSpacing.md,
                   ),
                   centerTitle: false,
                   title: Column(
@@ -99,15 +99,19 @@ class _HomeScreenState extends State<HomeScreen>
                     children: [
                       Text(
                         'VITALGLYPH',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: cs.primary,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 3,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         'Medical ID',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           color: cs.onSurface,
                           fontWeight: FontWeight.w900,
