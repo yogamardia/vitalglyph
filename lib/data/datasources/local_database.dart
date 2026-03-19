@@ -204,6 +204,27 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          // Run each migration step sequentially from `from+1` to `to`.
+          // Add a case for each new schema version.
+          for (var target = from + 1; target <= to; target++) {
+            switch (target) {
+              // Example for future v2 migration:
+              // case 2:
+              //   await m.addColumn(profiles, profiles.newColumn);
+              //   break;
+              default:
+                throw Exception(
+                  'Missing migration from v${target - 1} to v$target. '
+                  'Database version $to is not supported by this app version.',
+                );
+            }
+          }
+        },
+        beforeOpen: (details) async {
+          // Enable foreign key enforcement on every connection.
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
       );
 }
 
