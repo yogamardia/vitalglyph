@@ -6,9 +6,13 @@ import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 /// Parses a [MEDID|v1|...] QR payload into a [ScannedProfile].
 ///
 /// Returns [Left(ValidationFailure)] if the payload is not a recognised
-/// MEDID format. HMAC verification failure is surfaced via
+/// MEDID format. A failed HMAC format-integrity check is surfaced via
 /// [ScannedProfile.signatureValid] = false (not a hard error, because
-/// first responders still need to read the data even if tampered).
+/// first responders still need to read the data regardless).
+///
+/// Note: the HMAC uses a well-known key (see [HmacService]), so a failed
+/// check indicates corruption or a non-VitalGlyph source — not necessarily
+/// deliberate tampering.
 class ParseQrData {
   final HmacService _hmac;
 

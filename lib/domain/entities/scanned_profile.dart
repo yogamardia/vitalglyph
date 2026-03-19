@@ -46,6 +46,9 @@ class ScannedProfile extends Equatable {
   final List<ScannedContact> emergencyContacts;
   final bool isOrganDonor;
   final String? language;
+  /// Whether the HMAC format-integrity check passed. A `false` value means
+  /// the QR data may be corrupted or generated outside VitalGlyph — it does
+  /// NOT imply cryptographic tamper-proofing (the key is public).
   final bool signatureValid;
 
   const ScannedProfile({
