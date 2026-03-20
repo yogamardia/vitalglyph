@@ -2,9 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
+import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
 import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,6 +56,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   late List<MedicalCondition> _conditions;
   late List<EmergencyContact> _contacts;
 
+  String? _photoPath;
   bool _isSaving = false;
 
   bool get _isEditing => widget.profile != null;
@@ -60,6 +65,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   void initState() {
     super.initState();
     final p = widget.profile;
+    _photoPath = p?.photoPath;
     _dateOfBirth = p?.dateOfBirth;
     _nameCtrl = TextEditingController(text: p?.name ?? '');
     _dobCtrl = TextEditingController(
@@ -112,6 +118,90 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     }
   }
 
+  Future<void> _pickPhoto() async {
+    // Use String result: 'camera', 'gallery', 'remove', or null (dismissed)
+    final choice = await AppBottomSheet.show<String>(
+      context,
+      title: 'Profile Photo',
+      child: Column(
+        children: [
+          BottomSheetOption(
+            value: 'camera',
+            label: 'Take Photo',
+            icon: Icons.camera_alt_rounded,
+            onTap: (_) {},
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          BottomSheetOption(
+            value: 'gallery',
+            label: 'Choose from Gallery',
+            icon: Icons.photo_library_rounded,
+            onTap: (_) {},
+          ),
+          if (_photoPath != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            BottomSheetOption(
+              value: 'remove',
+              label: 'Remove Photo',
+              icon: Icons.delete_rounded,
+              isDestructive: true,
+              onTap: (_) {},
+            ),
+          ],
+        ],
+      ),
+    );
+
+    if (choice == null) return;
+
+    if (choice == 'remove') {
+      if (_photoPath != null) {
+        final oldFile = File(_photoPath!);
+        if (oldFile.existsSync()) oldFile.deleteSync();
+      }
+      setState(() => _photoPath = null);
+      return;
+    }
+
+    final source =
+        choice == 'camera' ? ImageSource.camera : ImageSource.gallery;
+
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 600,
+        maxHeight: 600,
+        imageQuality: 80,
+      );
+      if (picked == null) return;
+
+      // Copy to app documents directory for persistence
+      final appDir = await getApplicationDocumentsDirectory();
+      final photosDir = Directory(p.join(appDir.path, 'profile_photos'));
+      if (!photosDir.existsSync()) {
+        photosDir.createSync(recursive: true);
+      }
+
+      final ext = p.extension(picked.path).isEmpty
+          ? '.jpg'
+          : p.extension(picked.path);
+      final fileName = '${_uuid.v4()}$ext';
+      final destPath = p.join(photosDir.path, fileName);
+      await File(picked.path).copy(destPath);
+
+      // Delete old photo file if replacing
+      if (_photoPath != null) {
+        final oldFile = File(_photoPath!);
+        if (oldFile.existsSync()) oldFile.deleteSync();
+      }
+
+      setState(() => _photoPath = destPath);
+    } catch (e) {
+      if (mounted) AppSnackBar.error(context, 'Could not load photo');
+    }
+  }
+
   void _save() {
     if (!_formKey.currentState!.validate()) return;
     if (_dateOfBirth == null) {
@@ -139,7 +229,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       primaryLanguage:
           _langCtrl.text.trim().isEmpty ? null : _langCtrl.text.trim(),
-      photoPath: existing?.photoPath,
+      photoPath: _photoPath,
       allergies: List.unmodifiable(_allergies),
       medications: List.unmodifiable(_medications),
       conditions: List.unmodifiable(_conditions),
@@ -250,38 +340,67 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               ),
             ),
             Center(
-              child: Hero(
-                tag: 'profile_image_${widget.profile?.id ?? 'new'}',
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: colors.cardBorder,
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+              child: GestureDetector(
+                onTap: _pickPhoto,
+                child: Hero(
+                  tag: 'profile_image_${widget.profile?.id ?? 'new'}',
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colors.cardBorder,
+                        width: 2,
                       ),
-                    ],
-                  ),
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: colors.inputFill,
-                    backgroundImage: widget.profile?.photoPath != null
-                        ? FileImage(File(widget.profile!.photoPath!))
-                        : null,
-                    child: widget.profile?.photoPath == null
-                        ? Icon(
-                            Icons.person_add_rounded,
-                            size: 40,
-                            color: cs.primary.withValues(alpha: 0.5),
-                          )
-                        : null,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: colors.inputFill,
+                          backgroundImage: _photoPath != null
+                              ? FileImage(File(_photoPath!))
+                              : null,
+                          child: _photoPath == null
+                              ? Icon(
+                                  Icons.person_add_rounded,
+                                  size: 40,
+                                  color: cs.primary.withValues(alpha: 0.5),
+                                )
+                              : null,
+                        ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: cs.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: cs.surface,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              _photoPath != null
+                                  ? Icons.edit_rounded
+                                  : Icons.camera_alt_rounded,
+                              size: 14,
+                              color: cs.onPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
