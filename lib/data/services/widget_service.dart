@@ -27,7 +27,7 @@ class WidgetService {
   /// Renders the QR code for [profile] as a bitmap, saves all widget data,
   /// and triggers a widget refresh on both platforms.
   Future<void> updateWithProfile(Profile profile) async {
-    final qrData = _generateQrData(profile);
+    final qrData = _generateQrData(profile).data;
 
     // Persist text fields readable by native widget code.
     await HomeWidget.saveWidgetData('profile_name', profile.name);

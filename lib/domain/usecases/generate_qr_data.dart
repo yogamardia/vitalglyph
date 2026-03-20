@@ -1,7 +1,25 @@
+import 'dart:convert';
+
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 
+/// Result of QR data generation, including whether data was truncated to fit.
+class QrPayload {
+  /// The QR payload string.
+  final String data;
+
+  /// Whether the payload was truncated to fit within QR capacity limits.
+  final bool truncated;
+
+  const QrPayload(this.data, {this.truncated = false});
+}
+
 /// Encodes a [Profile] into a compact, versioned QR payload string.
+///
+/// If the full payload exceeds [maxPayloadBytes], data is progressively
+/// truncated (allergy reactions → medication details → low-priority
+/// contacts → conditions) until it fits. The [QrPayload.truncated] flag
+/// indicates when this has occurred.
 ///
 /// Format (newlines added for readability — actual payload is one line):
 /// ```
@@ -19,9 +37,69 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 class GenerateQrData {
   final HmacService _hmac;
 
+  /// Maximum QR payload size in bytes. QR Version 40 with Error Correction
+  /// Level L supports 2,953 bytes; we use 2,900 as a safety margin.
+  static const maxPayloadBytes = 2900;
+
   GenerateQrData(this._hmac);
 
-  String call(Profile profile) {
+  QrPayload call(Profile profile) {
+    // Try full payload first.
+    var payload = _buildPayload(profile);
+    if (_fits(payload)) return QrPayload(payload);
+
+    // Progressive truncation — drop least-critical data first.
+
+    // 1. Drop allergy reactions (keep name + severity).
+    payload = _buildPayload(profile, includeReactions: false);
+    if (_fits(payload)) return QrPayload(payload, truncated: true);
+
+    // 2. Drop medication dosage/frequency (keep name).
+    payload = _buildPayload(
+      profile,
+      includeReactions: false,
+      includeMedDetails: false,
+    );
+    if (_fits(payload)) return QrPayload(payload, truncated: true);
+
+    // 3. Drop emergency contacts one at a time, lowest priority first.
+    final contactCount = profile.emergencyContacts.length;
+    for (var max = contactCount - 1; max >= 0; max--) {
+      payload = _buildPayload(
+        profile,
+        includeReactions: false,
+        includeMedDetails: false,
+        maxContacts: max,
+      );
+      if (_fits(payload)) return QrPayload(payload, truncated: true);
+    }
+
+    // 4. Drop conditions one at a time.
+    final conditionCount = profile.conditions.length;
+    for (var max = conditionCount - 1; max >= 0; max--) {
+      payload = _buildPayload(
+        profile,
+        includeReactions: false,
+        includeMedDetails: false,
+        maxContacts: 0,
+        maxConditions: max,
+      );
+      if (_fits(payload)) return QrPayload(payload, truncated: true);
+    }
+
+    // Even the minimal payload doesn't fit — return it anyway.
+    return QrPayload(payload, truncated: true);
+  }
+
+  bool _fits(String payload) => utf8.encode(payload).length <= maxPayloadBytes;
+
+  String _buildPayload(
+    Profile profile, {
+    bool includeReactions = true,
+    bool includeMedDetails = true,
+    int? maxContacts,
+    int? maxConditions,
+  }) {
     final buffer = StringBuffer('MEDID|v1');
 
     buffer.write('|N:${_enc(profile.name)}');
@@ -43,35 +121,44 @@ class GenerateQrData {
       buffer.write('|WT:${profile.weightKg}');
     }
 
-    // Allergies: name/severity/reaction
+    // Allergies: name/severity[/reaction]
     if (profile.allergies.isNotEmpty) {
       final algParts = profile.allergies.map((a) {
-        final reaction = a.reaction != null ? _enc(a.reaction!) : '';
+        final reaction =
+            includeReactions && a.reaction != null ? _enc(a.reaction!) : '';
         return '${_enc(a.name)}/${_enc(a.severity.name)}/$reaction';
       }).join(',');
       buffer.write('|ALG:$algParts');
     }
 
-    // Medications: name/dosage/frequency
+    // Medications: name[/dosage/frequency]
     if (profile.medications.isNotEmpty) {
       final medParts = profile.medications.map((m) {
-        final dosage = m.dosage != null ? _enc(m.dosage!) : '';
-        final freq = m.frequency != null ? _enc(m.frequency!) : '';
+        final dosage =
+            includeMedDetails && m.dosage != null ? _enc(m.dosage!) : '';
+        final freq =
+            includeMedDetails && m.frequency != null ? _enc(m.frequency!) : '';
         return '${_enc(m.name)}/$dosage/$freq';
       }).join(',');
       buffer.write('|MED:$medParts');
     }
 
-    // Conditions: name only
-    if (profile.conditions.isNotEmpty) {
-      final conParts =
-          profile.conditions.map((c) => _enc(c.name)).join(',');
+    // Conditions (limited if truncating)
+    var conditions = profile.conditions;
+    if (maxConditions != null) {
+      conditions = conditions.take(maxConditions).toList();
+    }
+    if (conditions.isNotEmpty) {
+      final conParts = conditions.map((c) => _enc(c.name)).join(',');
       buffer.write('|CON:$conParts');
     }
 
-    // Emergency contacts: name/phone/relationship (ordered by priority)
-    final sortedContacts = [...profile.emergencyContacts]
+    // Emergency contacts: ordered by priority, limited if truncating
+    var sortedContacts = [...profile.emergencyContacts]
       ..sort((a, b) => a.priority.compareTo(b.priority));
+    if (maxContacts != null) {
+      sortedContacts = sortedContacts.take(maxContacts).toList();
+    }
     if (sortedContacts.isNotEmpty) {
       final ecParts = sortedContacts.map((ec) {
         final rel = ec.relationship != null ? _enc(ec.relationship!) : '';

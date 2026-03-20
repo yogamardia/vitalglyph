@@ -55,39 +55,43 @@ void main() {
 
   group('GenerateQrData', () {
     test('output starts with MEDID|v1', () {
-      final qr = generate(makeProfile());
-      expect(qr.startsWith('MEDID|v1'), isTrue);
+      final result = generate(makeProfile());
+      expect(result.data.startsWith('MEDID|v1'), isTrue);
+      expect(result.truncated, isFalse);
     });
 
     test('output contains name field', () {
-      final qr = generate(makeProfile(name: 'Bob Jones'));
-      expect(qr.contains('N:Bob Jones'), isTrue);
+      final result = generate(makeProfile(name: 'Bob Jones'));
+      expect(result.data.contains('N:Bob Jones'), isTrue);
     });
 
     test('output contains blood type in display format', () {
-      final qr = generate(makeProfile(bloodType: BloodType.abNeg));
-      expect(qr.contains('BT:AB-'), isTrue);
+      final result = generate(makeProfile(bloodType: BloodType.abNeg));
+      expect(result.data.contains('BT:AB-'), isTrue);
     });
 
     test('output ends with SIG field', () {
-      final qr = generate(makeProfile());
-      expect(qr.contains('|SIG:'), isTrue);
+      final result = generate(makeProfile());
+      expect(result.data.contains('|SIG:'), isTrue);
     });
 
     test('organ donor flag encoded as Y/N', () {
-      expect(generate(makeProfile(isOrganDonor: true)).contains('DONOR:Y'),
-          isTrue);
-      expect(generate(makeProfile(isOrganDonor: false)).contains('DONOR:N'),
-          isTrue);
+      expect(
+        generate(makeProfile(isOrganDonor: true)).data.contains('DONOR:Y'),
+        isTrue,
+      );
+      expect(
+        generate(makeProfile(isOrganDonor: false)).data.contains('DONOR:N'),
+        isTrue,
+      );
     });
 
     test('special chars in name are percent-encoded', () {
-      final qr = generate(makeProfile(name: 'O\'Brien, Jr.'));
-      // commas must be encoded
-      expect(qr.contains('N:O\'Brien%2C Jr.'), isTrue);
+      final result = generate(makeProfile(name: 'O\'Brien, Jr.'));
+      expect(result.data.contains('N:O\'Brien%2C Jr.'), isTrue);
     });
 
-    test('QR payload fits within 2953 bytes for typical profile', () {
+    test('typical profile fits within QR capacity without truncation', () {
       final allergy = Allergy(
         id: 'a1',
         name: 'Penicillin',
@@ -109,15 +113,125 @@ void main() {
         priority: 1,
       );
 
-      final profile = makeProfile(
+      final result = generate(makeProfile(
         allergies: [allergy],
         medications: [med],
         conditions: [cond],
         emergencyContacts: [contact],
+      ));
+
+      expect(result.data.length, lessThanOrEqualTo(2953));
+      expect(result.truncated, isFalse);
+    });
+
+    test('oversized profile is truncated to fit QR capacity', () {
+      final allergies = List.generate(
+        20,
+        (i) => Allergy(
+          id: 'a$i',
+          name: 'Allergy Number $i With A Very Long Name',
+          severity: AllergySeverity.severe,
+          reaction: 'Very severe reaction requiring immediate treatment $i',
+        ),
+      );
+      final medications = List.generate(
+        20,
+        (i) => Medication(
+          id: 'm$i',
+          name: 'Medication Number $i With Extended Name',
+          dosage: '${(i + 1) * 100}mg extended release',
+          frequency: 'Every $i hours with food and water',
+        ),
+      );
+      final conditions = List.generate(
+        15,
+        (i) => MedicalCondition(
+          id: 'c$i',
+          name: 'Medical Condition Number $i Description',
+        ),
+      );
+      final contacts = List.generate(
+        10,
+        (i) => EmergencyContact(
+          id: 'ec$i',
+          name: 'Emergency Contact Person $i',
+          phone: '+1555000${i.toString().padLeft(4, '0')}',
+          relationship: 'Family Member',
+          priority: i + 1,
+        ),
       );
 
-      final qr = generate(profile);
-      expect(qr.length, lessThanOrEqualTo(2953));
+      final result = generate(makeProfile(
+        name: 'Patient With A Reasonably Long Full Name',
+        allergies: allergies,
+        medications: medications,
+        conditions: conditions,
+        emergencyContacts: contacts,
+      ));
+
+      expect(result.truncated, isTrue);
+      expect(
+        result.data.length,
+        lessThanOrEqualTo(GenerateQrData.maxPayloadBytes),
+      );
+      // Core identity fields are always preserved
+      expect(
+        result.data.contains('N:Patient With A Reasonably Long Full Name'),
+        isTrue,
+      );
+      expect(result.data.startsWith('MEDID|v1'), isTrue);
+      expect(result.data.contains('|SIG:'), isTrue);
+    });
+
+    test('truncated payload is still parseable', () {
+      final allergies = List.generate(
+        25,
+        (i) => Allergy(
+          id: 'a$i',
+          name: 'Allergy$i',
+          severity: AllergySeverity.moderate,
+          reaction: 'A moderately long reaction description for allergy $i',
+        ),
+      );
+      final medications = List.generate(
+        25,
+        (i) => Medication(
+          id: 'm$i',
+          name: 'Medication$i',
+          dosage: '${(i + 1) * 50}mg',
+          frequency: 'Every $i hours',
+        ),
+      );
+      final contacts = List.generate(
+        10,
+        (i) => EmergencyContact(
+          id: 'ec$i',
+          name: 'Contact$i',
+          phone: '+1555${i.toString().padLeft(7, '0')}',
+          relationship: 'Family',
+          priority: i + 1,
+        ),
+      );
+
+      final result = generate(makeProfile(
+        allergies: allergies,
+        medications: medications,
+        emergencyContacts: contacts,
+      ));
+
+      // Payload should still parse successfully
+      final parsed = parse(result.data);
+      expect(parsed.isRight(), isTrue);
+      parsed.fold(
+        (_) => fail('Should parse'),
+        (scanned) {
+          expect(scanned.name, 'Alice Smith');
+          // Allergy names survive truncation (only reactions are dropped)
+          for (final a in scanned.allergies) {
+            expect(a.name, startsWith('Allergy'));
+          }
+        },
+      );
     });
   });
 
@@ -133,7 +247,7 @@ void main() {
     });
 
     test('parses name correctly', () {
-      final qr = generate(makeProfile(name: 'Test User'));
+      final qr = generate(makeProfile(name: 'Test User')).data;
       final result = parse(qr);
       expect(result.isRight(), isTrue);
       result.fold(
@@ -178,7 +292,7 @@ void main() {
         emergencyContacts: [contact],
       );
 
-      final qr = generate(profile);
+      final qr = generate(profile).data;
       final result = parse(qr);
 
       result.fold(
@@ -212,7 +326,7 @@ void main() {
     });
 
     test('signatureValid is false when payload is tampered', () {
-      final qr = generate(makeProfile(name: 'Alice'));
+      final qr = generate(makeProfile(name: 'Alice')).data;
       // Tamper by replacing name in the raw string
       final tampered = qr.replaceFirst('N:Alice', 'N:Mallory');
       final result = parse(tampered);
@@ -227,7 +341,7 @@ void main() {
 
     test('special chars in name roundtrip correctly', () {
       final profile = makeProfile(name: "O'Brien, Jr.");
-      final qr = generate(profile);
+      final qr = generate(profile).data;
       final result = parse(qr);
       result.fold(
         (f) => fail('Expected Right: $f'),
@@ -245,7 +359,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
       );
-      final result = parse(generate(profile));
+      final result = parse(generate(profile).data);
       result.fold(
         (f) => fail('Expected Right: $f'),
         (scanned) {

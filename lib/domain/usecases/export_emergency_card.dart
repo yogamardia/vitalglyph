@@ -20,7 +20,7 @@ class ExportEmergencyCard {
 
   Future<Either<Failure, Uint8List>> call(Profile profile) async {
     try {
-      final qrData = _generateQrData(profile);
+      final qrData = _generateQrData(profile).data;
       final doc = pw.Document(
         creator: 'VitalGlyph',
         author: profile.name,

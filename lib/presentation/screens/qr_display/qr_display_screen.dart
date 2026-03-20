@@ -25,11 +25,14 @@ class QrDisplayScreen extends StatefulWidget {
 
 class _QrDisplayScreenState extends State<QrDisplayScreen> {
   late final String _qrData;
+  late final bool _truncated;
 
   @override
   void initState() {
     super.initState();
-    _qrData = sl<GenerateQrData>()(widget.profile);
+    final payload = sl<GenerateQrData>()(widget.profile);
+    _qrData = payload.data;
+    _truncated = payload.truncated;
     WakelockPlus.enable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     // Disable screen protection so the QR code can be scanned or screenshotted for emergency use.
@@ -148,6 +151,35 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                   ],
                 ),
               ),
+            if (_truncated) ...[
+              const SizedBox(height: 12),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info_outline_rounded, size: 16, color: Colors.amber[800]),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Some details were omitted to fit QR capacity',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 48),
             _CloseButton(),
             const SizedBox(height: 24),
