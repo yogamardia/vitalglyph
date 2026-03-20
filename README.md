@@ -176,4 +176,4 @@ VitalGlyph makes **zero network requests**. There are no analytics, no accounts,
 
 ## License
 
-MIT
+MPL-2.0
