@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
@@ -122,19 +123,19 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     // Use String result: 'camera', 'gallery', 'remove', or null (dismissed)
     final choice = await AppBottomSheet.show<String>(
       context,
-      title: 'Profile Photo',
+      title: context.l10n.profileEditorPhotoTitle,
       child: Column(
         children: [
           BottomSheetOption(
             value: 'camera',
-            label: 'Take Photo',
+            label: context.l10n.profileEditorTakePhoto,
             icon: Icons.camera_alt_rounded,
             onTap: (_) {},
           ),
           const SizedBox(height: AppSpacing.sm),
           BottomSheetOption(
             value: 'gallery',
-            label: 'Choose from Gallery',
+            label: context.l10n.profileEditorChooseGallery,
             icon: Icons.photo_library_rounded,
             onTap: (_) {},
           ),
@@ -142,7 +143,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             const SizedBox(height: AppSpacing.sm),
             BottomSheetOption(
               value: 'remove',
-              label: 'Remove Photo',
+              label: context.l10n.profileEditorRemovePhoto,
               icon: Icons.delete_rounded,
               isDestructive: true,
               onTap: (_) {},
@@ -198,14 +199,14 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
       setState(() => _photoPath = destPath);
     } catch (e) {
-      if (mounted) AppSnackBar.error(context, 'Could not load photo');
+      if (mounted) AppSnackBar.error(context, context.l10n.profileEditorPhotoError);
     }
   }
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
     if (_dateOfBirth == null) {
-      AppSnackBar.warning(context, 'Please select a date of birth');
+      AppSnackBar.warning(context, context.l10n.profileEditorDobRequired);
       return;
     }
     setState(() => _isSaving = true);
@@ -289,7 +290,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           child: AppButton.primary(
             onPressed: _isSaving ? null : _save,
             isLoading: _isSaving,
-            label: _isEditing ? 'Update Profile' : 'Save Profile',
+            label: _isEditing ? context.l10n.profileEditorUpdateProfile : context.l10n.profileEditorSaveProfile,
             icon: Icons.check_rounded,
             fullWidth: true,
           ),
@@ -317,7 +318,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         ],
         centerTitle: true,
         title: Text(
-          _isEditing ? 'Edit Profile' : 'New Profile',
+          _isEditing ? context.l10n.profileEditorTitleEdit : context.l10n.profileEditorTitleNew,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w900,
             color: cs.onSurface,
@@ -413,28 +414,28 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
   Widget _buildBasicInfoSection(ThemeData theme) {
     return AppSectionCard(
-      title: 'Basic Information',
+      title: context.l10n.profileEditorBasicInfo,
       icon: Icons.person_rounded,
       children: [
         _CustomTextField(
           controller: _nameCtrl,
-          label: 'Full Name',
+          label: context.l10n.profileEditorFullName,
           prefixIcon: Icons.badge_rounded,
           isRequired: true,
           textCapitalization: TextCapitalization.words,
           validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+              (v == null || v.trim().isEmpty) ? context.l10n.profileEditorNameRequired : null,
         ),
         const SizedBox(height: 20),
         _CustomTextField(
           controller: _dobCtrl,
-          label: 'Date of Birth',
+          label: context.l10n.profileEditorDob,
           prefixIcon: Icons.calendar_today_rounded,
           isRequired: true,
           readOnly: true,
           onTap: _pickDateOfBirth,
           validator: (_) =>
-              _dateOfBirth == null ? 'Date of birth is required' : null,
+              _dateOfBirth == null ? context.l10n.profileEditorDobValidation : null,
         ),
         const SizedBox(height: 20),
         Row(
@@ -442,10 +443,10 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             Expanded(
               child: _CustomDropdown<BloodType?>(
                 value: _bloodType,
-                label: 'Blood Type',
+                label: context.l10n.profileEditorBloodType,
                 prefixIcon: Icons.water_drop_rounded,
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('Unknown')),
+                  DropdownMenuItem(value: null, child: Text(context.l10n.profileEditorBloodTypeUnknown)),
                   ...BloodType.values.map(
                     (b) => DropdownMenuItem(
                       value: b,
@@ -460,11 +461,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             Expanded(
               child: _CustomDropdown<BiologicalSex?>(
                 value: _biologicalSex,
-                label: 'Sex',
+                label: context.l10n.profileEditorSex,
                 prefixIcon: Icons.people_rounded,
                 items: [
-                  const DropdownMenuItem(
-                      value: null, child: Text('Not set')),
+                  DropdownMenuItem(
+                      value: null, child: Text(context.l10n.profileEditorSexNotSet)),
                   ...BiologicalSex.values.map(
                     (s) => DropdownMenuItem(
                       value: s,
@@ -483,7 +484,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             Expanded(
               child: _CustomTextField(
                 controller: _heightCtrl,
-                label: 'Height (cm)',
+                label: context.l10n.profileEditorHeight,
                 prefixIcon: Icons.height_rounded,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -493,7 +494,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             Expanded(
               child: _CustomTextField(
                 controller: _weightCtrl,
-                label: 'Weight (kg)',
+                label: context.l10n.profileEditorWeight,
                 prefixIcon: Icons.monitor_weight_rounded,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
@@ -517,7 +518,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Organ Donor',
+                context.l10n.profileEditorOrganDonor,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -532,7 +533,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         const SizedBox(height: 8),
         _CustomTextField(
           controller: _langCtrl,
-          label: 'Primary Language',
+          label: context.l10n.profileEditorPrimaryLanguage,
           prefixIcon: Icons.translate_rounded,
           textCapitalization: TextCapitalization.words,
         ),
@@ -542,11 +543,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
   Widget _buildMedicalSection(ThemeData theme) {
     return AppSectionCard(
-      title: 'Medical Details',
+      title: context.l10n.profileEditorMedicalDetails,
       icon: Icons.health_and_safety_rounded,
       children: [
         _buildSubEntitySection<Allergy>(
-          title: 'Allergies',
+          title: context.l10n.profileEditorAllergies,
           items: _allergies,
           itemBuilder: _allergyTile,
           onAdd: () async {
@@ -559,7 +560,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           child: Divider(height: 1),
         ),
         _buildSubEntitySection<Medication>(
-          title: 'Medications',
+          title: context.l10n.profileEditorMedications,
           items: _medications,
           itemBuilder: _medicationTile,
           onAdd: () async {
@@ -572,7 +573,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           child: Divider(height: 1),
         ),
         _buildSubEntitySection<MedicalCondition>(
-          title: 'Medical Conditions',
+          title: context.l10n.profileEditorMedicalConditions,
           items: _conditions,
           itemBuilder: _conditionTile,
           onAdd: () async {
@@ -586,7 +587,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         ),
         _CustomTextField(
           controller: _notesCtrl,
-          label: 'Medical Notes',
+          label: context.l10n.profileEditorMedicalNotes,
           prefixIcon: Icons.notes_rounded,
           maxLines: 4,
           minLines: 2,
@@ -598,11 +599,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
   Widget _buildEmergencySection(ThemeData theme) {
     return AppSectionCard(
-      title: 'Emergency Contacts',
+      title: context.l10n.profileEditorEmergencyContacts,
       icon: Icons.contact_emergency_rounded,
       children: [
         _buildSubEntitySection<EmergencyContact>(
-          title: 'Contacts',
+          title: context.l10n.profileEditorContacts,
           items: _contacts,
           itemBuilder: _contactTile,
           onAdd: () async {
@@ -642,7 +643,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Text(
-              'No ${title.toLowerCase()} added yet.',
+              context.l10n.profileEditorNoItemsYet(title.toLowerCase()),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                 fontStyle: FontStyle.italic,
@@ -1017,7 +1018,7 @@ class _AddButton extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: onPressed,
       icon: const Icon(Icons.add_rounded, size: 16),
-      label: const Text('Add'),
+      label: Text(context.l10n.add),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(80, 32),
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1078,7 +1079,7 @@ class _AllergyDialogState extends State<_AllergyDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? 'Add Allergy' : 'Edit Allergy',
+                  widget.existing == null ? context.l10n.profileEditorAddAllergy : context.l10n.profileEditorEditAllergy,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -1086,16 +1087,16 @@ class _AllergyDialogState extends State<_AllergyDialog> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Allergen *'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorAllergen),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<AllergySeverity>(
                   initialValue: _severity,
-                  decoration: const InputDecoration(labelText: 'Severity'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorSeverity),
                   items: AllergySeverity.values
                       .map(
                         (s) => DropdownMenuItem(
@@ -1109,8 +1110,8 @@ class _AllergyDialogState extends State<_AllergyDialog> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _reactionCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Reaction (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorReaction,
                   ),
                   textCapitalization: TextCapitalization.sentences,
                 ),
@@ -1120,7 +1121,7 @@ class _AllergyDialogState extends State<_AllergyDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(context.l10n.cancel),
                     ),
                     const SizedBox(width: 12),
                     AppButton.primary(
@@ -1138,7 +1139,7 @@ class _AllergyDialogState extends State<_AllergyDialog> {
                           ),
                         );
                       },
-                      label: 'Save',
+                      label: context.l10n.save,
                     ),
                   ],
                 ),
@@ -1206,7 +1207,7 @@ class _MedicationDialogState extends State<_MedicationDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? 'Add Medication' : 'Edit Medication',
+                  widget.existing == null ? context.l10n.profileEditorAddMedication : context.l10n.profileEditorEditMedication,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -1214,34 +1215,34 @@ class _MedicationDialogState extends State<_MedicationDialog> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Medication Name *'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorMedicationName),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _dosageCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Dosage',
-                    hintText: 'e.g. 500mg',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorDosage,
+                    hintText: context.l10n.profileEditorDosageHint,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _freqCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Frequency',
-                    hintText: 'e.g. 2x daily',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorFrequency,
+                    hintText: context.l10n.profileEditorFrequencyHint,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _forCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Prescribed For',
-                    hintText: 'e.g. Hypertension',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorPrescribedFor,
+                    hintText: context.l10n.profileEditorPrescribedForHint,
                   ),
                   textCapitalization: TextCapitalization.sentences,
                 ),
@@ -1251,7 +1252,7 @@ class _MedicationDialogState extends State<_MedicationDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(context.l10n.cancel),
                     ),
                     const SizedBox(width: 12),
                     AppButton.primary(
@@ -1274,7 +1275,7 @@ class _MedicationDialogState extends State<_MedicationDialog> {
                           ),
                         );
                       },
-                      label: 'Save',
+                      label: context.l10n.save,
                     ),
                   ],
                 ),
@@ -1339,7 +1340,7 @@ class _ConditionDialogState extends State<_ConditionDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? 'Add Condition' : 'Edit Condition',
+                  widget.existing == null ? context.l10n.profileEditorAddCondition : context.l10n.profileEditorEditCondition,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -1347,24 +1348,24 @@ class _ConditionDialogState extends State<_ConditionDialog> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Condition Name *'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorConditionName),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _dateCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Diagnosed Date',
-                    hintText: 'e.g. 2020 or Jan 2020',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorDiagnosedDate,
+                    hintText: context.l10n.profileEditorDiagnosedDateHint,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _notesCtrl,
-                  decoration: const InputDecoration(labelText: 'Notes'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorNotes),
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: 2,
                 ),
@@ -1374,7 +1375,7 @@ class _ConditionDialogState extends State<_ConditionDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(context.l10n.cancel),
                     ),
                     const SizedBox(width: 12),
                     AppButton.primary(
@@ -1394,7 +1395,7 @@ class _ConditionDialogState extends State<_ConditionDialog> {
                           ),
                         );
                       },
-                      label: 'Save',
+                      label: context.l10n.save,
                     ),
                   ],
                 ),
@@ -1459,7 +1460,7 @@ class _ContactDialogState extends State<_ContactDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? 'Add Emergency Contact' : 'Edit Contact',
+                  widget.existing == null ? context.l10n.profileEditorAddContact : context.l10n.profileEditorEditContact,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -1467,26 +1468,26 @@ class _ContactDialogState extends State<_ContactDialog> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Name *'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorContactName),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneCtrl,
-                  decoration: const InputDecoration(labelText: 'Phone *'),
+                  decoration: InputDecoration(labelText: context.l10n.profileEditorContactPhone),
                   keyboardType: TextInputType.phone,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _relCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Relationship',
-                    hintText: 'e.g. Spouse, Parent',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorRelationship,
+                    hintText: context.l10n.profileEditorRelationshipHint,
                   ),
                   textCapitalization: TextCapitalization.words,
                 ),
@@ -1496,7 +1497,7 @@ class _ContactDialogState extends State<_ContactDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(context.l10n.cancel),
                     ),
                     const SizedBox(width: 12),
                     AppButton.primary(
@@ -1515,7 +1516,7 @@ class _ContactDialogState extends State<_ContactDialog> {
                           ),
                         );
                       },
-                      label: 'Save',
+                      label: context.l10n.save,
                     ),
                   ],
                 ),

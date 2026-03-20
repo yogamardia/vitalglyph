@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/domain/usecases/parse_qr_data.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
@@ -34,7 +35,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     if (raw == null) return;
 
     if (!raw.startsWith('MEDID|')) {
-      _showError('This QR code is not a Medical ID.');
+      _showError(context.l10n.qrScannerNotMedicalId);
       return;
     }
 
@@ -69,7 +70,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Scan Medical ID'),
+        title: Text(context.l10n.qrScannerTitle),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -113,14 +114,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 borderColor: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(30),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.qr_code_rounded, color: Colors.white, size: 18),
-                    SizedBox(width: 10),
+                    const Icon(Icons.qr_code_rounded, color: Colors.white, size: 18),
+                    const SizedBox(width: 10),
                     Text(
-                      'Point at a Medical ID QR code',
-                      style: TextStyle(
+                      context.l10n.qrScannerInstruction,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -140,15 +141,15 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 backgroundColor: Colors.black.withValues(alpha: 0.4),
                 borderColor: Colors.transparent,
                 borderRadius: BorderRadius.zero,
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(color: Colors.white),
-                      SizedBox(height: 24),
+                      const CircularProgressIndicator(color: Colors.white),
+                      const SizedBox(height: 24),
                       Text(
-                        'Processing ID...',
-                        style: TextStyle(
+                        context.l10n.qrScannerProcessing,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
@@ -10,8 +11,8 @@ class AppDialog extends StatelessWidget {
   final String title;
   final String? message;
   final Widget? content;
-  final String confirmLabel;
-  final String cancelLabel;
+  final String? confirmLabel;
+  final String? cancelLabel;
   final bool isDestructive;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
@@ -21,8 +22,8 @@ class AppDialog extends StatelessWidget {
     required this.title,
     this.message,
     this.content,
-    this.confirmLabel = 'Confirm',
-    this.cancelLabel = 'Cancel',
+    this.confirmLabel,
+    this.cancelLabel,
     this.isDestructive = false,
     this.onConfirm,
     this.onCancel,
@@ -34,8 +35,8 @@ class AppDialog extends StatelessWidget {
     required String title,
     String? message,
     Widget? content,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
   }) {
     return showDialog<bool>(
       context: context,
@@ -57,8 +58,8 @@ class AppDialog extends StatelessWidget {
     BuildContext context, {
     required String title,
     String? message,
-    String confirmLabel = 'Delete',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
   }) {
     return showDialog<bool>(
       context: context,
@@ -80,6 +81,10 @@ class AppDialog extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
+    final l10n = context.l10n;
+    final resolvedConfirmLabel = confirmLabel ??
+        (isDestructive ? l10n.dialogDelete : l10n.dialogConfirm);
+    final resolvedCancelLabel = cancelLabel ?? l10n.dialogCancel;
 
     return Dialog(
       elevation: 0,
@@ -132,11 +137,11 @@ class AppDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: onCancel ?? () => Navigator.of(context).pop(false),
-                  child: Text(cancelLabel),
+                  child: Text(resolvedCancelLabel),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 AppButton.primary(
-                  label: confirmLabel,
+                  label: resolvedConfirmLabel,
                   onPressed: onConfirm ?? () => Navigator.of(context).pop(true),
                 ),
               ],

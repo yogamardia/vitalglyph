@@ -6,6 +6,7 @@ import 'package:vitalglyph/core/services/app_preferences.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
@@ -21,35 +22,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   double _scrollOffset = 0;
   int _currentPage = 0;
 
-  static const _pages = [
-    _PageData(
-      icon: Icons.medical_information_rounded,
-      companions: [Icons.water_drop_rounded, Icons.medication_rounded],
-      title: 'Your Medical ID, Always Ready',
-      body:
-          'Store critical medical information — blood type, allergies, medications, and emergency contacts — in one secure place.',
-      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
-    ),
-    _PageData(
-      icon: Icons.qr_code_scanner_rounded,
-      companions: [Icons.phone_iphone_rounded, Icons.local_hospital_rounded],
-      title: 'Instant Access via QR Code',
-      body:
-          'First responders can scan your QR code to access your medical information in seconds, even without internet.',
-      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
-    ),
-    _PageData(
-      icon: Icons.shield_rounded,
-      companions: [Icons.lock_rounded, Icons.wifi_off_rounded],
-      title: 'Private & Offline by Design',
-      body:
-          'All data stays on your device. Nothing is sent to servers. You control who sees your information.',
-      gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-      darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
-    ),
-  ];
+  List<_PageData> _getPages(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      _PageData(
+        icon: Icons.medical_information_rounded,
+        companions: [Icons.water_drop_rounded, Icons.medication_rounded],
+        title: l10n.onboardingTitle1,
+        body: l10n.onboardingBody1,
+        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+      ),
+      _PageData(
+        icon: Icons.qr_code_scanner_rounded,
+        companions: [Icons.phone_iphone_rounded, Icons.local_hospital_rounded],
+        title: l10n.onboardingTitle2,
+        body: l10n.onboardingBody2,
+        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+      ),
+      _PageData(
+        icon: Icons.shield_rounded,
+        companions: [Icons.lock_rounded, Icons.wifi_off_rounded],
+        title: l10n.onboardingTitle3,
+        body: l10n.onboardingBody3,
+        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -74,16 +75,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = _getPages(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final isLast = _currentPage == _pages.length - 1;
+    final isLast = _currentPage == pages.length - 1;
 
     return Scaffold(
       body: Stack(
         children: [
           // Background Gradients
-          for (int i = 0; i < _pages.length; i++)
+          for (int i = 0; i < pages.length; i++)
             Opacity(
               opacity: (1.0 - (_scrollOffset - i).abs()).clamp(0.0, 1.0),
               child: Container(
@@ -91,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: isDark ? _pages[i].darkGradient : _pages[i].gradient,
+                    colors: isDark ? pages[i].darkGradient : pages[i].gradient,
                   ),
                 ),
               ),
@@ -111,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: TextButton(
                       onPressed: _finish,
                       child: Text(
-                        'Skip',
+                        context.l10n.onboardingSkip,
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontWeight: FontWeight.w700,
@@ -125,19 +127,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Expanded(
                   child: PageView.builder(
                     controller: _controller,
-                    itemCount: _pages.length,
+                    itemCount: pages.length,
                     onPageChanged: (i) {
                       HapticFeedback.selectionClick();
                       setState(() => _currentPage = i);
                     },
-                    itemBuilder: (context, i) => _OnboardingPageView(data: _pages[i]),
+                    itemBuilder: (context, i) => _OnboardingPageView(data: pages[i]),
                   ),
                 ),
 
                 // Premium page indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_pages.length, (i) {
+                  children: List.generate(pages.length, (i) {
                     final active = _currentPage == i;
                     return AnimatedContainer(
                       duration: AppDuration.medium,
@@ -173,13 +175,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: isLast
                         ? AppButton.primary(
                             key: const ValueKey('get_started'),
-                            label: 'Get Started',
+                            label: context.l10n.onboardingGetStarted,
                             onPressed: _finish,
                             fullWidth: true,
                           )
                         : AppButton.primary(
                             key: const ValueKey('next'),
-                            label: 'Next',
+                            label: context.l10n.onboardingNext,
                             onPressed: () {
                               _controller.nextPage(
                                 duration: const Duration(milliseconds: 600),

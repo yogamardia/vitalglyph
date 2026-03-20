@@ -12,6 +12,7 @@ import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 import 'package:vitalglyph/presentation/widgets/profile_card.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'VITALGLYPH',
+                        context.l10n.brandName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelSmall?.copyWith(
@@ -109,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
-                        'Medical ID',
+                        context.l10n.appTitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall?.copyWith(
@@ -255,20 +256,20 @@ class _ModernBottomNavBar extends StatelessWidget {
             children: [
               _NavBarItem(
                 icon: Icons.qr_code_scanner_rounded,
-                label: 'Scan',
+                label: context.l10n.homeScan,
                 onTap: () => onTap(0),
                 cs: cs,
               ),
               _NavBarItem(
                 icon: Icons.add_rounded,
-                label: 'New Profile',
+                label: context.l10n.homeNewProfile,
                 onTap: () => onTap(1),
                 cs: cs,
                 isAction: true,
               ),
               _NavBarItem(
                 icon: Icons.settings_rounded,
-                label: 'Settings',
+                label: context.l10n.homeSettings,
                 onTap: () => onTap(2),
                 cs: cs,
               ),
@@ -526,7 +527,7 @@ class _ErrorState extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                label: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -652,7 +653,7 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
           ),
           const SizedBox(height: AppSpacing.xxl),
           Text(
-            'Create Your First Profile',
+            context.l10n.homeEmptyTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -660,8 +661,7 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Store blood type, allergies, medications, and emergency contacts '
-            'so first responders can help you faster.',
+            context.l10n.homeEmptyDescription,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurfaceVariant.withValues(alpha: 0.8),
               height: 1.5,
@@ -672,7 +672,7 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
           FilledButton.icon(
             onPressed: widget.onAddProfile,
             icon: const Icon(Icons.person_add_rounded),
-            label: const Text('Add Profile'),
+            label: Text(context.l10n.homeAddProfile),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),

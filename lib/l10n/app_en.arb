@@ -1,0 +1,326 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Medical ID",
+  "brandName": "VITALGLYPH",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "delete": "Delete",
+  "save": "Save",
+  "retry": "Retry",
+  "add": "Add",
+  "required": "Required",
+
+  "homeScan": "Scan",
+  "homeNewProfile": "New Profile",
+  "homeSettings": "Settings",
+  "homeEmptyTitle": "Create Your First Profile",
+  "homeEmptyDescription": "Store blood type, allergies, medications, and emergency contacts so first responders can help you faster.",
+  "homeAddProfile": "Add Profile",
+
+  "settingsTitle": "Settings",
+  "settingsLoadError": "Failed to load settings. Tap to retry.",
+  "settingsPinUpdated": "PIN updated.",
+  "settingsRemovePinTitle": "Remove PIN?",
+  "settingsRemovePinMessage": "This will disable app lock. You can set a new PIN at any time.",
+  "settingsRemovePinAction": "Remove",
+  "settingsLockAfterTitle": "Lock After",
+  "settingsAppearance": "Appearance",
+  "settingsSecurity": "Security",
+  "settingsAppLock": "App Lock",
+  "settingsAppLockEnabled": "App is locked when you leave",
+  "settingsAppLockDisabled": "Anyone can open the app",
+  "settingsLockAfter": "Lock after",
+  "settingsChangePin": "Change PIN",
+  "settingsSetPin": "Set PIN",
+  "settingsRemovePin": "Remove PIN",
+  "settingsUseBiometrics": "Use Biometrics",
+  "settingsBiometricsDescription": "Face ID / fingerprint unlock",
+  "settingsData": "Data",
+  "settingsBackupRestore": "Backup & Restore",
+  "settingsBackupRestoreDescription": "Export or import an encrypted .medid file",
+  "settingsAbout": "About",
+  "settingsVersion": "Version",
+  "settingsPrivacy": "Privacy",
+  "settingsPrivacyDescription": "No data ever leaves your device.",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+
+  "lockScreenTitle": "Medical ID Locked",
+  "lockScreenEnterPin": "Enter your PIN to continue",
+  "lockScreenUseBiometrics": "Use biometrics to unlock",
+  "lockScreenTooManyAttempts": "Too many attempts. Try again in {duration}",
+  "@lockScreenTooManyAttempts": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+
+  "pinSetupTitle": "Security Setup",
+  "pinSetupCreate": "Create a PIN",
+  "pinSetupConfirm": "Confirm your PIN",
+  "pinSetupCreateMessage": "Choose a {length}-digit PIN to secure your medical information.",
+  "@pinSetupCreateMessage": {
+    "placeholders": {
+      "length": { "type": "int" }
+    }
+  },
+  "pinSetupConfirmMessage": "Re-enter your {length}-digit PIN to confirm it matches.",
+  "@pinSetupConfirmMessage": {
+    "placeholders": {
+      "length": { "type": "int" }
+    }
+  },
+  "pinSetupLengthError": "PIN must be {length} digits.",
+  "@pinSetupLengthError": {
+    "placeholders": {
+      "length": { "type": "int" }
+    }
+  },
+  "pinSetupMismatch": "PINs do not match. Start over.",
+  "pinSetupEnter": "Enter PIN",
+  "pinSetupReenter": "Re-enter PIN",
+  "pinSetupPlaceholder": "••••••",
+  "pinSetupConfirmSave": "Confirm & Save",
+  "pinSetupContinue": "Continue",
+
+  "backupTitle": "Backup & Restore",
+  "backupSelectFileWarning": "Please select a .medid backup file.",
+  "backupFileAccessError": "Could not access the selected file.",
+  "backupImportTitle": "Import backup?",
+  "backupImportMessage": "This will add profiles from the backup. Existing profiles with the same ID will be skipped.",
+  "backupImportAction": "Import",
+  "backupShareSuccess": "Backup shared successfully.",
+  "backupImportEmpty": "No profiles found in backup.",
+  "backupImportResult": "{imported} profile(s) imported.",
+  "@backupImportResult": {
+    "placeholders": {
+      "imported": { "type": "int" }
+    }
+  },
+  "backupImportResultWithSkipped": "{imported} profile(s) imported, {skipped} already existed (skipped).",
+  "@backupImportResultWithSkipped": {
+    "placeholders": {
+      "imported": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "backupExportSection": "Export",
+  "backupExportInfo": "Creates an encrypted .medid file containing all your profiles. You can save it to Files, AirDrop it, or share it anywhere.",
+  "backupPassphrase": "Backup passphrase",
+  "backupPassphraseRequired": "Enter a passphrase to protect the backup.",
+  "backupPassphraseMinLength": "Passphrase must be at least 6 characters.",
+  "backupConfirmPassphrase": "Confirm passphrase",
+  "backupPassphraseMismatch": "Passphrases do not match.",
+  "backupExportAction": "Export Backup",
+  "backupRestoreSection": "Restore",
+  "backupRestoreInfo": "Select a .medid backup file and enter its passphrase. Profiles that already exist on this device will be skipped.",
+  "backupRestorePassphraseRequired": "Enter the passphrase for this backup.",
+  "backupImportBackupAction": "Import Backup",
+  "backupPickFile": "Pick backup file (.medid)",
+
+  "onboardingTitle1": "Your Medical ID, Always Ready",
+  "onboardingBody1": "Store critical medical information — blood type, allergies, medications, and emergency contacts — in one secure place.",
+  "onboardingTitle2": "Instant Access via QR Code",
+  "onboardingBody2": "First responders can scan your QR code to access your medical information in seconds, even without internet.",
+  "onboardingTitle3": "Private & Offline by Design",
+  "onboardingBody3": "All data stays on your device. Nothing is sent to servers. You control who sees your information.",
+  "onboardingSkip": "Skip",
+  "onboardingGetStarted": "Get Started",
+  "onboardingNext": "Next",
+
+  "profileEditorTitleEdit": "Edit Profile",
+  "profileEditorTitleNew": "New Profile",
+  "profileEditorUpdateProfile": "Update Profile",
+  "profileEditorSaveProfile": "Save Profile",
+  "profileEditorPhotoTitle": "Profile Photo",
+  "profileEditorTakePhoto": "Take Photo",
+  "profileEditorChooseGallery": "Choose from Gallery",
+  "profileEditorRemovePhoto": "Remove Photo",
+  "profileEditorPhotoError": "Could not load photo",
+  "profileEditorDobRequired": "Please select a date of birth",
+  "profileEditorBasicInfo": "Basic Information",
+  "profileEditorFullName": "Full Name",
+  "profileEditorNameRequired": "Name is required",
+  "profileEditorDob": "Date of Birth",
+  "profileEditorDobValidation": "Date of birth is required",
+  "profileEditorBloodType": "Blood Type",
+  "profileEditorBloodTypeUnknown": "Unknown",
+  "profileEditorSex": "Sex",
+  "profileEditorSexNotSet": "Not set",
+  "profileEditorHeight": "Height (cm)",
+  "profileEditorWeight": "Weight (kg)",
+  "profileEditorOrganDonor": "Organ Donor",
+  "profileEditorPrimaryLanguage": "Primary Language",
+  "profileEditorMedicalDetails": "Medical Details",
+  "profileEditorAllergies": "Allergies",
+  "profileEditorMedications": "Medications",
+  "profileEditorMedicalConditions": "Medical Conditions",
+  "profileEditorMedicalNotes": "Medical Notes",
+  "profileEditorEmergencyContacts": "Emergency Contacts",
+  "profileEditorContacts": "Contacts",
+  "profileEditorNoItemsYet": "No {items} added yet.",
+  "@profileEditorNoItemsYet": {
+    "placeholders": {
+      "items": { "type": "String" }
+    }
+  },
+  "profileEditorAddAllergy": "Add Allergy",
+  "profileEditorEditAllergy": "Edit Allergy",
+  "profileEditorAllergen": "Allergen *",
+  "profileEditorSeverity": "Severity",
+  "profileEditorReaction": "Reaction (optional)",
+  "profileEditorAddMedication": "Add Medication",
+  "profileEditorEditMedication": "Edit Medication",
+  "profileEditorMedicationName": "Medication Name *",
+  "profileEditorDosage": "Dosage",
+  "profileEditorDosageHint": "e.g. 500mg",
+  "profileEditorFrequency": "Frequency",
+  "profileEditorFrequencyHint": "e.g. 2x daily",
+  "profileEditorPrescribedFor": "Prescribed For",
+  "profileEditorPrescribedForHint": "e.g. Hypertension",
+  "profileEditorAddCondition": "Add Condition",
+  "profileEditorEditCondition": "Edit Condition",
+  "profileEditorConditionName": "Condition Name *",
+  "profileEditorDiagnosedDate": "Diagnosed Date",
+  "profileEditorDiagnosedDateHint": "e.g. 2020 or Jan 2020",
+  "profileEditorNotes": "Notes",
+  "profileEditorAddContact": "Add Emergency Contact",
+  "profileEditorEditContact": "Edit Contact",
+  "profileEditorContactName": "Name *",
+  "profileEditorContactPhone": "Phone *",
+  "profileEditorRelationship": "Relationship",
+  "profileEditorRelationshipHint": "e.g. Spouse, Parent",
+
+  "emergencyCardTitle": "{name} — Emergency Card",
+  "@emergencyCardTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "emergencyCardGenerating": "Generating Emergency Card…",
+  "emergencyCardFailed": "Failed to generate card",
+  "emergencyCardTryAgain": "Try Again",
+
+  "qrDisplayEmergencyLabel": "EMERGENCY MEDICAL ID",
+  "qrDisplaySemanticLabel": "QR code with medical info for {name}",
+  "@qrDisplaySemanticLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "qrDisplayBloodType": "Type {type}",
+  "@qrDisplayBloodType": {
+    "placeholders": {
+      "type": { "type": "String" }
+    }
+  },
+  "qrDisplayAllergyCount": "{count} Allergies",
+  "@qrDisplayAllergyCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "qrDisplayTruncated": "Some details were omitted to fit QR capacity",
+
+  "qrScannerTitle": "Scan Medical ID",
+  "qrScannerNotMedicalId": "This QR code is not a Medical ID.",
+  "qrScannerInstruction": "Point at a Medical ID QR code",
+  "qrScannerProcessing": "Processing ID...",
+
+  "scannedProfileTitle": "Medical ID Result",
+  "scannedProfileAllergies": "ALLERGIES",
+  "scannedProfileMedications": "MEDICATIONS",
+  "scannedProfileConditions": "MEDICAL CONDITIONS",
+  "scannedProfileContacts": "EMERGENCY CONTACTS",
+  "scannedProfileTamperTitle": "FORMAT CHECK FAILED — VERIFY DATA WITH PATIENT",
+  "scannedProfileTamperMessage": "This QR may have been altered or generated by another app. Confirm all details directly.",
+  "scannedProfileBorn": "Born",
+  "scannedProfileBloodType": "Blood Type",
+  "scannedProfileSex": "Sex",
+  "scannedProfileHeight": "Height",
+  "scannedProfileWeight": "Weight",
+  "scannedProfileOrganDonor": "Organ Donor",
+  "scannedProfileYes": "YES",
+  "scannedProfileNo": "NO",
+
+  "profileCardEditProfile": "Edit Profile",
+  "profileCardEmergencyCard": "Emergency Card",
+  "profileCardDeleteProfile": "Delete Profile",
+  "profileCardDeleteTitle": "Delete profile?",
+  "profileCardDeleteMessage": "This will permanently delete {name}'s medical profile.",
+  "@profileCardDeleteMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "profileCardPrimary": "Primary",
+  "profileCardSecondary": "Secondary",
+  "profileCardCriticalAllergies": "Critical Allergies",
+  "profileCardViewQr": "View Emergency QR",
+  "profileCardEncrypted": "Database Encrypted",
+  "profileCardUpdated": "Updated {date}",
+  "@profileCardUpdated": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "profileCardToday": "today",
+  "profileCardYesterday": "yesterday",
+
+  "dialogConfirm": "Confirm",
+  "dialogCancel": "Cancel",
+  "dialogDelete": "Delete",
+
+  "allergySeverityMild": "Mild",
+  "allergySeverityModerate": "Moderate",
+  "allergySeveritySevere": "Severe",
+  "allergySeverityLifeThreatening": "Life-Threatening",
+
+  "lockTimeoutImmediately": "Immediately",
+  "lockTimeoutAfter1Min": "After 1 minute",
+  "lockTimeoutAfter5Min": "After 5 minutes",
+  "lockTimeoutNever": "Never",
+
+  "biologicalSexMale": "Male",
+  "biologicalSexFemale": "Female",
+  "biologicalSexOther": "Other",
+
+  "pdfMedicalId": "⚕  MEDICAL ID",
+  "pdfTitle": "Emergency Medical Card — {name}",
+  "@pdfTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pdfDobBlood": "DOB: {dob}   Blood: {bloodType}",
+  "@pdfDobBlood": {
+    "placeholders": {
+      "dob": { "type": "String" },
+      "bloodType": { "type": "String" }
+    }
+  },
+  "pdfSexDonor": "Sex: {sex}   Organ Donor: {donor}",
+  "@pdfSexDonor": {
+    "placeholders": {
+      "sex": { "type": "String" },
+      "donor": { "type": "String" }
+    }
+  },
+  "pdfDonorOnly": "Organ Donor: {donor}",
+  "@pdfDonorOnly": {
+    "placeholders": {
+      "donor": { "type": "String" }
+    }
+  },
+  "pdfAllergies": "⚠  ALLERGIES",
+  "pdfNoAllergies": "No known allergies",
+  "pdfConditions": "CONDITIONS",
+  "pdfMedications": "MEDICATIONS",
+  "pdfEmergencyContacts": "EMERGENCY CONTACTS",
+  "pdfNotes": "NOTES",
+  "pdfNoAdditionalInfo": "No additional medical information.",
+  "pdfYes": "YES",
+  "pdfNo": "NO"
+}

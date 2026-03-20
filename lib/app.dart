@@ -4,6 +4,7 @@ import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/core/services/screen_protection_service.dart';
 import 'package:vitalglyph/core/theme/app_theme.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/generated/app_localizations.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
@@ -44,6 +45,8 @@ class _AppContent extends StatelessWidget {
             themeMode: themeMode,
             routerConfig: AppRouter.router,
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               return BlocListener<AuthCubit, AuthState>(
                 listener: (context, state) {

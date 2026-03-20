@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_state.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
@@ -59,7 +60,7 @@ class _BackupViewState extends State<_BackupView> {
     if (result == null || result.files.isEmpty) return;
     final file = result.files.single;
     if (file.path == null) {
-      if (mounted) AppSnackBar.error(context, 'Could not access the selected file.');
+      if (mounted) AppSnackBar.error(context, context.l10n.backupFileAccessError);
       return;
     }
     setState(() {
@@ -75,17 +76,16 @@ class _BackupViewState extends State<_BackupView> {
 
   Future<void> _onImport(BuildContext context) async {
     if (_selectedFilePath == null) {
-      AppSnackBar.warning(context, 'Please select a .medid backup file.');
+      AppSnackBar.warning(context, context.l10n.backupSelectFileWarning);
       return;
     }
     if (!_importFormKey.currentState!.validate()) return;
 
     final confirmed = await AppDialog.show(
       context,
-      title: 'Import backup?',
-      message: 'This will add profiles from the backup. '
-          'Existing profiles with the same ID will be skipped.',
-      confirmLabel: 'Import',
+      title: context.l10n.backupImportTitle,
+      message: context.l10n.backupImportMessage,
+      confirmLabel: context.l10n.backupImportAction,
     );
 
     if (confirmed != true || !context.mounted) return;
@@ -98,7 +98,7 @@ class _BackupViewState extends State<_BackupView> {
   Widget build(BuildContext context) {
     return GradientScaffold(
       appBar: AppBar(
-        title: const Text('Backup & Restore'),
+        title: Text(context.l10n.backupTitle),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
@@ -108,7 +108,7 @@ class _BackupViewState extends State<_BackupView> {
             _exportPassCtrl.clear();
             _exportConfirmCtrl.clear();
             context.read<BackupCubit>().reset();
-            AppSnackBar.success(context, 'Backup shared successfully.');
+            AppSnackBar.success(context, context.l10n.backupShareSuccess);
           } else if (state is BackupImportSuccess) {
             _importPassCtrl.clear();
             setState(() {
@@ -118,9 +118,10 @@ class _BackupViewState extends State<_BackupView> {
             context.read<BackupCubit>().reset();
             final r = state.result;
             final msg = r.imported == 0 && r.skipped == 0
-                ? 'No profiles found in backup.'
-                : '${r.imported} profile(s) imported'
-                    '${r.skipped > 0 ? ', ${r.skipped} already existed (skipped).' : '.'}';
+                ? context.l10n.backupImportEmpty
+                : r.skipped > 0
+                    ? context.l10n.backupImportResultWithSkipped(r.imported, r.skipped)
+                    : context.l10n.backupImportResult(r.imported);
             AppSnackBar.success(context, msg);
           } else if (state is BackupError) {
             context.read<BackupCubit>().reset();
@@ -134,13 +135,12 @@ class _BackupViewState extends State<_BackupView> {
             children: [
               // Export section
               AppSectionCard(
-                title: 'Export',
+                title: context.l10n.backupExportSection,
                 icon: Icons.upload_rounded,
                 children: [
                   _InfoBanner(
                     icon: Icons.cloud_upload_rounded,
-                    text: 'Creates an encrypted .medid file containing all your profiles. '
-                        'You can save it to Files, AirDrop it, or share it anywhere.',
+                    text: context.l10n.backupExportInfo,
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -151,27 +151,27 @@ class _BackupViewState extends State<_BackupView> {
                       child: Column(
                         children: [
                           AppTextField(
-                            label: 'Backup passphrase',
+                            label: context.l10n.backupPassphrase,
                             controller: _exportPassCtrl,
                             obscureText: true,
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'Enter a passphrase to protect the backup.';
+                                return context.l10n.backupPassphraseRequired;
                               }
                               if (v.trim().length < 6) {
-                                return 'Passphrase must be at least 6 characters.';
+                                return context.l10n.backupPassphraseMinLength;
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
-                            label: 'Confirm passphrase',
+                            label: context.l10n.backupConfirmPassphrase,
                             controller: _exportConfirmCtrl,
                             obscureText: true,
                             validator: (v) {
                               if (v != _exportPassCtrl.text) {
-                                return 'Passphrases do not match.';
+                                return context.l10n.backupPassphraseMismatch;
                               }
                               return null;
                             },
@@ -181,7 +181,7 @@ class _BackupViewState extends State<_BackupView> {
                             onPressed: loading ? null : () => _onExport(context),
                             isLoading: loading,
                             icon: Icons.ios_share_rounded,
-                            label: 'Export Backup',
+                            label: context.l10n.backupExportAction,
                             fullWidth: true,
                           ),
                         ],
@@ -193,13 +193,12 @@ class _BackupViewState extends State<_BackupView> {
 
               // Restore section
               AppSectionCard(
-                title: 'Restore',
+                title: context.l10n.backupRestoreSection,
                 icon: Icons.download_rounded,
                 children: [
                   _InfoBanner(
                     icon: Icons.settings_backup_restore_rounded,
-                    text: 'Select a .medid backup file and enter its passphrase. '
-                        'Profiles that already exist on this device will be skipped.',
+                    text: context.l10n.backupRestoreInfo,
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -216,12 +215,12 @@ class _BackupViewState extends State<_BackupView> {
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
-                            label: 'Backup passphrase',
+                            label: context.l10n.backupPassphrase,
                             controller: _importPassCtrl,
                             obscureText: true,
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'Enter the passphrase for this backup.';
+                                return context.l10n.backupRestorePassphraseRequired;
                               }
                               return null;
                             },
@@ -231,7 +230,7 @@ class _BackupViewState extends State<_BackupView> {
                             onPressed: loading ? null : () => _onImport(context),
                             isLoading: loading,
                             icon: Icons.restore_rounded,
-                            label: 'Import Backup',
+                            label: context.l10n.backupImportBackupAction,
                             fullWidth: true,
                           ),
                         ],
@@ -261,7 +260,7 @@ class _FilePickerButton extends StatelessWidget {
     return AppButton.secondary(
       onPressed: onTap,
       icon: Icons.folder_open_rounded,
-      label: fileName ?? 'Pick backup file (.medid)',
+      label: fileName ?? context.l10n.backupPickFile,
       fullWidth: true,
     );
   }

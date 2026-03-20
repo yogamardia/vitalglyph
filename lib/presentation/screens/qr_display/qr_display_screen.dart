@@ -9,6 +9,7 @@ import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/qr_code_widget.dart';
@@ -89,7 +90,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                'EMERGENCY MEDICAL ID',
+                context.l10n.qrDisplayEmergencyLabel,
                 style: TextStyle(
                   fontSize: 12,
                   color: colors.emergencyRed,
@@ -100,7 +101,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
             ),
             const Expanded(child: SizedBox()),
             Semantics(
-              label: 'QR code with medical info for ${widget.profile.name}',
+              label: context.l10n.qrDisplaySemanticLabel(widget.profile.name),
               child: Center(
                 child: _QrFrame(
                   child: Container(
@@ -135,7 +136,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                         index: 0,
                         child: _EmergencyPill(
                           icon: Icons.bloodtype_rounded,
-                          label: 'Type ${widget.profile.bloodType!.displayName}',
+                          label: context.l10n.qrDisplayBloodType(widget.profile.bloodType!.displayName),
                           color: colors.bloodTypeBadge,
                         ),
                       ),
@@ -144,7 +145,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                         index: 1,
                         child: _EmergencyPill(
                           icon: Icons.warning_amber_rounded,
-                          label: '${widget.profile.allergies.length} Allergies',
+                          label: context.l10n.qrDisplayAllergyCount(widget.profile.allergies.length),
                           color: colors.allergyTag,
                         ),
                       ),
@@ -168,7 +169,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'Some details were omitted to fit QR capacity',
+                        context.l10n.qrDisplayTruncated,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.amber[900],

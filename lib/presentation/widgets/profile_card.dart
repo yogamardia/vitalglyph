@@ -6,6 +6,7 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/domain/entities/allergy.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
@@ -63,7 +64,7 @@ class _ProfileCardState extends State<ProfileCard>
     return MergeSemantics(
       child: Semantics(
         label:
-            '${widget.profile.name}, ${widget.isPrimary ? "Primary" : "Secondary"} Profile'
+            '${widget.profile.name}, ${widget.isPrimary ? context.l10n.profileCardPrimary : context.l10n.profileCardSecondary} Profile'
             '${widget.profile.bloodType != null ? ", Blood type ${widget.profile.bloodType!.displayName}" : ""}'
             '${widget.profile.allergies.isNotEmpty ? ", ${widget.profile.allergies.length} allergies" : ""}',
         child: AnimatedPress(
@@ -136,21 +137,21 @@ class _ProfileCardState extends State<ProfileCard>
         children: [
           BottomSheetOption(
             value: 'edit',
-            label: 'Edit Profile',
+            label: context.l10n.profileCardEditProfile,
             icon: Icons.edit_rounded,
             onTap: (_) => widget.onEdit(),
           ),
           const SizedBox(height: AppSpacing.sm),
           BottomSheetOption(
             value: 'card',
-            label: 'Emergency Card',
+            label: context.l10n.profileCardEmergencyCard,
             icon: Icons.badge_rounded,
             onTap: (_) => widget.onEmergencyCard(),
           ),
           const SizedBox(height: AppSpacing.sm),
           BottomSheetOption(
             value: 'delete',
-            label: 'Delete Profile',
+            label: context.l10n.profileCardDeleteProfile,
             icon: Icons.delete_rounded,
             isDestructive: true,
             onTap: (_) => _confirmDelete(context),
@@ -163,10 +164,9 @@ class _ProfileCardState extends State<ProfileCard>
   void _confirmDelete(BuildContext context) {
     AppDialog.showDestructive(
       context,
-      title: 'Delete profile?',
-      message:
-          'This will permanently delete ${widget.profile.name}\'s medical profile.',
-      confirmLabel: 'Delete',
+      title: context.l10n.profileCardDeleteTitle,
+      message: context.l10n.profileCardDeleteMessage(widget.profile.name),
+      confirmLabel: context.l10n.delete,
     ).then((confirmed) {
       if (confirmed == true) {
         HapticFeedback.mediumImpact();
@@ -246,7 +246,7 @@ class _ProfileHeader extends StatelessWidget {
               Row(
                 children: [
                   _StatusBadge(
-                    label: isPrimary ? 'Primary' : 'Secondary',
+                    label: isPrimary ? context.l10n.profileCardPrimary : context.l10n.profileCardSecondary,
                     isPrimary: isPrimary,
                   ),
                   if (profile.bloodType != null) ...[
@@ -443,7 +443,7 @@ class _AllergyList extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              'Critical Allergies',
+              context.l10n.profileCardCriticalAllergies,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
@@ -503,14 +503,14 @@ class _EmergencyActionButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.qr_code_scanner_rounded, size: 22),
-              SizedBox(width: 12),
+              const Icon(Icons.qr_code_scanner_rounded, size: 22),
+              const SizedBox(width: 12),
               Text(
-                'View Emergency QR',
-                style: TextStyle(
+                context.l10n.profileCardViewQr,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.2,
@@ -555,7 +555,7 @@ class _FooterInfo extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Database Encrypted',
+                context.l10n.profileCardEncrypted,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w600,
@@ -564,7 +564,7 @@ class _FooterInfo extends StatelessWidget {
             ],
           ),
           Text(
-            'Updated ${_formatDate(profile.updatedAt)}',
+            context.l10n.profileCardUpdated(_formatDate(context.l10n, profile.updatedAt)),
             style: theme.textTheme.labelSmall?.copyWith(
               color: cs.onSurfaceVariant.withValues(alpha: 0.5),
               fontWeight: FontWeight.w500,
@@ -575,12 +575,12 @@ class _FooterInfo extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(AppLocalizations l10n, DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final dateOnly = DateTime(date.year, date.month, date.day);
-    if (dateOnly == today) return 'today';
-    if (dateOnly == today.subtract(const Duration(days: 1))) return 'yesterday';
+    if (dateOnly == today) return l10n.profileCardToday;
+    if (dateOnly == today.subtract(const Duration(days: 1))) return l10n.profileCardYesterday;
     return '${date.day}/${date.month}/${date.year}';
   }
 }

@@ -5,6 +5,7 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_text_field.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Two-step PIN setup: enter → confirm → save.
@@ -33,7 +34,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   Future<void> _onSubmit() async {
     final pin = _controller.text.trim();
     if (pin.length < _pinLength) {
-      setState(() => _error = 'PIN must be $_pinLength digits.');
+      setState(() => _error = context.l10n.pinSetupLengthError(_pinLength));
       return;
     }
 
@@ -49,7 +50,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
     if (pin != _firstPin) {
       setState(() {
-        _error = 'PINs do not match. Start over.';
+        _error = context.l10n.pinSetupMismatch;
         _confirming = false;
         _firstPin = '';
         _controller.clear();
@@ -70,7 +71,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
     return GradientScaffold(
       appBar: AppBar(
-        title: const Text('Security Setup'),
+        title: Text(context.l10n.pinSetupTitle),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
@@ -100,7 +101,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _confirming ? 'Confirm your PIN' : 'Create a PIN',
+                    _confirming ? context.l10n.pinSetupConfirm : context.l10n.pinSetupCreate,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                       fontFamily: 'Plus Jakarta Sans',
@@ -109,8 +110,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   const SizedBox(height: 12),
                   Text(
                     _confirming
-                        ? 'Re-enter your $_pinLength-digit PIN to confirm it matches.'
-                        : 'Choose a $_pinLength-digit PIN to secure your medical information.',
+                        ? context.l10n.pinSetupConfirmMessage(_pinLength)
+                        : context.l10n.pinSetupCreateMessage(_pinLength),
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: cs.onSurfaceVariant,
                       height: 1.5,
@@ -118,7 +119,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   ),
                   const SizedBox(height: 32),
                   AppTextField(
-                    label: _confirming ? 'Re-enter PIN' : 'Enter PIN',
+                    label: _confirming ? context.l10n.pinSetupReenter : context.l10n.pinSetupEnter,
                     controller: _controller,
                     keyboardType: TextInputType.number,
                     obscureText: _obscure,
@@ -126,7 +127,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                       LengthLimitingTextInputFormatter(_pinLength),
                     ],
-                    hintText: '••••••',
+                    hintText: context.l10n.pinSetupPlaceholder,
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
@@ -148,7 +149,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             const Spacer(),
             AppButton.primary(
               onPressed: _onSubmit,
-              label: _confirming ? 'Confirm & Save' : 'Continue',
+              label: _confirming ? context.l10n.pinSetupConfirmSave : context.l10n.pinSetupContinue,
               icon: _confirming ? Icons.lock_outline_rounded : Icons.arrow_forward_rounded,
               fullWidth: true,
             ),

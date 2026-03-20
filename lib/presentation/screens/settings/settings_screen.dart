@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
@@ -109,17 +110,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
     if (set == true && mounted) {
       setState(() => _hasPin = true);
-      AppSnackBar.success(context, 'PIN updated.');
+      AppSnackBar.success(context, context.l10n.settingsPinUpdated);
     }
   }
 
   Future<void> _clearPin() async {
+    final l10n = context.l10n;
     final confirm = await AppDialog.showDestructive(
       context,
-      title: 'Remove PIN?',
-      message:
-          'This will disable app lock. You can set a new PIN at any time.',
-      confirmLabel: 'Remove',
+      title: l10n.settingsRemovePinTitle,
+      message: l10n.settingsRemovePinMessage,
+      confirmLabel: l10n.settingsRemovePinAction,
     );
     if (confirm != true) return;
     await _pinService.clearPin();
@@ -135,15 +136,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _showTimeoutPicker() async {
     HapticFeedback.selectionClick();
+    final l10n = context.l10n;
     final selected = await AppBottomSheet.show<LockTimeout>(
       context,
-      title: 'Lock After',
+      title: l10n.settingsLockAfterTitle,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: LockTimeout.values.map((t) {
           return BottomSheetOption(
             value: t,
-            label: t.displayName,
+            label: t.localizedName(l10n),
             isSelected: _timeout == t,
             onTap: (val) => Navigator.of(context).pop(val),
           );
@@ -160,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return GradientScaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(context.l10n.settingsTitle),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
@@ -190,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               FilledButton.icon(
                 onPressed: _load,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                label: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -204,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Appearance
         BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, mode) => AppSectionCard(
-            title: 'Appearance',
+            title: context.l10n.settingsAppearance,
             icon: Icons.palette_outlined,
             padding: EdgeInsets.zero,
             children: [
@@ -215,42 +217,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // Security
         AppSectionCard(
-          title: 'Security',
+          title: context.l10n.settingsSecurity,
           icon: Icons.security_rounded,
           showDividers: true,
           padding: EdgeInsets.zero,
           children: [
             SettingsToggleTile(
-              title: 'App Lock',
+              title: context.l10n.settingsAppLock,
               subtitle: _authEnabled
-                  ? 'App is locked when you leave'
-                  : 'Anyone can open the app',
+                  ? context.l10n.settingsAppLockEnabled
+                  : context.l10n.settingsAppLockDisabled,
               value: _authEnabled,
               onChanged: _toggleAuth,
             ),
             if (_authEnabled) ...[
               SettingsTile(
-                title: 'Lock after',
-                subtitle: _timeout.displayName,
+                title: context.l10n.settingsLockAfter,
+                subtitle: _timeout.localizedName(context.l10n),
                 leading: Icons.timer_outlined,
                 onTap: _showTimeoutPicker,
               ),
               SettingsTile(
-                title: _hasPin ? 'Change PIN' : 'Set PIN',
+                title: _hasPin ? context.l10n.settingsChangePin : context.l10n.settingsSetPin,
                 leading: Icons.pin_outlined,
                 onTap: _changePin,
               ),
               if (_hasPin)
                 SettingsTile(
-                  title: 'Remove PIN',
+                  title: context.l10n.settingsRemovePin,
                   leading: Icons.no_encryption_outlined,
                   destructive: true,
                   onTap: _clearPin,
                 ),
               if (_biometricAvailable)
                 SettingsToggleTile(
-                  title: 'Use Biometrics',
-                  subtitle: 'Face ID / fingerprint unlock',
+                  title: context.l10n.settingsUseBiometrics,
+                  subtitle: context.l10n.settingsBiometricsDescription,
                   value: _biometricEnabled,
                   onChanged: _toggleBiometric,
                 ),
@@ -260,14 +262,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // Data
         AppSectionCard(
-          title: 'Data',
+          title: context.l10n.settingsData,
           icon: Icons.storage_rounded,
           showDividers: true,
           padding: EdgeInsets.zero,
           children: [
             SettingsTile(
-              title: 'Backup & Restore',
-              subtitle: 'Export or import an encrypted .medid file',
+              title: context.l10n.settingsBackupRestore,
+              subtitle: context.l10n.settingsBackupRestoreDescription,
               onTap: () => context.push(AppRouter.backup),
             ),
           ],
@@ -275,13 +277,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // About
         AppSectionCard(
-          title: 'About',
+          title: context.l10n.settingsAbout,
           icon: Icons.info_outline_rounded,
           showDividers: true,
           padding: EdgeInsets.zero,
           children: [
-            const SettingsTile(
-              title: 'Version',
+            SettingsTile(
+              title: context.l10n.settingsVersion,
               trailing: Text(
                 '1.0.0',
                 style: TextStyle(
@@ -291,9 +293,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            const SettingsTile(
-              title: 'Privacy',
-              subtitle: 'No data ever leaves your device.',
+            SettingsTile(
+              title: context.l10n.settingsPrivacy,
+              subtitle: context.l10n.settingsPrivacyDescription,
             ),
           ],
         ),
@@ -352,19 +354,19 @@ class _ThemeSelectorInternal extends StatelessWidget {
           Row(
             children: [
               _ThemeOption(
-                label: 'System',
+                label: context.l10n.settingsThemeSystem,
                 icon: Icons.brightness_auto_rounded,
                 selected: mode == ThemeMode.system,
                 onTap: () => context.read<ThemeCubit>().setSystem(),
               ),
               _ThemeOption(
-                label: 'Light',
+                label: context.l10n.settingsThemeLight,
                 icon: Icons.light_mode_rounded,
                 selected: mode == ThemeMode.light,
                 onTap: () => context.read<ThemeCubit>().setLight(),
               ),
               _ThemeOption(
-                label: 'Dark',
+                label: context.l10n.settingsThemeDark,
                 icon: Icons.dark_mode_rounded,
                 selected: mode == ThemeMode.dark,
                 onTap: () => context.read<ThemeCubit>().setDark(),

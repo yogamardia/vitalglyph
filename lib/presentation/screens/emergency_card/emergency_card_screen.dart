@@ -5,6 +5,7 @@ import 'package:printing/printing.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/export_emergency_card.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
@@ -50,7 +51,7 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
   Widget build(BuildContext context) {
     return GradientScaffold(
       appBar: AppBar(
-        title: Text('${widget.profile.name} — Emergency Card'),
+        title: Text(context.l10n.emergencyCardTitle(widget.profile.name)),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       ),
@@ -144,7 +145,7 @@ class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerPro
                     const CircularProgressIndicator(),
                     const SizedBox(height: 24),
                     Text(
-                      'Generating Emergency Card…',
+                      context.l10n.emergencyCardGenerating,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: cs.onSurface.withValues(alpha: 0.6),
                             fontWeight: FontWeight.w600,
@@ -234,7 +235,7 @@ class _ErrorCard extends StatelessWidget {
               Icon(Icons.error_outline_rounded, size: 56, color: cs.error),
               const SizedBox(height: 24),
               Text(
-                'Failed to generate card',
+                context.l10n.emergencyCardFailed,
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 textAlign: TextAlign.center,
               ),
@@ -251,7 +252,7 @@ class _ErrorCard extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Try Again'),
+                label: Text(context.l10n.emergencyCardTryAgain),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),

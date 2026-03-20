@@ -8,6 +8,7 @@ import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Overlay shown when [AuthRequired] — user must authenticate to proceed.
@@ -210,7 +211,7 @@ class _LockScreenState extends State<LockScreen>
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'Medical ID Locked',
+                  context.l10n.lockScreenTitle,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -218,8 +219,8 @@ class _LockScreenState extends State<LockScreen>
                 const SizedBox(height: 8),
                 Text(
                   widget.hasPinSet
-                      ? 'Enter your PIN to continue'
-                      : 'Use biometrics to unlock',
+                      ? context.l10n.lockScreenEnterPin
+                      : context.l10n.lockScreenUseBiometrics,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: cs.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w600,
@@ -260,7 +261,7 @@ class _LockScreenState extends State<LockScreen>
                             Icon(Icons.timer_rounded, color: cs.error),
                             const SizedBox(height: 8),
                             Text(
-                              'Too many attempts. Try again in ${_formatDuration(_lockoutRemaining!)}',
+                              context.l10n.lockScreenTooManyAttempts(_formatDuration(_lockoutRemaining!)),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: cs.error,
