@@ -5,6 +5,8 @@ import 'package:vitalglyph/domain/entities/emergency_contact.dart';
 import 'package:vitalglyph/domain/entities/medical_condition.dart';
 import 'package:vitalglyph/domain/entities/medication.dart';
 
+const _sentinel = Object();
+
 class Profile extends Equatable {
   final String id;
   final String name;
@@ -48,14 +50,14 @@ class Profile extends Equatable {
     String? id,
     String? name,
     DateTime? dateOfBirth,
-    BloodType? bloodType,
-    BiologicalSex? biologicalSex,
-    double? heightCm,
-    double? weightKg,
+    Object? bloodType = _sentinel,
+    Object? biologicalSex = _sentinel,
+    Object? heightCm = _sentinel,
+    Object? weightKg = _sentinel,
     bool? isOrganDonor,
-    String? medicalNotes,
-    String? primaryLanguage,
-    String? photoPath,
+    Object? medicalNotes = _sentinel,
+    Object? primaryLanguage = _sentinel,
+    Object? photoPath = _sentinel,
     List<Allergy>? allergies,
     List<MedicalCondition>? conditions,
     List<Medication>? medications,
@@ -67,14 +69,28 @@ class Profile extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      bloodType: bloodType ?? this.bloodType,
-      biologicalSex: biologicalSex ?? this.biologicalSex,
-      heightCm: heightCm ?? this.heightCm,
-      weightKg: weightKg ?? this.weightKg,
+      bloodType: identical(bloodType, _sentinel)
+          ? this.bloodType
+          : bloodType as BloodType?,
+      biologicalSex: identical(biologicalSex, _sentinel)
+          ? this.biologicalSex
+          : biologicalSex as BiologicalSex?,
+      heightCm: identical(heightCm, _sentinel)
+          ? this.heightCm
+          : heightCm as double?,
+      weightKg: identical(weightKg, _sentinel)
+          ? this.weightKg
+          : weightKg as double?,
       isOrganDonor: isOrganDonor ?? this.isOrganDonor,
-      medicalNotes: medicalNotes ?? this.medicalNotes,
-      primaryLanguage: primaryLanguage ?? this.primaryLanguage,
-      photoPath: photoPath ?? this.photoPath,
+      medicalNotes: identical(medicalNotes, _sentinel)
+          ? this.medicalNotes
+          : medicalNotes as String?,
+      primaryLanguage: identical(primaryLanguage, _sentinel)
+          ? this.primaryLanguage
+          : primaryLanguage as String?,
+      photoPath: identical(photoPath, _sentinel)
+          ? this.photoPath
+          : photoPath as String?,
       allergies: allergies ?? this.allergies,
       conditions: conditions ?? this.conditions,
       medications: medications ?? this.medications,
