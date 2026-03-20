@@ -356,16 +356,20 @@ class _StaggeredEntryState extends State<_StaggeredEntry> with SingleTickerProvi
 class _CloseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AnimatedPress(
-      onTap: () => Navigator.of(context).pop(),
-      child: GlassContainer(
-        width: 56,
-        height: 56,
-        backgroundColor: const Color(0xFFF2F4F7),
-        borderColor: const Color(0xFFE8ECF0),
-        borderRadius: BorderRadius.circular(28),
-        child: const Center(
-          child: Icon(Icons.close_rounded, color: Color(0xFF4B5563), size: 24),
+    return Semantics(
+      label: context.l10n.a11yCloseQrDisplay,
+      button: true,
+      child: AnimatedPress(
+        onTap: () => Navigator.of(context).pop(),
+        child: GlassContainer(
+          width: 56,
+          height: 56,
+          backgroundColor: const Color(0xFFF2F4F7),
+          borderColor: const Color(0xFFE8ECF0),
+          borderRadius: BorderRadius.circular(28),
+          child: const Center(
+            child: Icon(Icons.close_rounded, color: Color(0xFF4B5563), size: 24),
+          ),
         ),
       ),
     );

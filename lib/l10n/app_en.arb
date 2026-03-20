@@ -322,5 +322,60 @@
   "pdfNotes": "NOTES",
   "pdfNoAdditionalInfo": "No additional medical information.",
   "pdfYes": "YES",
-  "pdfNo": "NO"
+  "pdfNo": "NO",
+
+  "a11yPinDigit": "Digit {digit}",
+  "@a11yPinDigit": {
+    "placeholders": {
+      "digit": { "type": "String" }
+    }
+  },
+  "a11yPinDelete": "Delete last digit",
+  "a11yPinBiometric": "Authenticate with biometrics",
+  "a11yPinDotsEntered": "{entered} of {total} digits entered",
+  "@a11yPinDotsEntered": {
+    "placeholders": {
+      "entered": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "a11yCloseQrDisplay": "Close QR display",
+  "a11yToggleTorch": "Toggle flashlight",
+  "a11yMoreActions": "More actions",
+  "a11yEditItem": "Edit {item}",
+  "@a11yEditItem": {
+    "placeholders": {
+      "item": { "type": "String" }
+    }
+  },
+  "a11yDeleteItem": "Delete {item}",
+  "@a11yDeleteItem": {
+    "placeholders": {
+      "item": { "type": "String" }
+    }
+  },
+  "a11yProfilePhoto": "Change profile photo",
+  "a11yAllergyWithSeverity": "Allergy: {name}, severity: {severity}",
+  "@a11yAllergyWithSeverity": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "severity": { "type": "String" }
+    }
+  },
+  "a11yTogglePasswordVisibility": "Toggle password visibility",
+  "a11ySelectedOption": "{label}, selected",
+  "@a11ySelectedOption": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "a11yLoadingButton": "Loading",
+  "a11yProcessingQr": "Processing scanned QR code",
+  "a11yStepIndicator": "Step {current} of {total}",
+  "@a11yStepIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  }
 }

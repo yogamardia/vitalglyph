@@ -1395,6 +1395,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'NO'**
   String get pdfNo;
+
+  /// No description provided for @a11yPinDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Digit {digit}'**
+  String a11yPinDigit(String digit);
+
+  /// No description provided for @a11yPinDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete last digit'**
+  String get a11yPinDelete;
+
+  /// No description provided for @a11yPinBiometric.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate with biometrics'**
+  String get a11yPinBiometric;
+
+  /// No description provided for @a11yPinDotsEntered.
+  ///
+  /// In en, this message translates to:
+  /// **'{entered} of {total} digits entered'**
+  String a11yPinDotsEntered(int entered, int total);
+
+  /// No description provided for @a11yCloseQrDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Close QR display'**
+  String get a11yCloseQrDisplay;
+
+  /// No description provided for @a11yToggleTorch.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle flashlight'**
+  String get a11yToggleTorch;
+
+  /// No description provided for @a11yMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get a11yMoreActions;
+
+  /// No description provided for @a11yEditItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {item}'**
+  String a11yEditItem(String item);
+
+  /// No description provided for @a11yDeleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {item}'**
+  String a11yDeleteItem(String item);
+
+  /// No description provided for @a11yProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change profile photo'**
+  String get a11yProfilePhoto;
+
+  /// No description provided for @a11yAllergyWithSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergy: {name}, severity: {severity}'**
+  String a11yAllergyWithSeverity(String name, String severity);
+
+  /// No description provided for @a11yTogglePasswordVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle password visibility'**
+  String get a11yTogglePasswordVisibility;
+
+  /// No description provided for @a11ySelectedOption.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, selected'**
+  String a11ySelectedOption(String label);
+
+  /// No description provided for @a11yLoadingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get a11yLoadingButton;
+
+  /// No description provided for @a11yProcessingQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing scanned QR code'**
+  String get a11yProcessingQr;
+
+  /// No description provided for @a11yStepIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String a11yStepIndicator(int current, int total);
 }
 
 class _AppLocalizationsDelegate

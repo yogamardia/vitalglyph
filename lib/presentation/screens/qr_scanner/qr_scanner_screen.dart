@@ -135,27 +135,31 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
           // Processing overlay
           if (_processing)
-            Positioned.fill(
-              child: GlassContainer(
-                blurSigma: 15,
-                backgroundColor: Colors.black.withValues(alpha: 0.4),
-                borderColor: Colors.transparent,
-                borderRadius: BorderRadius.zero,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircularProgressIndicator(color: Colors.white),
-                      const SizedBox(height: 24),
-                      Text(
-                        context.l10n.qrScannerProcessing,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+            Semantics(
+              label: context.l10n.a11yProcessingQr,
+              liveRegion: true,
+              child: Positioned.fill(
+                child: GlassContainer(
+                  blurSigma: 15,
+                  backgroundColor: Colors.black.withValues(alpha: 0.4),
+                  borderColor: Colors.transparent,
+                  borderRadius: BorderRadius.zero,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(color: Colors.white),
+                        const SizedBox(height: 24),
+                        Text(
+                          context.l10n.qrScannerProcessing,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -179,18 +183,23 @@ class _CircleActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedPress(
-      onTap: onPressed,
-      child: GlassContainer(
-        width: 40,
-        height: 40,
-        blurSigma: 10,
-        backgroundColor: active 
-            ? Colors.white.withValues(alpha: 0.3) 
-            : Colors.black.withValues(alpha: 0.3),
-        borderColor: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-        child: Icon(icon, size: 20, color: Colors.white),
+    return Semantics(
+      label: context.l10n.a11yToggleTorch,
+      button: true,
+      toggled: active,
+      child: AnimatedPress(
+        onTap: onPressed,
+        child: GlassContainer(
+          width: 48,
+          height: 48,
+          blurSigma: 10,
+          backgroundColor: active
+              ? Colors.white.withValues(alpha: 0.3)
+              : Colors.black.withValues(alpha: 0.3),
+          borderColor: Colors.white.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(24),
+          child: Icon(icon, size: 20, color: Colors.white),
+        ),
       ),
     );
   }

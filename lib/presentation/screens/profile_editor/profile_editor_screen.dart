@@ -341,66 +341,70 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               ),
             ),
             Center(
-              child: GestureDetector(
-                onTap: _pickPhoto,
-                child: Hero(
-                  tag: 'profile_image_${widget.profile?.id ?? 'new'}',
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colors.cardBorder,
-                        width: 2,
+              child: Semantics(
+                label: context.l10n.a11yProfilePhoto,
+                button: true,
+                child: GestureDetector(
+                  onTap: _pickPhoto,
+                  child: Hero(
+                    tag: 'profile_image_${widget.profile?.id ?? 'new'}',
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.cardBorder,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: colors.inputFill,
-                          backgroundImage: _photoPath != null
-                              ? FileImage(File(_photoPath!))
-                              : null,
-                          child: _photoPath == null
-                              ? Icon(
-                                  Icons.person_add_rounded,
-                                  size: 40,
-                                  color: cs.primary.withValues(alpha: 0.5),
-                                )
-                              : null,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: cs.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: cs.surface,
-                                width: 2,
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: colors.inputFill,
+                            backgroundImage: _photoPath != null
+                                ? FileImage(File(_photoPath!))
+                                : null,
+                            child: _photoPath == null
+                                ? Icon(
+                                    Icons.person_add_rounded,
+                                    size: 40,
+                                    color: cs.primary.withValues(alpha: 0.5),
+                                  )
+                                : null,
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: cs.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: cs.surface,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Icon(
+                                _photoPath != null
+                                    ? Icons.edit_rounded
+                                    : Icons.camera_alt_rounded,
+                                size: 14,
+                                color: cs.onPrimary,
                               ),
                             ),
-                            child: Icon(
-                              _photoPath != null
-                                  ? Icons.edit_rounded
-                                  : Icons.camera_alt_rounded,
-                              size: 14,
-                              color: cs.onPrimary,
-                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -991,12 +995,14 @@ class _SubEntityTile extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.edit_rounded, size: 20, color: cs.primary),
                     onPressed: onEdit,
-                    visualDensity: VisualDensity.compact,
+                    tooltip: context.l10n.a11yEditItem(title),
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                   ),
                   IconButton(
                     icon: Icon(Icons.delete_outline_rounded, size: 20, color: cs.error),
                     onPressed: onDelete,
-                    visualDensity: VisualDensity.compact,
+                    tooltip: context.l10n.a11yDeleteItem(title),
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                   ),
                 ],
               ),

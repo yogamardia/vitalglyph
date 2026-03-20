@@ -189,23 +189,25 @@ class _LockScreenState extends State<LockScreen>
                 const SizedBox(height: 32),
                 ScaleTransition(
                   scale: _pulseAnimation,
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: cs.primary.withValues(alpha: 0.1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.glowPrimary.withValues(alpha: 0.2),
-                          blurRadius: 40,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.shield_rounded,
-                      size: 64,
-                      color: cs.primary,
+                  child: ExcludeSemantics(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: cs.primary.withValues(alpha: 0.1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.glowPrimary.withValues(alpha: 0.2),
+                            blurRadius: 40,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.shield_rounded,
+                        size: 64,
+                        color: cs.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -283,12 +285,16 @@ class _LockScreenState extends State<LockScreen>
                   ),
                 ] else if (widget.canUseBiometric) ...[
                   const SizedBox(height: 24),
-                  _HeaderAction(
-                    icon: Icons.fingerprint_rounded,
-                    onPressed: _triggerBiometric,
-                    colors: colors,
-                    size: 80,
-                    iconSize: 40,
+                  Semantics(
+                    label: context.l10n.a11yPinBiometric,
+                    button: true,
+                    child: _HeaderAction(
+                      icon: Icons.fingerprint_rounded,
+                      onPressed: _triggerBiometric,
+                      colors: colors,
+                      size: 80,
+                      iconSize: 40,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   if (_errorMessage != null) ...[
@@ -321,39 +327,42 @@ class _PinDots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(total, (i) {
-        final filled = i < entered;
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: filled ? 1.0 : 0.0),
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutQuart,
-          builder: (context, value, _) {
-            return Container(
-              width: 12,
-              height: 12,
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color.lerp(
-                  cs.onSurface.withValues(alpha: 0.1),
-                  cs.primary,
-                  value,
+    return Semantics(
+      label: context.l10n.a11yPinDotsEntered(entered, total),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(total, (i) {
+          final filled = i < entered;
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: filled ? 1.0 : 0.0),
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutQuart,
+            builder: (context, value, _) {
+              return Container(
+                width: 12,
+                height: 12,
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color.lerp(
+                    cs.onSurface.withValues(alpha: 0.1),
+                    cs.primary,
+                    value,
+                  ),
+                  boxShadow: [
+                    if (value > 0.5)
+                      BoxShadow(
+                        color: cs.primary.withValues(alpha: 0.2 * value),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                  ],
                 ),
-                boxShadow: [
-                  if (value > 0.5)
-                    BoxShadow(
-                      color: cs.primary.withValues(alpha: 0.2 * value),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                    ),
-                ],
-              ),
-            );
-          },
-        );
-      }),
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 }
@@ -410,43 +419,55 @@ class _NumPad extends StatelessWidget {
   }
 
   Widget _buildDigitButton(BuildContext context, String digit) {
-    return _PadButton(
-      onTap: disabled ? null : () => onDigit(digit),
-      colors: colors,
-      child: Text(
-        digit,
-        style: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.w800,
-          fontFamily: 'Plus Jakarta Sans',
-          color: Theme.of(context).colorScheme.onSurface,
+    return Semantics(
+      label: context.l10n.a11yPinDigit(digit),
+      button: true,
+      child: _PadButton(
+        onTap: disabled ? null : () => onDigit(digit),
+        colors: colors,
+        child: Text(
+          digit,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            fontFamily: 'Plus Jakarta Sans',
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildDeleteButton(BuildContext context) {
-    return _PadButton(
-      onTap: disabled ? null : onDelete,
-      colors: colors,
-      child: Icon(
-        Icons.backspace_rounded,
-        size: 24,
-        color: Theme.of(context).colorScheme.onSurface,
+    return Semantics(
+      label: context.l10n.a11yPinDelete,
+      button: true,
+      child: _PadButton(
+        onTap: disabled ? null : onDelete,
+        colors: colors,
+        child: Icon(
+          Icons.backspace_rounded,
+          size: 24,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }
 
   Widget _buildBioButton(BuildContext context) {
     if (onBiometric == null) return const SizedBox(width: 80, height: 80);
-    return _PadButton(
-      onTap: disabled ? null : onBiometric!,
-      colors: colors,
-      enableGlow: true,
-      child: Icon(
-        Icons.fingerprint_rounded,
-        size: 32,
-        color: Theme.of(context).colorScheme.primary,
+    return Semantics(
+      label: context.l10n.a11yPinBiometric,
+      button: true,
+      child: _PadButton(
+        onTap: disabled ? null : onBiometric!,
+        colors: colors,
+        enableGlow: true,
+        child: Icon(
+          Icons.fingerprint_rounded,
+          size: 32,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }

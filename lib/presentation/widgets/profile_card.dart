@@ -265,11 +265,11 @@ class _ProfileHeader extends StatelessWidget {
             size: 24,
           ),
           onPressed: onActionsPressed,
-          visualDensity: VisualDensity.compact,
+          tooltip: context.l10n.a11yMoreActions,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(
-            minWidth: 40,
-            minHeight: 40,
+            minWidth: 48,
+            minHeight: 48,
           ),
         ),
       ],
@@ -596,7 +596,7 @@ class _AllergyTag extends StatelessWidget {
     final colors = theme.extension<VitalGlyphColors>()!;
 
     return Semantics(
-      label: 'Allergy: ${allergy.name}',
+      label: context.l10n.a11yAllergyWithSeverity(allergy.name, allergy.severity.displayName),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(

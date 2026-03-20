@@ -133,6 +133,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                         _obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                         size: 20,
                       ),
+                      tooltip: context.l10n.a11yTogglePasswordVisibility,
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
@@ -168,29 +169,32 @@ class _StepIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Row(
-      children: List.generate(2, (i) {
-        final active = i <= currentStep;
-        final isCurrent = i == currentStep;
-        return AnimatedContainer(
-          duration: AppDuration.medium,
-          margin: const EdgeInsets.only(right: 8),
-          width: isCurrent ? 32 : 12,
-          height: 8,
-          decoration: BoxDecoration(
-            color: active ? cs.primary : cs.onSurface.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              if (isCurrent)
-                BoxShadow(
-                  color: cs.primary.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-            ],
-          ),
-        );
-      }),
+    return Semantics(
+      label: context.l10n.a11yStepIndicator(currentStep + 1, 2),
+      child: Row(
+        children: List.generate(2, (i) {
+          final active = i <= currentStep;
+          final isCurrent = i == currentStep;
+          return AnimatedContainer(
+            duration: AppDuration.medium,
+            margin: const EdgeInsets.only(right: 8),
+            width: isCurrent ? 32 : 12,
+            height: 8,
+            decoration: BoxDecoration(
+              color: active ? cs.primary : cs.onSurface.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(4),
+              boxShadow: [
+                if (isCurrent)
+                  BoxShadow(
+                    color: cs.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 }

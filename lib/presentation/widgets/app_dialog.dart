@@ -296,38 +296,45 @@ class BottomSheetOption<T> extends StatelessWidget {
             ? cs.primary
             : cs.onSurface;
 
-    return AnimatedPress(
-      onTap: () {
-        Navigator.of(context).pop(value);
-        onTap(value);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          color: isSelected ? cs.primary.withValues(alpha: 0.05) : null,
-        ),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: color, size: 22),
-              const SizedBox(width: AppSpacing.md),
-            ],
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: color,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+    return Semantics(
+      label: label,
+      button: true,
+      selected: isSelected,
+      child: AnimatedPress(
+        onTap: () {
+          Navigator.of(context).pop(value);
+          onTap(value);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            color: isSelected ? cs.primary.withValues(alpha: 0.05) : null,
+          ),
+          child: Row(
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: color, size: 22),
+                const SizedBox(width: AppSpacing.md),
+              ],
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: color,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            if (isSelected)
-              Icon(Icons.check_rounded, color: cs.primary, size: 22),
-          ],
+              if (isSelected)
+                ExcludeSemantics(
+                  child: Icon(Icons.check_rounded, color: cs.primary, size: 22),
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -707,4 +707,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pdfNo => 'NO';
+
+  @override
+  String a11yPinDigit(String digit) {
+    return 'Digit $digit';
+  }
+
+  @override
+  String get a11yPinDelete => 'Delete last digit';
+
+  @override
+  String get a11yPinBiometric => 'Authenticate with biometrics';
+
+  @override
+  String a11yPinDotsEntered(int entered, int total) {
+    return '$entered of $total digits entered';
+  }
+
+  @override
+  String get a11yCloseQrDisplay => 'Close QR display';
+
+  @override
+  String get a11yToggleTorch => 'Toggle flashlight';
+
+  @override
+  String get a11yMoreActions => 'More actions';
+
+  @override
+  String a11yEditItem(String item) {
+    return 'Edit $item';
+  }
+
+  @override
+  String a11yDeleteItem(String item) {
+    return 'Delete $item';
+  }
+
+  @override
+  String get a11yProfilePhoto => 'Change profile photo';
+
+  @override
+  String a11yAllergyWithSeverity(String name, String severity) {
+    return 'Allergy: $name, severity: $severity';
+  }
+
+  @override
+  String get a11yTogglePasswordVisibility => 'Toggle password visibility';
+
+  @override
+  String a11ySelectedOption(String label) {
+    return '$label, selected';
+  }
+
+  @override
+  String get a11yLoadingButton => 'Loading';
+
+  @override
+  String get a11yProcessingQr => 'Processing scanned QR code';
+
+  @override
+  String a11yStepIndicator(int current, int total) {
+    return 'Step $current of $total';
+  }
 }

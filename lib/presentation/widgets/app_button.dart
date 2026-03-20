@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 
 enum AppButtonVariant { primary, secondary, ghost, danger }
@@ -108,15 +109,20 @@ class AppButton extends StatelessWidget {
 
     final isEnabled = onPressed != null && !isLoading;
 
-    return AnimatedPress(
-      onTap: isEnabled ? onPressed : null,
-      enableGlow: variant == AppButtonVariant.primary && isEnabled,
-      child: Container(
-        width: fullWidth ? double.infinity : null,
-        height: 52,
-        decoration: _buildDecoration(cs, colors, isEnabled),
-        child: Center(
-          child: _buildChild(context, cs, colors),
+    return Semantics(
+      label: isLoading ? context.l10n.a11yLoadingButton : label,
+      button: true,
+      enabled: isEnabled,
+      child: AnimatedPress(
+        onTap: isEnabled ? onPressed : null,
+        enableGlow: variant == AppButtonVariant.primary && isEnabled,
+        child: Container(
+          width: fullWidth ? double.infinity : null,
+          height: 52,
+          decoration: _buildDecoration(cs, colors, isEnabled),
+          child: Center(
+            child: _buildChild(context, cs, colors),
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 
 /// A shared text input widget with glassmorphism styling and focus animations.
 class AppTextField extends StatefulWidget {
@@ -125,6 +126,7 @@ class _AppTextFieldState extends State<AppTextField> {
                     size: 20,
                     color: cs.onSurfaceVariant,
                   ),
+                  tooltip: context.l10n.a11yTogglePasswordVisibility,
                   onPressed: () => setState(() => _obscureText = !_obscureText),
                 )
               : widget.suffixIcon,
