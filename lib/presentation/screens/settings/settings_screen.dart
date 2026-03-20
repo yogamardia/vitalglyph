@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/l10n/l10n.dart';
@@ -40,6 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   LockTimeout _timeout = LockTimeout.immediately;
   bool _loading = true;
   String? _loadError;
+  String _appVersion = '';
 
   @override
   void initState() {
@@ -62,6 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final hasPin = await _pinService.hasPin();
       final bioAvailable = await _localAuth.isDeviceSupported() &&
           await _localAuth.canCheckBiometrics;
+      final packageInfo = await PackageInfo.fromPlatform();
 
       if (mounted) {
         setState(() {
@@ -70,6 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _biometricAvailable = bioAvailable;
           _timeout = timeout;
           _hasPin = hasPin;
+          _appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
           _loading = false;
         });
       }
@@ -300,7 +304,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsTile(
               title: context.l10n.settingsVersion,
               trailing: Text(
-                '1.0.0',
+                _appVersion,
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
