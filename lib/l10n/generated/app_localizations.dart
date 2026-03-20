@@ -1491,6 +1491,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Step {current} of {total}'**
   String a11yStepIndicator(int current, int total);
+
+  /// No description provided for @disclaimerShort.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is not a substitute for professional medical advice.'**
+  String get disclaimerShort;
+
+  /// No description provided for @settingsMedicalDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Disclaimer'**
+  String get settingsMedicalDisclaimer;
+
+  /// No description provided for @disclaimerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Disclaimer'**
+  String get disclaimerTitle;
+
+  /// No description provided for @disclaimerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'VitalGlyph is designed to store and display medical information for emergency reference only.\n\nThis app is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.\n\nIn an emergency, always call your local emergency services. Do not rely solely on this app for critical medical decisions.\n\nThe developers of this app assume no liability for any actions taken based on the information stored or displayed.'**
+  String get disclaimerBody;
 }
 
 class _AppLocalizationsDelegate

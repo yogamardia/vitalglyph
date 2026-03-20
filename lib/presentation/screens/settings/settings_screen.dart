@@ -158,6 +158,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  void _showDisclaimer(BuildContext context) {
+    final l10n = context.l10n;
+    AppBottomSheet.show(
+      context,
+      title: l10n.disclaimerTitle,
+      child: Text(
+        l10n.disclaimerBody,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          height: 1.6,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GradientScaffold(
@@ -296,6 +311,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsTile(
               title: context.l10n.settingsPrivacy,
               subtitle: context.l10n.settingsPrivacyDescription,
+            ),
+            SettingsTile(
+              title: context.l10n.settingsMedicalDisclaimer,
+              leading: Icons.health_and_safety_outlined,
+              onTap: () => _showDisclaimer(context),
             ),
           ],
         ),

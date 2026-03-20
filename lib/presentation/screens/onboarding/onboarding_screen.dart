@@ -193,6 +193,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
+                // Medical disclaimer on last page
+                AnimatedOpacity(
+                  opacity: isLast ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: AppSpacing.lg,
+                      left: AppSpacing.xxl,
+                      right: AppSpacing.xxl,
+                    ),
+                    child: Text(
+                      context.l10n.disclaimerShort,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurface.withValues(alpha: 0.4),
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: AppSpacing.xxxl),
               ],
             ),
