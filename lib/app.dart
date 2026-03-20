@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
+import 'package:vitalglyph/core/services/incoming_file_service.dart';
 import 'package:vitalglyph/core/services/screen_protection_service.dart';
 import 'package:vitalglyph/core/theme/app_theme.dart';
 import 'package:vitalglyph/injection.dart';
@@ -95,6 +98,7 @@ class _LifecycleObserver extends StatefulWidget {
 class _LifecycleObserverState extends State<_LifecycleObserver>
     with WidgetsBindingObserver {
   DateTime? _backgroundedAt;
+  StreamSubscription<String>? _fileSub;
 
   @override
   void initState() {
@@ -104,10 +108,15 @@ class _LifecycleObserverState extends State<_LifecycleObserver>
     context.read<AuthCubit>().checkAuthRequired();
     // Enable screen protection globally.
     ScreenProtectionService.enable();
+    // Navigate to backup screen when a .medid file is opened.
+    _fileSub = sl<IncomingFileService>().onFileOpen.listen((_) {
+      AppRouter.router.go(AppRouter.backup);
+    });
   }
 
   @override
   void dispose() {
+    _fileSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

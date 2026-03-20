@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vitalglyph/core/services/incoming_file_service.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
@@ -42,6 +43,16 @@ class _BackupViewState extends State<_BackupView> {
   final _importFormKey = GlobalKey<FormState>();
   String? _selectedFilePath;
   String? _selectedFileName;
+
+  @override
+  void initState() {
+    super.initState();
+    final pending = sl<IncomingFileService>().consumePendingFile();
+    if (pending != null) {
+      _selectedFilePath = pending;
+      _selectedFileName = pending.split('/').last;
+    }
+  }
 
   @override
   void dispose() {

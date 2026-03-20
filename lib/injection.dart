@@ -5,6 +5,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
 import 'package:vitalglyph/core/crypto/encryption_service.dart';
+import 'package:vitalglyph/core/services/incoming_file_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
@@ -104,4 +105,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory(() => ThemeCubit(sl<FlutterSecureStorage>()));
 
   sl.registerLazySingleton(() => AppPreferences(sl<FlutterSecureStorage>()));
+
+  // ── Incoming File ───────────────────────────────
+  sl.registerLazySingleton<IncomingFileService>(() => IncomingFileService());
 }
