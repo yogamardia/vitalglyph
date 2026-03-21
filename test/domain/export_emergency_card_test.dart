@@ -76,7 +76,7 @@ void main() {
   Profile minimalProfile() => Profile(
         id: 'p-min',
         name: 'Minimal User',
-        dateOfBirth: DateTime(2000, 1, 1),
+        dateOfBirth: DateTime(2000),
         createdAt: now,
         updatedAt: now,
       );

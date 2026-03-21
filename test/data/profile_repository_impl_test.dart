@@ -73,7 +73,7 @@ void main() {
   Profile minimalProfile({String id = 'p-min'}) => Profile(
         id: id,
         name: 'Minimal User',
-        dateOfBirth: DateTime(2000, 1, 1),
+        dateOfBirth: DateTime(2000),
         createdAt: now,
         updatedAt: now,
       );
@@ -202,7 +202,7 @@ void main() {
     });
 
     test('streams updated list after create', () async {
-      await repo.createProfile(fullProfile(id: 'p1'));
+      await repo.createProfile(fullProfile());
 
       final result = await repo.watchAllProfiles().first;
 
@@ -217,7 +217,7 @@ void main() {
     });
 
     test('includes multiple profiles', () async {
-      await repo.createProfile(fullProfile(id: 'p1'));
+      await repo.createProfile(fullProfile());
       await repo.createProfile(minimalProfile(id: 'p2'));
 
       final result = await repo.watchAllProfiles().first;
@@ -236,7 +236,7 @@ void main() {
       final updated = fullProfile().copyWith(
         name: 'Alice Jones',
         bloodType: BloodType.bNeg,
-        updatedAt: DateTime(2025, 7, 1),
+        updatedAt: DateTime(2025, 7),
       );
       await repo.updateProfile(updated);
 
@@ -287,7 +287,7 @@ void main() {
     });
 
     test('does not affect other profiles', () async {
-      await repo.createProfile(fullProfile(id: 'p1'));
+      await repo.createProfile(fullProfile());
       await repo.createProfile(minimalProfile(id: 'p2'));
       await repo.deleteProfile('p1');
 
