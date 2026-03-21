@@ -325,7 +325,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPrivacy.
   ///
   /// In en, this message translates to:
-  /// **'Privacy'**
+  /// **'Privacy Policy'**
   String get settingsPrivacy;
 
   /// No description provided for @settingsPrivacyDescription.
@@ -333,6 +333,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data ever leaves your device.'**
   String get settingsPrivacyDescription;
+
+  /// No description provided for @privacyPolicyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'VitalGlyph is committed to protecting your privacy.\n\n• Zero Data Collection — No accounts, no servers, no analytics, no network requests.\n\n• Local Storage Only — All medical data is stored solely on your device in a local database.\n\n• Data Protection — PIN/biometric authentication, HMAC-SHA256 QR integrity checks, and AES-256-CBC encrypted backups.\n\n• No Third-Party Access — Your data is entirely under your control. We cannot share, sell, or disclose it.\n\nFor the full privacy policy, visit:\nhttps://yogamardia.com/vitalglyph/privacy\n\nContact: vitalglyph@yogamardia.com'**
+  String get privacyPolicyBody;
 
   /// No description provided for @settingsThemeSystem.
   ///

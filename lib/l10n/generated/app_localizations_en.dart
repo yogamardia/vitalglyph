@@ -126,10 +126,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsVersion => 'Version';
 
   @override
-  String get settingsPrivacy => 'Privacy';
+  String get settingsPrivacy => 'Privacy Policy';
 
   @override
   String get settingsPrivacyDescription => 'No data ever leaves your device.';
+
+  @override
+  String get privacyPolicyBody =>
+      'VitalGlyph is committed to protecting your privacy.\n\n• Zero Data Collection — No accounts, no servers, no analytics, no network requests.\n\n• Local Storage Only — All medical data is stored solely on your device in a local database.\n\n• Data Protection — PIN/biometric authentication, HMAC-SHA256 QR integrity checks, and AES-256-CBC encrypted backups.\n\n• No Third-Party Access — Your data is entirely under your control. We cannot share, sell, or disclose it.\n\nFor the full privacy policy, visit:\nhttps://yogamardia.com/vitalglyph/privacy\n\nContact: vitalglyph@yogamardia.com';
 
   @override
   String get settingsThemeSystem => 'System';

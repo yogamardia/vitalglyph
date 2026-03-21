@@ -1,4 +1,4 @@
-package com.example.vitalglyph
+package com.yogamardia.vitalglyph
 
 import android.content.Intent
 import android.net.Uri
@@ -9,7 +9,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.example.vitalglyph/file_open"
+    private val CHANNEL = "com.yogamardia.vitalglyph/file_open"
     private var methodChannel: MethodChannel? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Vitalglyph</string>
+	<string>VitalGlyph</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -60,7 +60,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.example.vitalglyph.medid</string>
+				<string>com.yogamardia.vitalglyph.medid</string>
 			</array>
 		</dict>
 	</array>
@@ -68,7 +68,7 @@
 	<array>
 		<dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.example.vitalglyph.medid</string>
+			<string>com.yogamardia.vitalglyph.medid</string>
 			<key>UTTypeDescription</key>
 			<string>VitalGlyph Medical ID Backup</string>
 			<key>UTTypeConformsTo</key>

@@ -136,7 +136,7 @@ The widget shows the user's name, blood type, and allergy count at a glance.
 
 1. File > New > Target > Widget Extension — name it `VitalglyphWidget` (no configuration intent)
 2. Replace the generated Swift files with those in `ios/VitalglyphWidget/`
-3. Add the App Group `group.com.example.vitalglyph` to both the Runner and VitalglyphWidget targets
+3. Add the App Group `group.com.yogamardia.vitalglyph` to both the Runner and VitalglyphWidget targets
 4. Set the widget bundle ID to `$(PRODUCT_BUNDLE_IDENTIFIER).VitalglyphWidget`
 
 ---

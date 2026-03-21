@@ -163,6 +163,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  void _showPrivacyPolicy(BuildContext context) {
+    final l10n = context.l10n;
+    AppBottomSheet.show<void>(
+      context,
+      title: l10n.settingsPrivacy,
+      child: Text(
+        l10n.privacyPolicyBody,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          height: 1.6,
+        ),
+      ),
+    );
+  }
+
   void _showDisclaimer(BuildContext context) {
     final l10n = context.l10n;
     AppBottomSheet.show<void>(
@@ -316,6 +331,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsTile(
               title: context.l10n.settingsPrivacy,
               subtitle: context.l10n.settingsPrivacyDescription,
+              leading: Icons.privacy_tip_outlined,
+              onTap: () => _showPrivacyPolicy(context),
             ),
             SettingsTile(
               title: context.l10n.settingsMedicalDisclaimer,

@@ -10,7 +10,7 @@ class IncomingFileService {
   IncomingFileService() {
     _channel.setMethodCallHandler(_handlePlatformCall);
   }
-  static const _channel = MethodChannel('com.example.vitalglyph/file_open');
+  static const _channel = MethodChannel('com.yogamardia.vitalglyph/file_open');
 
   final _controller = StreamController<String>.broadcast();
   String? _pendingFilePath;

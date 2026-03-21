@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective Date:** January 1, 2024
+**Effective Date:** March 21, 2026
 
 VitalGlyph ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains our practices regarding the collection, use, and disclosure of information when you use the VitalGlyph mobile application.
 
@@ -33,4 +33,4 @@ We may update our Privacy Policy from time to time. We will notify you of any ch
 
 ## 6. Contact Us
 
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at [INSERT CONTACT METHOD].
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at vitalglyph@yogamardia.com.

@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 
 class SceneDelegate: FlutterSceneDelegate {
-    private static let channelName = "com.example.vitalglyph/file_open"
+    private static let channelName = "com.yogamardia.vitalglyph/file_open"
     private var pendingFileURL: URL?
     private var channel: FlutterMethodChannel?
 

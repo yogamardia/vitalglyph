@@ -1,4 +1,4 @@
-package com.example.vitalglyph
+package com.yogamardia.vitalglyph
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
