@@ -32,7 +32,7 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
 
   Future<Uint8List> _buildPdf() async {
     final result = await widget.exportEmergencyCard(widget.profile);
-    return result.fold(
+    return result.match(
       (failure) => throw Exception(failure.message),
       (bytes) => bytes,
     );

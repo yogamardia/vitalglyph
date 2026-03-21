@@ -35,7 +35,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(const ProfileLoading());
     await emit.forEach(
       _watchAllProfiles(),
-      onData: (result) => result.fold(
+      onData: (result) => result.match(
         (failure) => ProfileError(failure.message),
         ProfileLoaded.new,
       ),
@@ -48,7 +48,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final result = await _createProfile(event.profile);
-    result.fold(
+    result.match(
       (failure) => emit(ProfileError(failure.message)),
       (_) {}, // stream watch will push updated list
     );
@@ -59,7 +59,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final result = await _updateProfile(event.profile);
-    result.fold(
+    result.match(
       (failure) => emit(ProfileError(failure.message)),
       (_) {},
     );
@@ -70,7 +70,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final result = await _deleteProfile(event.id);
-    result.fold(
+    result.match(
       (failure) => emit(ProfileError(failure.message)),
       (_) {},
     );

@@ -160,7 +160,7 @@ void main() {
 
     final result = await importBackup(backupFile.path, passphrase);
 
-    result.fold(
+    result.match(
       (f) => fail('Import failed: ${f.message}'),
       (importResult) {
         expect(importResult.imported, 1);
@@ -170,7 +170,7 @@ void main() {
 
     // 4. Verify the imported profile matches the original.
     final getResult = await repo.getProfile('p1');
-    getResult.fold(
+    getResult.match(
       (f) => fail('getProfile failed: ${f.message}'),
       (imported) {
         expect(imported.name, original.name);
@@ -227,7 +227,7 @@ void main() {
     final importBackup = ImportBackup(repo, crypto);
     final result = await importBackup(backupFile.path, passphrase);
 
-    result.fold(
+    result.match(
       (f) => fail('Import failed: ${f.message}'),
       (importResult) {
         expect(importResult.imported, 1);
@@ -237,7 +237,7 @@ void main() {
 
     // Verify both profiles exist.
     final all = await repo.watchAllProfiles().first;
-    all.fold(
+    all.match(
       (f) => fail('watchAll failed'),
       (profiles) => expect(profiles, hasLength(2)),
     );
@@ -260,7 +260,7 @@ void main() {
     final result = await importBackup(backupFile.path, 'wrong');
 
     expect(result.isLeft(), true);
-    result.fold(
+    result.match(
       (f) => expect(f.message, contains('Wrong passphrase')),
       (_) => fail('Expected Left'),
     );
@@ -286,7 +286,7 @@ void main() {
 
     final result = await importBackup(backupFile.path, passphrase);
 
-    result.fold(
+    result.match(
       (f) => fail('Import failed: ${f.message}'),
       (importResult) {
         expect(importResult.imported, 5);
@@ -295,7 +295,7 @@ void main() {
     );
 
     final all = await repo.watchAllProfiles().first;
-    all.fold(
+    all.match(
       (f) => fail('watchAll failed'),
       (list) => expect(list, hasLength(5)),
     );

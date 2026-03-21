@@ -1,6 +1,6 @@
-import 'package:dartz/dartz.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/error/failures.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
@@ -98,7 +98,7 @@ void main() {
       await repo.createProfile(fullProfile());
       final result = await repo.getProfile('p1');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profile) {
           expect(profile.name, 'Alice Smith');
@@ -117,7 +117,7 @@ void main() {
       await repo.createProfile(fullProfile());
       final result = await repo.getProfile('p1');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profile) {
           expect(profile.allergies, hasLength(2));
@@ -149,7 +149,7 @@ void main() {
       await repo.createProfile(minimalProfile());
       final result = await repo.getProfile('p-min');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profile) {
           expect(profile.name, 'Minimal User');
@@ -179,7 +179,7 @@ void main() {
       final result = await repo.getProfile('p1');
 
       expect(result.isRight(), true);
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (profile) {
           expect(profile.allergies, hasLength(2));
@@ -195,7 +195,7 @@ void main() {
     test('streams empty list when no profiles exist', () async {
       final result = await repo.watchAllProfiles().first;
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profiles) => expect(profiles, isEmpty),
       );
@@ -206,7 +206,7 @@ void main() {
 
       final result = await repo.watchAllProfiles().first;
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profiles) {
           expect(profiles, hasLength(1));
@@ -222,7 +222,7 @@ void main() {
 
       final result = await repo.watchAllProfiles().first;
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profiles) => expect(profiles, hasLength(2)),
       );
@@ -241,7 +241,7 @@ void main() {
       await repo.updateProfile(updated);
 
       final result = await repo.getProfile('p1');
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (profile) {
           expect(profile.name, 'Alice Jones');
@@ -264,7 +264,7 @@ void main() {
       await repo.updateProfile(updated);
 
       final result = await repo.getProfile('p1');
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (profile) {
           expect(profile.allergies, hasLength(1));
@@ -304,7 +304,7 @@ void main() {
           minimalProfile(id: id).copyWith(bloodType: bt),
         );
         final result = await repo.getProfile(id);
-        result.fold(
+        result.match(
           (f) => fail('Expected Right'),
           (profile) => expect(profile.bloodType, bt),
         );
@@ -318,7 +318,7 @@ void main() {
           minimalProfile(id: id).copyWith(biologicalSex: sex),
         );
         final result = await repo.getProfile(id);
-        result.fold(
+        result.match(
           (f) => fail('Expected Right'),
           (profile) => expect(profile.biologicalSex, sex),
         );
@@ -336,7 +336,7 @@ void main() {
           ),
         );
         final result = await repo.getProfile(id);
-        result.fold(
+        result.match(
           (f) => fail('Expected Right'),
           (profile) => expect(profile.allergies[0].severity, sev),
         );

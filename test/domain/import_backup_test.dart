@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
@@ -144,7 +144,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: ${f.message}'),
         (importResult) {
           expect(importResult.imported, 1);
@@ -165,7 +165,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (importResult) {
           expect(importResult.imported, 0);
@@ -197,7 +197,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (importResult) {
           expect(importResult.imported, 1);
@@ -231,7 +231,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (importResult) {
           // First failed silently (not counted), second succeeded.
@@ -250,7 +250,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (importResult) {
           expect(importResult.imported, 0);
@@ -287,7 +287,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got: ${f.message}'),
         (importResult) => expect(importResult.imported, 1),
       );
@@ -298,7 +298,7 @@ void main() {
     test('returns BackupFailure when file does not exist', () async {
       final result = await useCase('/nonexistent/file.medid', 'pass');
 
-      result.fold(
+      result.match(
         (failure) {
           expect(failure, isA<BackupFailure>());
           expect(failure.message, 'Backup file not found.');
@@ -315,7 +315,7 @@ void main() {
 
       final result = await useCase(file.path, 'wrong');
 
-      result.fold(
+      result.match(
         (failure) {
           expect(failure, isA<BackupFailure>());
           expect(failure.message, contains('Wrong passphrase'));
@@ -332,7 +332,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (failure) {
           expect(failure, isA<BackupFailure>());
           expect(failure.message, contains('Invalid format'));
@@ -349,7 +349,7 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.fold(
+      result.match(
         (failure) => expect(failure, isA<BackupFailure>()),
         (_) => fail('Expected Left'),
       );

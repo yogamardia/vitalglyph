@@ -41,7 +41,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     setState(() => _processing = true);
 
     final result = sl<ParseQrData>()(raw);
-    result.fold(
+    result.match(
       (failure) {
         setState(() => _processing = false);
         _showError(failure.message);

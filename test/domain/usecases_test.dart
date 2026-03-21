@@ -1,5 +1,5 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vitalglyph/core/error/failures.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
@@ -34,7 +34,7 @@ void main() {
       );
       final usecase = WatchAllProfiles(mockRepo);
       final result = await usecase().first;
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: $f'),
         (profiles) => expect(profiles, [testProfile]),
       );

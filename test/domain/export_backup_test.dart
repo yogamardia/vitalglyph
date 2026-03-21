@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
@@ -136,7 +136,7 @@ void main() {
 
       final result = await useCase('pass');
 
-      result.fold(
+      result.match(
         (failure) => expect(failure, isA<BackupFailure>()),
         (_) => fail('Expected Left'),
       );
@@ -153,7 +153,7 @@ void main() {
 
       final result = await useCase('pass');
 
-      result.fold(
+      result.match(
         (failure) {
           // getTemporaryDirectory may fail in test env — acceptable
           expect(failure, isA<BackupFailure>());

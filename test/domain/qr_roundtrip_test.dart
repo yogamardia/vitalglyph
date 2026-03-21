@@ -221,7 +221,7 @@ void main() {
       // Payload should still parse successfully
       final parsed = parse(result.data);
       expect(parsed.isRight(), isTrue);
-      parsed.fold(
+      parsed.match(
         (_) => fail('Should parse'),
         (scanned) {
           expect(scanned.name, 'Alice Smith');
@@ -249,7 +249,7 @@ void main() {
       final qr = generate(makeProfile(name: 'Test User')).data;
       final result = parse(qr);
       expect(result.isRight(), isTrue);
-      result.fold(
+      result.match(
         (_) => fail('Should be Right'),
         (p) => expect(p.name, 'Test User'),
       );
@@ -291,7 +291,7 @@ void main() {
       final qr = generate(profile).data;
       final result = parse(qr);
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got: $f'),
         (scanned) {
           expect(scanned.name, 'Alice Smith');
@@ -326,7 +326,7 @@ void main() {
       // Tamper by replacing name in the raw string
       final tampered = qr.replaceFirst('N:Alice', 'N:Mallory');
       final result = parse(tampered);
-      result.fold(
+      result.match(
         (f) => fail('Should parse but with invalid sig'),
         (scanned) {
           expect(scanned.name, 'Mallory');
@@ -339,7 +339,7 @@ void main() {
       final profile = makeProfile(name: "O'Brien, Jr.");
       final qr = generate(profile).data;
       final result = parse(qr);
-      result.fold(
+      result.match(
         (f) => fail('Expected Right: $f'),
         (scanned) => expect(scanned.name, "O'Brien, Jr."),
       );
@@ -355,7 +355,7 @@ void main() {
         updatedAt: now,
       );
       final result = parse(generate(profile).data);
-      result.fold(
+      result.match(
         (f) => fail('Expected Right: $f'),
         (scanned) {
           expect(scanned.name, 'Minimal User');

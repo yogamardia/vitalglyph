@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
 import 'package:vitalglyph/core/error/failures.dart';
@@ -26,7 +26,7 @@ class ExportBackup {
 
       Failure? failure;
       List<Profile>? profiles;
-      streamResult.fold(
+      streamResult.match(
         (f) => failure = f,
         (p) => profiles = p,
       );

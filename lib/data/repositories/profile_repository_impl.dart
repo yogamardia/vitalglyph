@@ -1,5 +1,5 @@
-import 'package:dartz/dartz.dart';
 import 'package:drift/drift.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/error/failures.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';

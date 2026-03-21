@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
 import 'package:vitalglyph/core/error/failures.dart';
@@ -63,7 +63,7 @@ class ImportBackup {
         }
 
         final createResult = await _repository.createProfile(profile);
-        createResult.fold(
+        createResult.match(
           (_) {/* silent: individual failure doesn't abort the whole import */},
           (_) => imported++,
         );

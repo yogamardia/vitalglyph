@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/error/failures.dart';
 import 'package:vitalglyph/domain/entities/scanned_profile.dart';

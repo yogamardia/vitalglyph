@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:vitalglyph/core/error/failures.dart';

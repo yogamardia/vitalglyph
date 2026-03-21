@@ -85,7 +85,7 @@ void main() {
     test('generates valid PDF bytes for full profile', () async {
       final result = await useCase(fullProfile());
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: ${f.message}'),
         (pdfBytes) {
           expect(pdfBytes, isNotEmpty);
@@ -101,7 +101,7 @@ void main() {
     test('generates valid PDF for minimal profile (no optional data)', () async {
       final result = await useCase(minimalProfile());
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right, got Left: ${f.message}'),
         (pdfBytes) {
           expect(pdfBytes, isNotEmpty);
@@ -133,7 +133,7 @@ void main() {
       // Profile with no conditions, medications, contacts, or notes
       final result = await useCase(minimalProfile());
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (pdfBytes) {
           // Just verify it produces valid PDF — the "No additional medical
@@ -146,7 +146,7 @@ void main() {
     test('generates PDF with all back page sections', () async {
       final result = await useCase(fullProfile());
 
-      result.fold(
+      result.match(
         (f) => fail('Expected Right'),
         (pdfBytes) => expect(pdfBytes.length, greaterThan(100)),
       );
@@ -200,7 +200,7 @@ void main() {
       // the return type is correct for the success path.
       final result = await useCase(fullProfile());
 
-      result.fold(
+      result.match(
         (failure) => expect(failure, isA<PdfFailure>()),
         (bytes) => expect(bytes, isNotEmpty),
       );

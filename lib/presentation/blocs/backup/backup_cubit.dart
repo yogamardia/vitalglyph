@@ -22,7 +22,7 @@ class BackupCubit extends Cubit<BackupState> {
     emit(const BackupLoading());
 
     final result = await _exportBackup(passphrase);
-    await result.fold(
+    await result.match(
       (failure) async => emit(BackupError(failure.message)),
       (filePath) async {
         await SharePlus.instance.share(
@@ -41,7 +41,7 @@ class BackupCubit extends Cubit<BackupState> {
     emit(const BackupLoading());
 
     final result = await _importBackup(filePath, passphrase);
-    result.fold(
+    result.match(
       (failure) => emit(BackupError(failure.message)),
       (importResult) => emit(BackupImportSuccess(importResult)),
     );
