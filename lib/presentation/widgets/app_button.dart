@@ -218,6 +218,7 @@ class AppButton extends StatelessWidget {
     }
     switch (variant) {
       case AppButtonVariant.primary:
+        return cs.onPrimary;
       case AppButtonVariant.danger:
         return Colors.white;
       case AppButtonVariant.secondary:

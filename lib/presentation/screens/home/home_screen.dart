@@ -324,7 +324,7 @@ class _NavBarItem extends StatelessWidget {
                   ),
                   child: Icon(
                     icon,
-                    color: Colors.white,
+                    color: cs.onPrimary,
                     size: 28,
                   ),
                 )
@@ -642,9 +642,9 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.add_rounded,
-                      color: Colors.white,
+                      color: cs.onPrimary,
                       size: 28,
                     ),
                   ),

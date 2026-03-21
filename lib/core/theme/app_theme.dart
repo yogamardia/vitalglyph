@@ -22,10 +22,14 @@ class AppTheme {
       error: _errorColor,
     );
     return ThemeData(
+      brightness: Brightness.light,
       useMaterial3: true,
       colorScheme: cs,
       extensions: const [VitalGlyphColors.light],
-      textTheme: _buildTextTheme(),
+      textTheme: _buildTextTheme().apply(
+        bodyColor: cs.onSurface,
+        displayColor: cs.onSurface,
+      ),
       scaffoldBackgroundColor: const Color(0xFFFFFFFF),
       appBarTheme: AppBarThemeData(
         centerTitle: false,
@@ -159,10 +163,14 @@ class AppTheme {
       brightness: Brightness.dark,
     );
     return ThemeData(
+      brightness: Brightness.dark,
       useMaterial3: true,
       colorScheme: cs,
       extensions: const [VitalGlyphColors.dark],
-      textTheme: _buildTextTheme(),
+      textTheme: _buildTextTheme().apply(
+        bodyColor: cs.onSurface,
+        displayColor: cs.onSurface,
+      ),
       scaffoldBackgroundColor: const Color(0xFF020617),
       appBarTheme: AppBarThemeData(
         centerTitle: false,
