@@ -1,0 +1,24 @@
+VitalGlyph is a privacy-first emergency medical ID app that keeps your critical health information accessible when it matters most — without accounts, cloud sync, or internet connectivity.
+
+<b>Features</b>
+
+• <b>Multiple profiles</b> — Store medical IDs for your whole family
+• <b>Emergency QR codes</b> — First responders scan to see allergies, medications, conditions, and emergency contacts
+• <b>Offline-first</b> — Everything stays on your device. No accounts, no servers, no tracking
+• <b>PIN & biometric lock</b> — Protect sensitive medical data with PIN or fingerprint
+• <b>Emergency PDF cards</b> — Generate printable credit-card-sized medical ID cards
+• <b>Home screen widget</b> — Quick access to your QR code without unlocking the app
+• <b>Encrypted backups</b> — Export and import your data with passphrase-protected .medid files
+• <b>QR scanner</b> — Scan other VitalGlyph QR codes to view medical information
+
+<b>Your data stays yours</b>
+
+VitalGlyph never connects to external servers. Your medical information is stored locally on your device and encrypted at rest. Backups are encrypted with AES-256 before leaving the app.
+
+<b>Built for emergencies</b>
+
+When seconds count, VitalGlyph makes critical health information instantly accessible. The QR code contains allergies, medications, blood type, and emergency contacts — everything a first responder needs.
+
+<b>Open source</b>
+
+VitalGlyph is free and open source software, licensed under the Mozilla Public License 2.0. Audit the code, contribute improvements, or build your own version.

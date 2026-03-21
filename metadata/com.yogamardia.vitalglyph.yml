@@ -1,0 +1,43 @@
+Categories:
+  - Science & Education
+  - Security
+
+License: MPL-2.0
+
+AuthorName: Yoga Mardia
+SourceCode: https://github.com/yogamardia/vitalglyph
+IssueTracker: https://github.com/yogamardia/vitalglyph/issues
+
+AutoName: VitalGlyph
+
+RepoType: git
+Repo: https://github.com/yogamardia/vitalglyph.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    output: build/app/outputs/flutter-apk/app-release.apk
+    srclibs:
+      - flutter@3.41.0
+    rm:
+      - ios
+      - macos
+      - windows
+      - linux
+      - web
+    prebuild:
+      - export PATH="$$flutter$$/bin:$PATH"
+      - flutter pub get
+    build:
+      - export PATH="$$flutter$$/bin:$PATH"
+      - flutter build apk --release
+
+AntiFeatures:
+  NonFreeDep:
+    en-US: Uses Google ML Kit for barcode scanning (bundled, no network calls).
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

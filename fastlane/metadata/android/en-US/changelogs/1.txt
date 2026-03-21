@@ -1,0 +1,9 @@
+Initial release.
+
+• Multiple medical ID profiles with allergies, medications, conditions, and emergency contacts
+• Emergency QR code generation and scanning
+• PIN and biometric authentication
+• Emergency PDF card generation
+• Home screen widget with QR code
+• Encrypted backup and restore
+• Fully offline — no accounts or servers required
