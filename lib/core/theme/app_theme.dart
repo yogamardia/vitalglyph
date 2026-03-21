@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 class AppTheme {
   AppTheme._();
+
+  static const String _headingFont = 'PlusJakartaSans';
+  static const String _bodyFont = 'Inter';
 
   static const Color _seedColorLight = Color(0xFF0F172A);
   static const Color _seedColorDark = Color(0xFFF8FAFC);
@@ -32,7 +34,8 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         foregroundColor: cs.onSurface,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
+        titleTextStyle: TextStyle(
+          fontFamily: _headingFont,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: cs.onSurface,
@@ -71,12 +74,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: const BorderSide(color: _errorColor, width: 1.5),
         ),
-        labelStyle: GoogleFonts.inter(
+        labelStyle: const TextStyle(
+          fontFamily: _bodyFont,
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF64748B),
+          color: Color(0xFF64748B),
         ),
-        hintStyle: GoogleFonts.inter(
-          color: const Color(0xFF94A3B8),
+        hintStyle: const TextStyle(
+          fontFamily: _bodyFont,
+          color: Color(0xFF94A3B8),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -89,7 +94,8 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size(0, 56),
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 16,
             fontWeight: FontWeight.w700,
             letterSpacing: 0,
@@ -105,7 +111,8 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
           foregroundColor: _seedColorLight,
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -118,7 +125,8 @@ class AppTheme {
           ),
           minimumSize: const Size(0, 48),
           foregroundColor: _seedColorLight,
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
@@ -163,7 +171,8 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         foregroundColor: cs.onSurface,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
+        titleTextStyle: TextStyle(
+          fontFamily: _headingFont,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: cs.onSurface,
@@ -202,12 +211,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
         ),
-        labelStyle: GoogleFonts.inter(
+        labelStyle: const TextStyle(
+          fontFamily: _bodyFont,
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF94A3B8),
+          color: Color(0xFF94A3B8),
         ),
-        hintStyle: GoogleFonts.inter(
-          color: const Color(0xFF475569),
+        hintStyle: const TextStyle(
+          fontFamily: _bodyFont,
+          color: Color(0xFF475569),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -220,7 +231,8 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size(0, 56),
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 16,
             fontWeight: FontWeight.w700,
             letterSpacing: 0,
@@ -236,7 +248,8 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           side: const BorderSide(color: Color(0xFF334155), width: 1.5),
           foregroundColor: _seedColorDark,
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -249,7 +262,8 @@ class AppTheme {
           ),
           minimumSize: const Size(0, 48),
           foregroundColor: _seedColorDark,
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: _headingFont,
             fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
@@ -272,67 +286,79 @@ class AppTheme {
   }
 
   static TextTheme _buildTextTheme() {
-    return TextTheme(
-      headlineLarge: GoogleFonts.plusJakartaSans(
+    return const TextTheme(
+      headlineLarge: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 32,
         fontWeight: FontWeight.w800,
         letterSpacing: -1.2,
         height: 1.1,
       ),
-      headlineMedium: GoogleFonts.plusJakartaSans(
+      headlineMedium: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 28,
         fontWeight: FontWeight.w800,
         letterSpacing: -1,
         height: 1.2,
       ),
-      headlineSmall: GoogleFonts.plusJakartaSans(
+      headlineSmall: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 24,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.8,
         height: 1.2,
       ),
-      titleLarge: GoogleFonts.plusJakartaSans(
+      titleLarge: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 20,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
       ),
-      titleMedium: GoogleFonts.plusJakartaSans(
+      titleMedium: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 18,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.2,
       ),
-      titleSmall: GoogleFonts.plusJakartaSans(
+      titleSmall: TextStyle(
+        fontFamily: _headingFont,
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 17,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.3,
         height: 1.5,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 15,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.1,
         height: 1.5,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 13,
         fontWeight: FontWeight.w400,
         height: 1.4,
       ),
-      labelLarge: GoogleFonts.inter(
+      labelLarge: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.2,
       ),
-      labelMedium: GoogleFonts.inter(
+      labelMedium: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 12,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       ),
-      labelSmall: GoogleFonts.inter(
+      labelSmall: TextStyle(
+        fontFamily: _bodyFont,
         fontSize: 10,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.8,
