@@ -5,9 +5,10 @@ import 'package:local_auth/local_auth.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
 import 'package:vitalglyph/core/crypto/backup_crypto_service.dart';
 import 'package:vitalglyph/core/crypto/encryption_service.dart';
-import 'package:vitalglyph/core/services/incoming_file_service.dart';
 import 'package:vitalglyph/core/crypto/hmac_service.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
+import 'package:vitalglyph/core/services/app_preferences.dart';
+import 'package:vitalglyph/core/services/incoming_file_service.dart';
 import 'package:vitalglyph/data/datasources/local_database.dart';
 import 'package:vitalglyph/data/repositories/profile_repository_impl.dart';
 import 'package:vitalglyph/data/services/widget_service.dart';
@@ -24,7 +25,6 @@ import 'package:vitalglyph/domain/usecases/watch_all_profiles.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
-import 'package:vitalglyph/core/services/app_preferences.dart';
 import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 
 final GetIt sl = GetIt.instance;
@@ -36,12 +36,12 @@ Future<void> configureDependencies() async {
   );
 
   // ── Crypto Services ───────────────────────────
-  sl.registerLazySingleton<HmacService>(() => HmacService());
+  sl.registerLazySingleton<HmacService>(HmacService.new);
   sl.registerLazySingleton<PinService>(
       () => PinService(sl<FlutterSecureStorage>()));
   sl.registerLazySingleton<AuthSettingsService>(
       () => AuthSettingsService(sl<FlutterSecureStorage>()));
-  sl.registerLazySingleton<LocalAuthentication>(() => LocalAuthentication());
+  sl.registerLazySingleton<LocalAuthentication>(LocalAuthentication.new);
   sl.registerLazySingleton<EncryptionService>(
       () => EncryptionService(sl<FlutterSecureStorage>()));
 
@@ -67,7 +67,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory(() => ExportEmergencyCard(sl<GenerateQrData>()));
 
   // ── Backup ────────────────────────────────────
-  sl.registerLazySingleton<BackupCryptoService>(() => BackupCryptoService());
+  sl.registerLazySingleton<BackupCryptoService>(BackupCryptoService.new);
   sl.registerFactory(() => ExportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
   sl.registerFactory(() => ImportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
   sl.registerFactory(
@@ -107,5 +107,5 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton(() => AppPreferences(sl<FlutterSecureStorage>()));
 
   // ── Incoming File ───────────────────────────────
-  sl.registerLazySingleton<IncomingFileService>(() => IncomingFileService());
+  sl.registerLazySingleton<IncomingFileService>(IncomingFileService.new);
 }

@@ -5,21 +5,9 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 /// A reusable glassmorphism container that applies a blur effect and semi-transparent background.
 class GlassContainer extends StatelessWidget {
-  final Widget child;
-  final double blurSigma;
-  final Color? backgroundColor;
-  final Color? borderColor;
-  final BorderRadius? borderRadius;
-  final EdgeInsetsGeometry? padding;
-  final EdgeInsetsGeometry? margin;
-  final Gradient? gradient;
-  final bool enableBlur;
-  final double? width;
-  final double? height;
 
   const GlassContainer({
-    super.key,
-    required this.child,
+    required this.child, super.key,
     this.blurSigma = 20,
     this.backgroundColor,
     this.borderColor,
@@ -31,6 +19,17 @@ class GlassContainer extends StatelessWidget {
     this.width,
     this.height,
   });
+  final Widget child;
+  final double blurSigma;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final Gradient? gradient;
+  final bool enableBlur;
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {

@@ -6,22 +6,21 @@ import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 
 /// A modern settings row that replaces stock ListTile.
 class SettingsTile extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final IconData? leading;
-  final Widget? trailing;
-  final VoidCallback? onTap;
-  final bool destructive;
 
   const SettingsTile({
-    super.key,
-    required this.title,
+    required this.title, super.key,
     this.subtitle,
     this.leading,
     this.trailing,
     this.onTap,
     this.destructive = false,
   });
+  final String title;
+  final String? subtitle;
+  final IconData? leading;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool destructive;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,6 @@ class SettingsTile extends StatelessWidget {
                         color: destructive
                             ? cs.error.withValues(alpha: 0.1)
                             : colors.cardBorder,
-                        width: 1,
                       ),
                     ),
                     child: Icon(leading, size: 20, color: iconColor),
@@ -117,20 +115,17 @@ class SettingsTile extends StatelessWidget {
 /// A settings row with an integrated toggle switch.
 /// Replaces SwitchListTile.
 class SettingsToggleTile extends StatelessWidget {
+
+  const SettingsToggleTile({
+    required this.title, required this.value, required this.onChanged, super.key,
+    this.subtitle,
+    this.leading,
+  });
   final String title;
   final String? subtitle;
   final IconData? leading;
   final bool value;
   final ValueChanged<bool>? onChanged;
-
-  const SettingsToggleTile({
-    super.key,
-    required this.title,
-    this.subtitle,
-    this.leading,
-    required this.value,
-    required this.onChanged,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +160,6 @@ class SettingsToggleTile extends StatelessWidget {
                       color: colors.surfaceSubtle,
                       border: Border.all(
                         color: colors.cardBorder,
-                        width: 1,
                       ),
                     ),
                     child: Icon(leading, size: 20, color: cs.primary),

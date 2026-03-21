@@ -10,14 +10,12 @@ import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 class EmergencyCardScreen extends StatefulWidget {
-  final Profile profile;
-  final ExportEmergencyCard exportEmergencyCard;
 
   const EmergencyCardScreen({
-    super.key,
-    required this.profile,
-    required this.exportEmergencyCard,
+    required this.profile, required this.exportEmergencyCard, super.key,
   });
+  final Profile profile;
+  final ExportEmergencyCard exportEmergencyCard;
 
   @override
   State<EmergencyCardScreen> createState() => _EmergencyCardScreenState();
@@ -42,7 +40,7 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
 
   String _pdfFileName() {
     final safeName = widget.profile.name
-        .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')
+        .replaceAll(RegExp('[^a-zA-Z0-9]'), '_')
         .toLowerCase();
     return 'emergency_card_$safeName.pdf';
   }
@@ -70,12 +68,10 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
           final bytes = snapshot.data!;
           return PdfPreview(
             build: (_) async => bytes,
-            allowPrinting: true,
-            allowSharing: true,
             canChangePageFormat: false,
             canChangeOrientation: false,
             pdfFileName: _pdfFileName(),
-            initialPageFormat: PdfPageFormat(
+            initialPageFormat: const PdfPageFormat(
               8.56 * PdfPageFormat.cm,
               5.398 * PdfPageFormat.cm,
             ),
@@ -102,7 +98,7 @@ class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerPro
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
+    _animation = Tween<double>(begin: -1, end: 2).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -171,8 +167,8 @@ class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerPro
 }
 
 class _SlidingGradientTransform extends GradientTransform {
-  final double slidePercent;
   const _SlidingGradientTransform(this.slidePercent);
+  final double slidePercent;
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
@@ -181,15 +177,15 @@ class _SlidingGradientTransform extends GradientTransform {
 }
 
 class _SkeletonBlock extends StatelessWidget {
-  final double width;
-  final double height;
-  final Gradient gradient;
 
   const _SkeletonBlock({
     required this.width,
     required this.height,
     required this.gradient,
   });
+  final double width;
+  final double height;
+  final Gradient gradient;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +199,7 @@ class _SkeletonBlock extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: ShaderMask(
         blendMode: BlendMode.srcATop,
-        shaderCallback: (bounds) => gradient.createShader(bounds),
+        shaderCallback: gradient.createShader,
         child: Container(color: Colors.white),
       ),
     );
@@ -211,10 +207,10 @@ class _SkeletonBlock extends StatelessWidget {
 }
 
 class _ErrorCard extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
 
   const _ErrorCard({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {

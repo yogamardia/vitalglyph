@@ -8,98 +8,87 @@ enum AppButtonVariant { primary, secondary, ghost, danger }
 
 /// Standardized button widget with loading state support and premium animations.
 class AppButton extends StatelessWidget {
+
+  const AppButton._({
+    required this.label, required this.onPressed, required this.isLoading, required this.variant, super.key,
+    this.icon,
+    this.fullWidth = false,
+  });
+
+  /// Filled pill button with gradient (primary action).
+  const AppButton.primary({
+    required String label, Key? key,
+    VoidCallback? onPressed,
+    bool isLoading = false,
+    IconData? icon,
+    bool fullWidth = false,
+  }) : this._(
+          key: key,
+          label: label,
+          onPressed: onPressed,
+          isLoading: isLoading,
+          icon: icon,
+          fullWidth: fullWidth,
+          variant: AppButtonVariant.primary,
+        );
+
+  /// Outlined pill button with glass border (secondary action).
+  const AppButton.secondary({
+    required String label, Key? key,
+    VoidCallback? onPressed,
+    bool isLoading = false,
+    IconData? icon,
+    bool fullWidth = false,
+  }) : this._(
+          key: key,
+          label: label,
+          onPressed: onPressed,
+          isLoading: isLoading,
+          icon: icon,
+          fullWidth: fullWidth,
+          variant: AppButtonVariant.secondary,
+        );
+
+  /// Text-only button (ghost action).
+  const AppButton.ghost({
+    required String label, Key? key,
+    VoidCallback? onPressed,
+    bool isLoading = false,
+    IconData? icon,
+    bool fullWidth = false,
+  }) : this._(
+          key: key,
+          label: label,
+          onPressed: onPressed,
+          isLoading: isLoading,
+          icon: icon,
+          fullWidth: fullWidth,
+          variant: AppButtonVariant.ghost,
+        );
+
+  /// Red gradient button (destructive action).
+  const AppButton.danger({
+    required String label, Key? key,
+    VoidCallback? onPressed,
+    bool isLoading = false,
+    IconData? icon,
+    bool fullWidth = false,
+  }) : this._(
+          key: key,
+          label: label,
+          onPressed: onPressed,
+          isLoading: isLoading,
+          icon: icon,
+          fullWidth: fullWidth,
+          variant: AppButtonVariant.danger,
+        );
+
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
   final IconData? icon;
   final bool fullWidth;
   final AppButtonVariant variant;
-
-  const AppButton._({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    required this.isLoading,
-    required this.variant,
-    this.icon,
-    this.fullWidth = false,
-  });
-
-  /// Filled pill button with gradient (primary action).
-  static AppButton primary({
-    Key? key,
-    required String label,
-    VoidCallback? onPressed,
-    bool isLoading = false,
-    IconData? icon,
-    bool fullWidth = false,
-  }) =>
-      AppButton._(
-        key: key,
-        label: label,
-        onPressed: onPressed,
-        isLoading: isLoading,
-        icon: icon,
-        fullWidth: fullWidth,
-        variant: AppButtonVariant.primary,
-      );
-
-  /// Outlined pill button with glass border (secondary action).
-  static AppButton secondary({
-    Key? key,
-    required String label,
-    VoidCallback? onPressed,
-    bool isLoading = false,
-    IconData? icon,
-    bool fullWidth = false,
-  }) =>
-      AppButton._(
-        key: key,
-        label: label,
-        onPressed: onPressed,
-        isLoading: isLoading,
-        icon: icon,
-        fullWidth: fullWidth,
-        variant: AppButtonVariant.secondary,
-      );
-
-  /// Text-only button (ghost action).
-  static AppButton ghost({
-    Key? key,
-    required String label,
-    VoidCallback? onPressed,
-    bool isLoading = false,
-    IconData? icon,
-    bool fullWidth = false,
-  }) =>
-      AppButton._(
-        key: key,
-        label: label,
-        onPressed: onPressed,
-        isLoading: isLoading,
-        icon: icon,
-        fullWidth: fullWidth,
-        variant: AppButtonVariant.ghost,
-      );
-
-  /// Red gradient button (destructive action).
-  static AppButton danger({
-    Key? key,
-    required String label,
-    VoidCallback? onPressed,
-    bool isLoading = false,
-    IconData? icon,
-    bool fullWidth = false,
-  }) =>
-      AppButton._(
-        key: key,
-        label: label,
-        onPressed: onPressed,
-        isLoading: isLoading,
-        icon: icon,
-        fullWidth: fullWidth,
-        variant: AppButtonVariant.danger,
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +172,7 @@ class AppButton extends StatelessWidget {
     if (isLoading) {
       // Shimmer loading state placeholder - using a simple fade for now
       return TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.4, end: 1.0),
+        tween: Tween(begin: 0.4, end: 1),
         duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOut,
         builder: (context, value, child) => Opacity(

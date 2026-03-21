@@ -34,10 +34,10 @@ void main() {
       when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
           .thenAnswer((_) async {});
 
-      await service.setAuthEnabled(true);
+      await service.setAuthEnabled(enabled: true);
       verify(() => storage.write(key: 'vitalglyph_auth_enabled', value: 'true')).called(1);
 
-      await service.setAuthEnabled(false);
+      await service.setAuthEnabled(enabled: false);
       verify(() => storage.write(key: 'vitalglyph_auth_enabled', value: 'false')).called(1);
     });
   });
@@ -61,7 +61,7 @@ void main() {
       when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
           .thenAnswer((_) async {});
 
-      await service.setBiometricEnabled(true);
+      await service.setBiometricEnabled(enabled: true);
       verify(() => storage.write(
             key: 'vitalglyph_biometric_enabled',
             value: 'true',

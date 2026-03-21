@@ -20,13 +20,13 @@ class AuthNotRequired extends AuthState {
 
 /// Auth is required — show the lock screen.
 class AuthRequired extends AuthState {
-  final bool canUseBiometric;
-  final bool hasPinSet;
 
   const AuthRequired({
     required this.canUseBiometric,
     required this.hasPinSet,
   });
+  final bool canUseBiometric;
+  final bool hasPinSet;
 
   @override
   List<Object?> get props => [canUseBiometric, hasPinSet];
@@ -41,18 +41,18 @@ class AuthAuthenticated extends AuthState {
 
 /// An auth attempt failed.
 class AuthFailure extends AuthState {
-  final String message;
 
   const AuthFailure(this.message);
+  final String message;
   @override
   List<Object?> get props => [message];
 }
 
 /// Too many failed attempts — locked out for [remaining] duration.
 class AuthLockedOut extends AuthState {
-  final Duration remaining;
 
   const AuthLockedOut(this.remaining);
+  final Duration remaining;
   @override
   List<Object?> get props => [remaining];
 }

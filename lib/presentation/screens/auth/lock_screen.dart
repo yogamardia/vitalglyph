@@ -1,26 +1,25 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Overlay shown when [AuthRequired] — user must authenticate to proceed.
 class LockScreen extends StatefulWidget {
-  final bool canUseBiometric;
-  final bool hasPinSet;
 
   const LockScreen({
-    super.key,
-    required this.canUseBiometric,
-    required this.hasPinSet,
+    required this.canUseBiometric, required this.hasPinSet, super.key,
   });
+  final bool canUseBiometric;
+  final bool hasPinSet;
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -60,14 +59,14 @@ class _LockScreenState extends State<LockScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.03).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     if (widget.canUseBiometric) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await Future.delayed(const Duration(milliseconds: 800));
-        if (mounted) _triggerBiometric();
+        await Future<void>.delayed(const Duration(milliseconds: 800));
+        if (mounted) unawaited(_triggerBiometric());
       });
     }
   }
@@ -128,14 +127,14 @@ class _LockScreenState extends State<LockScreen>
     if (!mounted) return;
     final state = cubit.state;
     if (state is AuthFailure) {
-      HapticFeedback.heavyImpact();
-      _shakeController.forward(from: 0);
+      unawaited(HapticFeedback.heavyImpact());
+      unawaited(_shakeController.forward(from: 0));
       setState(() {
         _errorMessage = state.message;
         _entered = '';
       });
     } else if (state is AuthLockedOut) {
-      HapticFeedback.heavyImpact();
+      unawaited(HapticFeedback.heavyImpact());
       _startLockoutCountdown(state.remaining);
       setState(() => _entered = '');
     }
@@ -318,11 +317,11 @@ class _LockScreenState extends State<LockScreen>
 }
 
 class _PinDots extends StatelessWidget {
+
+  const _PinDots({required this.entered, required this.total, required this.colors});
   final int entered;
   final int total;
   final VitalGlyphColors colors;
-
-  const _PinDots({required this.entered, required this.total, required this.colors});
 
   @override
   Widget build(BuildContext context) {
@@ -368,19 +367,18 @@ class _PinDots extends StatelessWidget {
 }
 
 class _NumPad extends StatelessWidget {
+
+  const _NumPad({
+    required this.onDigit,
+    required this.onDelete,
+    required this.colors, this.onBiometric,
+    this.disabled = false,
+  });
   final void Function(String) onDigit;
   final VoidCallback onDelete;
   final VoidCallback? onBiometric;
   final bool disabled;
   final VitalGlyphColors colors;
-
-  const _NumPad({
-    required this.onDigit,
-    required this.onDelete,
-    this.onBiometric,
-    this.disabled = false,
-    required this.colors,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -474,10 +472,6 @@ class _NumPad extends StatelessWidget {
 }
 
 class _PadButton extends StatelessWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final VitalGlyphColors colors;
-  final bool enableGlow;
 
   const _PadButton({
     required this.child,
@@ -485,6 +479,10 @@ class _PadButton extends StatelessWidget {
     required this.colors,
     this.enableGlow = false,
   });
+  final Widget child;
+  final VoidCallback? onTap;
+  final VitalGlyphColors colors;
+  final bool enableGlow;
 
   @override
   Widget build(BuildContext context) {
@@ -509,11 +507,6 @@ class _PadButton extends StatelessWidget {
 }
 
 class _HeaderAction extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-  final VitalGlyphColors colors;
-  final double size;
-  final double iconSize;
 
   const _HeaderAction({
     required this.icon,
@@ -522,6 +515,11 @@ class _HeaderAction extends StatelessWidget {
     this.size = 40,
     this.iconSize = 20,
   });
+  final IconData icon;
+  final VoidCallback onPressed;
+  final VitalGlyphColors colors;
+  final double size;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {

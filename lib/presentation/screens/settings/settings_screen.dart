@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,16 +8,15 @@ import 'package:local_auth/local_auth.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/core/crypto/auth_settings_service.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/core/router/app_router.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/theme/theme_cubit.dart';
 import 'package:vitalglyph/presentation/screens/auth/pin_setup_screen.dart';
-import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
 import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
 import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
@@ -95,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (set != true) return;
       setState(() => _hasPin = true);
     }
-    await _authSettings.setAuthEnabled(enabled);
+    await _authSettings.setAuthEnabled(enabled: enabled);
     if (!mounted) return;
     setState(() => _authEnabled = enabled);
     if (!enabled) {
@@ -104,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _toggleBiometric(bool enabled) async {
-    await _authSettings.setBiometricEnabled(enabled);
+    await _authSettings.setBiometricEnabled(enabled: enabled);
     setState(() => _biometricEnabled = enabled);
   }
 
@@ -112,7 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final set = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => const PinSetupScreen()),
     );
-    if (set == true && mounted) {
+    if ((set ?? false) && mounted) {
       setState(() => _hasPin = true);
       AppSnackBar.success(context, context.l10n.settingsPinUpdated);
     }
@@ -128,7 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
     if (confirm != true) return;
     await _pinService.clearPin();
-    await _authSettings.setAuthEnabled(false);
+    await _authSettings.setAuthEnabled(enabled: false);
     if (mounted) {
       setState(() {
         _hasPin = false;
@@ -139,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showTimeoutPicker() async {
-    HapticFeedback.selectionClick();
+    unawaited(HapticFeedback.selectionClick());
     final l10n = context.l10n;
     final selected = await AppBottomSheet.show<LockTimeout>(
       context,
@@ -164,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showDisclaimer(BuildContext context) {
     final l10n = context.l10n;
-    AppBottomSheet.show(
+    AppBottomSheet.show<void>(
       context,
       title: l10n.disclaimerTitle,
       child: Text(
@@ -305,7 +306,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: context.l10n.settingsVersion,
               trailing: Text(
                 _appVersion,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -331,9 +332,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 class _ThemeSelectorInternal extends StatelessWidget {
-  final ThemeMode mode;
 
   const _ThemeSelectorInternal({required this.mode});
+  final ThemeMode mode;
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +348,6 @@ class _ThemeSelectorInternal extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
           color: colors.cardBorder,
-          width: 1,
         ),
       ),
       child: Stack(
@@ -415,10 +415,6 @@ class _ThemeSelectorInternal extends StatelessWidget {
 }
 
 class _ThemeOption extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
 
   const _ThemeOption({
     required this.label,
@@ -426,6 +422,10 @@ class _ThemeOption extends StatelessWidget {
     required this.selected,
     required this.onTap,
   });
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {

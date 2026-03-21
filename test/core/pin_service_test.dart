@@ -67,7 +67,8 @@ void main() {
     });
 
     test('different PINs produce different hashes', () async {
-      String? hash1, hash2;
+      String? hash1;
+      String? hash2;
 
       when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
           .thenAnswer((invocation) async {

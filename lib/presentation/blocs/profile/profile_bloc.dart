@@ -7,10 +7,6 @@ import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final WatchAllProfiles _watchAllProfiles;
-  final CreateProfile _createProfile;
-  final UpdateProfile _updateProfile;
-  final DeleteProfile _deleteProfile;
 
   ProfileBloc({
     required WatchAllProfiles watchAllProfiles,
@@ -27,6 +23,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileUpdateRequested>(_onUpdateRequested);
     on<ProfileDeleteRequested>(_onDeleteRequested);
   }
+  final WatchAllProfiles _watchAllProfiles;
+  final CreateProfile _createProfile;
+  final UpdateProfile _updateProfile;
+  final DeleteProfile _deleteProfile;
 
   Future<void> _onWatchStarted(
     ProfilesWatchStarted event,
@@ -37,7 +37,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       _watchAllProfiles(),
       onData: (result) => result.fold(
         (failure) => ProfileError(failure.message),
-        (profileList) => ProfileLoaded(profileList),
+        ProfileLoaded.new,
       ),
       onError: (error, _) => const ProfileError('Unexpected error'),
     );

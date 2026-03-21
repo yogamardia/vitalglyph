@@ -1,30 +1,31 @@
 import 'package:equatable/equatable.dart';
+import 'package:vitalglyph/domain/entities/profile.dart' show Profile;
 
 class ScannedAllergy extends Equatable {
-  final String name;
-  final String severity;
-  final String? reaction;
 
   const ScannedAllergy({
     required this.name,
     required this.severity,
     this.reaction,
   });
+  final String name;
+  final String severity;
+  final String? reaction;
 
   @override
   List<Object?> get props => [name, severity, reaction];
 }
 
 class ScannedContact extends Equatable {
-  final String name;
-  final String phone;
-  final String? relationship;
 
   const ScannedContact({
     required this.name,
     required this.phone,
     this.relationship,
   });
+  final String name;
+  final String phone;
+  final String? relationship;
 
   @override
   List<Object?> get props => [name, phone, relationship];
@@ -34,6 +35,21 @@ class ScannedContact extends Equatable {
 /// Intentionally separate from [Profile] — it has no database ID
 /// and is only displayed, never persisted.
 class ScannedProfile extends Equatable {
+
+  const ScannedProfile({
+    required this.name,
+    required this.signatureValid, this.dateOfBirth,
+    this.bloodType,
+    this.biologicalSex,
+    this.heightCm,
+    this.weightKg,
+    this.allergies = const [],
+    this.medications = const [],
+    this.conditions = const [],
+    this.emergencyContacts = const [],
+    this.isOrganDonor = false,
+    this.language,
+  });
   final String name;
   final String? dateOfBirth;
   final String? bloodType;
@@ -50,22 +66,6 @@ class ScannedProfile extends Equatable {
   /// the QR data may be corrupted or generated outside VitalGlyph — it does
   /// NOT imply cryptographic tamper-proofing (the key is public).
   final bool signatureValid;
-
-  const ScannedProfile({
-    required this.name,
-    this.dateOfBirth,
-    this.bloodType,
-    this.biologicalSex,
-    this.heightCm,
-    this.weightKg,
-    this.allergies = const [],
-    this.medications = const [],
-    this.conditions = const [],
-    this.emergencyContacts = const [],
-    this.isOrganDonor = false,
-    this.language,
-    required this.signatureValid,
-  });
 
   @override
   List<Object?> get props => [

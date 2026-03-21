@@ -15,10 +15,10 @@ import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 
 /// Result of a successful import operation.
 class ImportResult extends Equatable {
-  final int imported;
-  final int skipped;
 
   const ImportResult({required this.imported, required this.skipped});
+  final int imported;
+  final int skipped;
 
   @override
   List<Object?> get props => [imported, skipped];
@@ -29,10 +29,10 @@ class ImportResult extends Equatable {
 /// Merge strategy: profiles whose ID already exists in the database are
 /// skipped; all others are created as new profiles.
 class ImportBackup {
-  final ProfileRepository _repository;
-  final BackupCryptoService _crypto;
 
   ImportBackup(this._repository, this._crypto);
+  final ProfileRepository _repository;
+  final BackupCryptoService _crypto;
 
   Future<Either<Failure, ImportResult>> call(
     String filePath,
@@ -49,8 +49,8 @@ class ImportBackup {
       final map = jsonDecode(json) as Map<String, dynamic>;
       final profilesList = (map['profiles'] as List<dynamic>?) ?? [];
 
-      int imported = 0;
-      int skipped = 0;
+      var imported = 0;
+      var skipped = 0;
 
       for (final raw in profilesList) {
         final profile = _profileFromJson(raw as Map<String, dynamic>);

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:vitalglyph/core/services/screen_protection_service.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_cubit.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/qr_code_widget.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Full-screen QR display optimised for emergency scanning.
 class QrDisplayScreen extends StatefulWidget {
-  final Profile profile;
 
-  const QrDisplayScreen({super.key, required this.profile});
+  const QrDisplayScreen({required this.profile, super.key});
+  final Profile profile;
 
   @override
   State<QrDisplayScreen> createState() => _QrDisplayScreenState();
@@ -95,7 +95,7 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
                   fontSize: 12,
                   color: colors.emergencyRed,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
+                  letterSpacing: 1,
                 ),
               ),
             ),
@@ -193,8 +193,8 @@ class _QrDisplayScreenState extends State<QrDisplayScreen> {
 }
 
 class _QrFrame extends StatefulWidget {
-  final Widget child;
   const _QrFrame({required this.child});
+  final Widget child;
 
   @override
   State<_QrFrame> createState() => _QrFrameState();
@@ -211,7 +211,7 @@ class _QrFrameState extends State<_QrFrame> with SingleTickerProviderStateMixin 
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
+    _animation = Tween<double>(begin: 0.4, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -243,8 +243,8 @@ class _QrFrameState extends State<_QrFrame> with SingleTickerProviderStateMixin 
 }
 
 class _QrFramePainter extends CustomPainter {
-  final Color color;
   _QrFramePainter({required this.color});
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -271,15 +271,15 @@ class _QrFramePainter extends CustomPainter {
 }
 
 class _EmergencyPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
 
   const _EmergencyPill({
     required this.icon,
     required this.label,
     required this.color,
   });
+  final IconData icon;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -309,10 +309,10 @@ class _EmergencyPill extends StatelessWidget {
 }
 
 class _StaggeredEntry extends StatefulWidget {
-  final Widget child;
-  final int index;
 
   const _StaggeredEntry({required this.child, required this.index});
+  final Widget child;
+  final int index;
 
   @override
   State<_StaggeredEntry> createState() => _StaggeredEntryState();

@@ -8,9 +8,9 @@ import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Emergency-optimised read-only view of a scanned Medical ID.
 class ScannedProfileView extends StatelessWidget {
-  final ScannedProfile profile;
 
-  const ScannedProfileView({super.key, required this.profile});
+  const ScannedProfileView({required this.profile, super.key});
+  final ScannedProfile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +105,7 @@ class _TamperWarningState extends State<_TamperWarning> with SingleTickerProvide
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(
+    _animation = Tween<double>(begin: 0.3, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -168,9 +168,9 @@ class _TamperWarningState extends State<_TamperWarning> with SingleTickerProvide
 }
 
 class _HeaderCard extends StatelessWidget {
-  final ScannedProfile profile;
 
   const _HeaderCard({required this.profile});
+  final ScannedProfile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -253,11 +253,11 @@ class _HeaderCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
+
+  const _InfoRow({required this.label, required this.value, this.valueStyle});
   final String label;
   final String value;
   final TextStyle? valueStyle;
-
-  const _InfoRow({required this.label, required this.value, this.valueStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -296,11 +296,6 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<Widget> children;
-  final Color? titleColor;
-  final Color? iconColor;
 
   const _SectionCard({
     required this.title,
@@ -309,6 +304,11 @@ class _SectionCard extends StatelessWidget {
     this.titleColor,
     this.iconColor,
   });
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+  final Color? titleColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +337,6 @@ class _SectionCard extends StatelessWidget {
               border: Border(
                 bottom: BorderSide(
                   color: (titleColor ?? defaultColor).withValues(alpha: 0.1),
-                  width: 1,
                 ),
               ),
             ),
@@ -370,9 +369,9 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _AllergyRow extends StatelessWidget {
-  final ScannedAllergy allergy;
 
   const _AllergyRow({required this.allergy});
+  final ScannedAllergy allergy;
 
   @override
   Widget build(BuildContext context) {
@@ -422,10 +421,10 @@ class _AllergyRow extends StatelessWidget {
 }
 
 class _SeverityBadge extends StatelessWidget {
-  final String label;
-  final Color color;
 
   const _SeverityBadge({required this.label, required this.color});
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -435,7 +434,6 @@ class _SeverityBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
           color: color.withValues(alpha: 0.2),
-          width: 1,
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -453,9 +451,9 @@ class _SeverityBadge extends StatelessWidget {
 }
 
 class _BulletRow extends StatelessWidget {
-  final String text;
 
   const _BulletRow({required this.text});
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -491,9 +489,9 @@ class _BulletRow extends StatelessWidget {
 }
 
 class _ContactRow extends StatelessWidget {
-  final ScannedContact contact;
 
   const _ContactRow({required this.contact});
+  final ScannedContact contact;
 
   @override
   Widget build(BuildContext context) {

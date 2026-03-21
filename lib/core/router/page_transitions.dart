@@ -17,7 +17,7 @@ class PageTransitions {
       transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final position = Tween<Offset>(
-          begin: const Offset(0.0, 1.0),
+          begin: const Offset(0, 1),
           end: Offset.zero,
         ).animate(CurvedAnimation(
           parent: animation,
@@ -44,7 +44,7 @@ class PageTransitions {
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scale = Tween(begin: 0.97, end: 1.0).animate(animation);
+        final scale = Tween<double>(begin: 0.97, end: 1).animate(animation);
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
@@ -64,9 +64,8 @@ class PageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
-      transitionDuration: const Duration(milliseconds: 300),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scale = Tween(begin: 0.9, end: 1.0).animate(CurvedAnimation(
+        final scale = Tween<double>(begin: 0.9, end: 1).animate(CurvedAnimation(
           parent: animation,
           curve: Curves.easeOutBack,
         ));
@@ -92,7 +91,7 @@ class PageTransitions {
       transitionDuration: const Duration(milliseconds: 400),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final enterTween = Tween<Offset>(
-          begin: const Offset(1.0, 0.0),
+          begin: const Offset(1, 0),
           end: Offset.zero,
         ).animate(CurvedAnimation(
           parent: animation,
@@ -101,14 +100,14 @@ class PageTransitions {
 
         final exitTween = Tween<Offset>(
           begin: Offset.zero,
-          end: const Offset(-0.15, 0.0),
+          end: const Offset(-0.15, 0),
         ).animate(CurvedAnimation(
           parent: secondaryAnimation,
           curve: Curves.easeOut,
         ));
 
         final exitOpacity = Tween<double>(
-          begin: 1.0,
+          begin: 1,
           end: 0.8,
         ).animate(secondaryAnimation);
 
@@ -136,10 +135,10 @@ class PageTransitions {
       child: child,
       transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scale = Tween(begin: 0.95, end: 1.0).animate(
+        final scale = Tween<double>(begin: 0.95, end: 1).animate(
           CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         );
-        final blur = Tween(begin: 15.0, end: 0.0).animate(animation);
+        final blur = Tween<double>(begin: 15, end: 0).animate(animation);
 
         return AnimatedBuilder(
           animation: animation,

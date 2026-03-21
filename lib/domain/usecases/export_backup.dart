@@ -15,10 +15,10 @@ import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 /// Serializes all profiles to JSON, encrypts with PBKDF2+AES-256-CBC,
 /// writes to a temp `.medid` file, and returns the file path for sharing.
 class ExportBackup {
-  final ProfileRepository _repository;
-  final BackupCryptoService _crypto;
 
   ExportBackup(this._repository, this._crypto);
+  final ProfileRepository _repository;
+  final BackupCryptoService _crypto;
 
   Future<Either<Failure, String>> call(String passphrase) async {
     try {

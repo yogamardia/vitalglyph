@@ -6,13 +6,13 @@ import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/data/services/widget_service.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
 import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 import 'package:vitalglyph/presentation/widgets/profile_card.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,13 +45,10 @@ class _HomeScreenState extends State<HomeScreen>
     switch (index) {
       case 0:
         context.push(AppRouter.scanner);
-        break;
       case 1:
         context.push(AppRouter.profileNew);
-        break;
       case 2:
         context.push(AppRouter.settings);
-        break;
     }
   }
 
@@ -116,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen>
                         style: theme.textTheme.headlineSmall?.copyWith(
                           color: cs.onSurface,
                           fontWeight: FontWeight.w900,
-                          height: 1.0,
+                          height: 1,
                         ),
                       ),
                     ],
@@ -215,19 +212,18 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
 class _ModernBottomNavBar extends StatelessWidget {
-  final ValueChanged<int> onTap;
-  final VitalGlyphColors colors;
 
   const _ModernBottomNavBar({
     required this.onTap,
     required this.colors,
   });
+  final ValueChanged<int> onTap;
+  final VitalGlyphColors colors;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Container(
       decoration: BoxDecoration(
@@ -282,11 +278,6 @@ class _ModernBottomNavBar extends StatelessWidget {
 }
 
 class _NavBarItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final ColorScheme cs;
-  final bool isAction;
 
   const _NavBarItem({
     required this.icon,
@@ -295,6 +286,11 @@ class _NavBarItem extends StatelessWidget {
     required this.cs,
     this.isAction = false,
   });
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final ColorScheme cs;
+  final bool isAction;
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +373,7 @@ class _ShimmerLoadingState extends State<_ShimmerLoading>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
+    _animation = Tween<double>(begin: -1, end: 2).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -421,8 +417,8 @@ class _ShimmerLoadingState extends State<_ShimmerLoading>
 }
 
 class _SlidingGradientTransform extends GradientTransform {
-  final double slidePercent;
   const _SlidingGradientTransform(this.slidePercent);
+  final double slidePercent;
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
@@ -431,10 +427,10 @@ class _SlidingGradientTransform extends GradientTransform {
 }
 
 class _ShimmerSkeleton extends StatelessWidget {
-  final Gradient gradient;
-  final VitalGlyphColors colors;
 
   const _ShimmerSkeleton({required this.gradient, required this.colors});
+  final Gradient gradient;
+  final VitalGlyphColors colors;
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +440,7 @@ class _ShimmerSkeleton extends StatelessWidget {
       borderColor: colors.glassBorder.withValues(alpha: 0.2),
       child: ShaderMask(
         blendMode: BlendMode.srcATop,
-        shaderCallback: (bounds) => gradient.createShader(bounds),
+        shaderCallback: gradient.createShader,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -503,10 +499,10 @@ class _ShimmerSkeleton extends StatelessWidget {
 }
 
 class _ErrorState extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
 
   const _ErrorState({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -545,9 +541,9 @@ class _ErrorState extends StatelessWidget {
 }
 
 class _EmptyState extends StatefulWidget {
-  final VoidCallback onAddProfile;
 
   const _EmptyState({required this.onAddProfile});
+  final VoidCallback onAddProfile;
 
   @override
   State<_EmptyState> createState() => _EmptyStateState();
@@ -614,7 +610,6 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         border: Border.all(
                           color: colors.cardBorder,
-                          width: 1,
                         ),
                       ),
                     ),
@@ -629,7 +624,6 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         border: Border.all(
                           color: cs.primary.withValues(alpha: 0.2),
-                          width: 1,
                         ),
                       ),
                     ),
@@ -691,10 +685,10 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
 }
 
 class _PulsingDot extends StatefulWidget {
-  final int index;
-  final VitalGlyphColors colors;
 
   const _PulsingDot({required this.index, required this.colors});
+  final int index;
+  final VitalGlyphColors colors;
 
   @override
   State<_PulsingDot> createState() => _PulsingDotState();
@@ -717,7 +711,7 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
       if (mounted) _controller.forward();
     });
 
-    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(
+    _animation = Tween<double>(begin: 0.3, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }

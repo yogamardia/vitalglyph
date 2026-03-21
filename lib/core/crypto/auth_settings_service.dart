@@ -3,19 +3,19 @@ import 'package:vitalglyph/core/constants/enums.dart';
 
 /// Persists user preferences for the app-lock feature.
 class AuthSettingsService {
+
+  AuthSettingsService(this._storage);
   static const _authEnabledKey = 'vitalglyph_auth_enabled';
   static const _biometricEnabledKey = 'vitalglyph_biometric_enabled';
   static const _lockTimeoutKey = 'vitalglyph_lock_timeout';
 
   final FlutterSecureStorage _storage;
 
-  AuthSettingsService(this._storage);
-
   Future<bool> isAuthEnabled() async {
     return await _storage.read(key: _authEnabledKey) == 'true';
   }
 
-  Future<void> setAuthEnabled(bool enabled) async {
+  Future<void> setAuthEnabled({required bool enabled}) async {
     await _storage.write(key: _authEnabledKey, value: enabled.toString());
   }
 
@@ -23,7 +23,7 @@ class AuthSettingsService {
     return await _storage.read(key: _biometricEnabledKey) == 'true';
   }
 
-  Future<void> setBiometricEnabled(bool enabled) async {
+  Future<void> setBiometricEnabled({required bool enabled}) async {
     await _storage.write(key: _biometricEnabledKey, value: enabled.toString());
   }
 

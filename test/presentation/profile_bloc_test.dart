@@ -26,12 +26,11 @@ void main() {
   late MockUpdateProfile mockUpdate;
   late MockDeleteProfile mockDelete;
 
-  final now = DateTime(2025, 1, 1);
+  final now = DateTime(2025);
   final testProfile = Profile(
     id: 'id-1',
     name: 'Alice',
     dateOfBirth: DateTime(1990),
-    isOrganDonor: false,
     createdAt: now,
     updatedAt: now,
   );
@@ -92,7 +91,7 @@ void main() {
       },
       build: buildBloc,
       act: (bloc) => bloc.add(ProfileCreateRequested(testProfile)),
-      expect: () => [],
+      expect: () => <ProfileState>[],
     );
 
     blocTest<ProfileBloc, ProfileState>(
@@ -117,7 +116,7 @@ void main() {
       },
       build: buildBloc,
       act: (bloc) => bloc.add(const ProfileDeleteRequested('id-1')),
-      expect: () => [],
+      expect: () => <ProfileState>[],
     );
   });
 }

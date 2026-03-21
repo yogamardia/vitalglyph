@@ -18,7 +18,6 @@ class QrScannerScreen extends StatefulWidget {
 class _QrScannerScreenState extends State<QrScannerScreen> {
   final MobileScannerController _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
-    facing: CameraFacing.back,
   );
   bool _processing = false;
 
@@ -171,15 +170,15 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 }
 
 class _CircleActionButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-  final bool active;
 
   const _CircleActionButton({
     required this.icon,
     required this.onPressed,
     this.active = false,
   });
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
@@ -254,7 +253,6 @@ class _ScannerOverlayState extends State<_ScannerOverlay> with SingleTickerProvi
                 ),
               ),
               Align(
-                alignment: Alignment.center,
                 child: Container(
                   width: size,
                   height: size,

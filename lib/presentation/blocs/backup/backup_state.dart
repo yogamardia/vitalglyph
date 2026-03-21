@@ -24,15 +24,15 @@ class BackupExportSuccess extends BackupState {
 }
 
 class BackupImportSuccess extends BackupState {
-  final ImportResult result;
   const BackupImportSuccess(this.result);
+  final ImportResult result;
   @override
   List<Object?> get props => [result];
 }
 
 class BackupError extends BackupState {
-  final String message;
   const BackupError(this.message);
+  final String message;
   @override
   List<Object?> get props => [message];
 }

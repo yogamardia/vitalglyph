@@ -11,9 +11,9 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final ProfileDao _dao;
 
   ProfileRepositoryImpl(this._dao);
+  final ProfileDao _dao;
 
   @override
   Stream<Either<Failure, List<Profile>>> watchAllProfiles() {

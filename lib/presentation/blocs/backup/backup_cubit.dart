@@ -6,8 +6,6 @@ import 'package:vitalglyph/presentation/blocs/backup/backup_state.dart';
 
 
 class BackupCubit extends Cubit<BackupState> {
-  final ExportBackup _exportBackup;
-  final ImportBackup _importBackup;
 
   BackupCubit({
     required ExportBackup exportBackup,
@@ -15,6 +13,8 @@ class BackupCubit extends Cubit<BackupState> {
   })  : _exportBackup = exportBackup,
         _importBackup = importBackup,
         super(const BackupInitial());
+  final ExportBackup _exportBackup;
+  final ImportBackup _importBackup;
 
   /// Exports all profiles to an encrypted `.medid` file and triggers the
   /// system share sheet so the user can save or send the file.

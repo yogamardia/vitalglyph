@@ -36,7 +36,7 @@ void main() {
     });
 
     test('cascade delete removes child records', () async {
-      final profileId = 'test-profile-1';
+      const profileId = 'test-profile-1';
       final now = DateTime.now();
 
       await db.profileDao.insertProfile(ProfilesCompanion.insert(
@@ -123,7 +123,7 @@ void main() {
 
     test('profile round-trip preserves all fields', () async {
       final now = DateTime(2025, 6, 15, 10, 30);
-      final id = 'round-trip-1';
+      const id = 'round-trip-1';
 
       await db.profileDao.insertProfile(ProfilesCompanion.insert(
         id: id,

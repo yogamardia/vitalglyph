@@ -6,6 +6,15 @@ import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
+
+  AuthCubit({
+    required PinService pin,
+    required AuthSettingsService settings,
+    required LocalAuthentication localAuth,
+  })  : _pin = pin,
+        _settings = settings,
+        _localAuth = localAuth,
+        super(const AuthInitial());
   final PinService _pin;
   final AuthSettingsService _settings;
   final LocalAuthentication _localAuth;
@@ -17,15 +26,6 @@ class AuthCubit extends Cubit<AuthState> {
   static const int _hardLockThreshold = 10;
   static const Duration _softLockDuration = Duration(seconds: 30);
   static const Duration _hardLockDuration = Duration(minutes: 5);
-
-  AuthCubit({
-    required PinService pin,
-    required AuthSettingsService settings,
-    required LocalAuthentication localAuth,
-  })  : _pin = pin,
-        _settings = settings,
-        _localAuth = localAuth,
-        super(const AuthInitial());
 
   /// Call on app start. Emits [AuthNotRequired] or [AuthRequired].
   Future<void> checkAuthRequired() async {
@@ -60,7 +60,6 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final success = await _localAuth.authenticate(
         localizedReason: 'Authenticate to access your Medical ID',
-        biometricOnly: false,
         persistAcrossBackgrounding: true,
       );
       if (success) {
@@ -96,10 +95,10 @@ class AuthCubit extends Cubit<AuthState> {
       _failedAttempts++;
       if (_failedAttempts >= _hardLockThreshold) {
         _lockoutUntil = DateTime.now().add(_hardLockDuration);
-        emit(AuthLockedOut(_hardLockDuration));
+        emit(const AuthLockedOut(_hardLockDuration));
       } else if (_failedAttempts >= _softLockThreshold) {
         _lockoutUntil = DateTime.now().add(_softLockDuration);
-        emit(AuthLockedOut(_softLockDuration));
+        emit(const AuthLockedOut(_softLockDuration));
       } else {
         emit(AuthFailure(
           'Incorrect PIN. ${_softLockThreshold - _failedAttempts} attempts remaining before lockout.',

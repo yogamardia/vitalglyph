@@ -4,6 +4,36 @@ import 'package:flutter/material.dart';
 /// Access via: `Theme.of(context).extension<VitalGlyphColors>()!`
 @immutable
 class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
+
+  const VitalGlyphColors({
+    required this.bloodTypeBadge,
+    required this.bloodTypeBadgeBackground,
+    required this.bloodTypeBadgeBorder,
+    required this.allergyTag,
+    required this.allergyTagBackground,
+    required this.allergyTagBorder,
+    required this.lifeThreatening,
+    required this.severe,
+    required this.moderate,
+    required this.mild,
+    required this.successGreen,
+    required this.emergencyRed,
+    required this.primaryAction,
+    required this.dividerSubtle,
+    required this.tamperWarning,
+    required this.tamperWarningBackground,
+    required this.cardBorder,
+    required this.surfaceSubtle,
+    required this.inputFill,
+    required this.glassBackground,
+    required this.glassBorder,
+    required this.glassSurface,
+    required this.gradientStart,
+    required this.gradientEnd,
+    required this.glowPrimary,
+    required this.shimmerBase,
+    required this.shimmerHighlight,
+  });
   // Blood type badge
   final Color bloodTypeBadge;
   final Color bloodTypeBadgeBackground;
@@ -44,36 +74,6 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
   final Color glowPrimary;
   final Color shimmerBase;
   final Color shimmerHighlight;
-
-  const VitalGlyphColors({
-    required this.bloodTypeBadge,
-    required this.bloodTypeBadgeBackground,
-    required this.bloodTypeBadgeBorder,
-    required this.allergyTag,
-    required this.allergyTagBackground,
-    required this.allergyTagBorder,
-    required this.lifeThreatening,
-    required this.severe,
-    required this.moderate,
-    required this.mild,
-    required this.successGreen,
-    required this.emergencyRed,
-    required this.primaryAction,
-    required this.dividerSubtle,
-    required this.tamperWarning,
-    required this.tamperWarningBackground,
-    required this.cardBorder,
-    required this.surfaceSubtle,
-    required this.inputFill,
-    required this.glassBackground,
-    required this.glassBorder,
-    required this.glassSurface,
-    required this.gradientStart,
-    required this.gradientEnd,
-    required this.glowPrimary,
-    required this.shimmerBase,
-    required this.shimmerHighlight,
-  });
 
   static const light = VitalGlyphColors(
     bloodTypeBadge: Color(0xFF991B1B), // Refined Red 800

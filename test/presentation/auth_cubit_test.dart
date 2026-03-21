@@ -188,7 +188,7 @@ void main() {
       build: buildCubit,
       // Initial state is AuthInitial, not AuthAuthenticated
       act: (c) => c.onResumed(const Duration(minutes: 10)),
-      expect: () => [],
+      expect: () => <AuthState>[],
     );
 
     blocTest<AuthCubit, AuthState>(
@@ -200,7 +200,7 @@ void main() {
       build: buildCubit,
       seed: () => const AuthAuthenticated(),
       act: (c) => c.onResumed(const Duration(minutes: 10)),
-      expect: () => [],
+      expect: () => <AuthState>[],
     );
 
     blocTest<AuthCubit, AuthState>(
@@ -213,7 +213,7 @@ void main() {
       build: buildCubit,
       seed: () => const AuthAuthenticated(),
       act: (c) => c.onResumed(const Duration(hours: 1)),
-      expect: () => [],
+      expect: () => <AuthState>[],
     );
 
     blocTest<AuthCubit, AuthState>(

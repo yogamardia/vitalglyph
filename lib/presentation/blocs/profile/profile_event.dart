@@ -13,27 +13,27 @@ class ProfilesWatchStarted extends ProfileEvent {
 }
 
 class ProfileCreateRequested extends ProfileEvent {
-  final Profile profile;
 
   const ProfileCreateRequested(this.profile);
+  final Profile profile;
 
   @override
   List<Object?> get props => [profile];
 }
 
 class ProfileUpdateRequested extends ProfileEvent {
-  final Profile profile;
 
   const ProfileUpdateRequested(this.profile);
+  final Profile profile;
 
   @override
   List<Object?> get props => [profile];
 }
 
 class ProfileDeleteRequested extends ProfileEvent {
-  final String id;
 
   const ProfileDeleteRequested(this.id);
+  final String id;
 
   @override
   List<Object?> get props => [id];

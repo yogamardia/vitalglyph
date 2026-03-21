@@ -14,9 +14,9 @@ import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 /// check indicates corruption or a non-VitalGlyph source — not necessarily
 /// deliberate tampering.
 class ParseQrData {
-  final HmacService _hmac;
 
   ParseQrData(this._hmac);
+  final HmacService _hmac;
 
   Either<Failure, ScannedProfile> call(String rawQr) {
     if (!rawQr.startsWith('MEDID|v1|')) {
@@ -24,9 +24,9 @@ class ParseQrData {
     }
 
     // Strip signature for verification
-    bool sigValid = false;
-    String payload = rawQr;
-    String dataWithoutSig = rawQr;
+    var sigValid = false;
+    var payload = rawQr;
+    var dataWithoutSig = rawQr;
 
     final sigIdx = rawQr.lastIndexOf('|SIG:');
     if (sigIdx != -1) {
@@ -77,7 +77,7 @@ class ParseQrData {
 
     // Parse conditions: comma-separated names
     final conditions =
-        _parseList(fields['CON']).map((c) => _dec(c)).toList();
+        _parseList(fields['CON']).map(_dec).toList();
 
     // Parse emergency contacts: comma-separated, each name/phone/relationship
     final contacts = _parseList(fields['EC']).map((item) {

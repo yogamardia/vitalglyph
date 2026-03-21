@@ -8,6 +8,24 @@ import 'package:vitalglyph/domain/entities/medication.dart';
 const _sentinel = Object();
 
 class Profile extends Equatable {
+
+  const Profile({
+    required this.id,
+    required this.name,
+    required this.dateOfBirth,
+    required this.createdAt, required this.updatedAt, this.bloodType,
+    this.biologicalSex,
+    this.heightCm,
+    this.weightKg,
+    this.isOrganDonor = false,
+    this.medicalNotes,
+    this.primaryLanguage,
+    this.photoPath,
+    this.allergies = const [],
+    this.conditions = const [],
+    this.medications = const [],
+    this.emergencyContacts = const [],
+  });
   final String id;
   final String name;
   final DateTime dateOfBirth;
@@ -25,26 +43,6 @@ class Profile extends Equatable {
   final List<EmergencyContact> emergencyContacts;
   final DateTime createdAt;
   final DateTime updatedAt;
-
-  const Profile({
-    required this.id,
-    required this.name,
-    required this.dateOfBirth,
-    this.bloodType,
-    this.biologicalSex,
-    this.heightCm,
-    this.weightKg,
-    this.isOrganDonor = false,
-    this.medicalNotes,
-    this.primaryLanguage,
-    this.photoPath,
-    this.allergies = const [],
-    this.conditions = const [],
-    this.medications = const [],
-    this.emergencyContacts = const [],
-    required this.createdAt,
-    required this.updatedAt,
-  });
 
   Profile copyWith({
     String? id,

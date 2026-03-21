@@ -3,22 +3,21 @@ import 'package:vitalglyph/core/theme/app_colors.dart';
 
 /// A Scaffold wrapper with a gradient background.
 class GradientScaffold extends StatelessWidget {
-  final Widget body;
-  final PreferredSizeWidget? appBar;
-  final Widget? floatingActionButton;
-  final FloatingActionButtonLocation? floatingActionButtonLocation;
-  final Widget? bottomNavigationBar;
-  final bool extendBodyBehindAppBar;
 
   const GradientScaffold({
-    super.key,
-    required this.body,
+    required this.body, super.key,
     this.appBar,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
     this.extendBodyBehindAppBar = false,
   });
+  final Widget body;
+  final PreferredSizeWidget? appBar;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final Widget? bottomNavigationBar;
+  final bool extendBodyBehindAppBar;
 
   @override
   Widget build(BuildContext context) {

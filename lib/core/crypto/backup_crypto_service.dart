@@ -8,8 +8,8 @@ import 'package:encrypt/encrypt.dart' as enc;
 // ── Exceptions ────────────────────────────────────────────────────────────────
 
 class BackupFormatException implements Exception {
-  final String message;
   const BackupFormatException(this.message);
+  final String message;
   @override
   String toString() => message;
 }

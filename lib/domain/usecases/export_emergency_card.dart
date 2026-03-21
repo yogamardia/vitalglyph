@@ -8,12 +8,12 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 
 class ExportEmergencyCard {
-  final GenerateQrData _generateQrData;
 
   ExportEmergencyCard(this._generateQrData);
+  final GenerateQrData _generateQrData;
 
   // Credit-card dimensions (ISO/IEC 7810 ID-1)
-  static final _cardFormat = PdfPageFormat(
+  static const _cardFormat = PdfPageFormat(
     8.56 * PdfPageFormat.cm,
     5.398 * PdfPageFormat.cm,
   );
@@ -86,12 +86,12 @@ class ExportEmergencyCard {
                   pw.SizedBox(height: 3),
                   pw.Text(
                     'DOB: $dob   Blood: $bloodType',
-                    style: pw.TextStyle(fontSize: bodySize),
+                    style: const pw.TextStyle(fontSize: bodySize),
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
                     '${sex != null ? "Sex: $sex   " : ""}Organ Donor: $donor',
-                    style: pw.TextStyle(fontSize: bodySize),
+                    style: const pw.TextStyle(fontSize: bodySize),
                   ),
                 ],
               ),
@@ -136,7 +136,7 @@ class ExportEmergencyCard {
                 ),
                 child: pw.Text(
                   '${a.name} (${a.severity.displayName})',
-                  style: pw.TextStyle(
+                  style: const pw.TextStyle(
                     fontSize: smallSize,
                     color: PdfColors.red900,
                   ),
@@ -147,7 +147,7 @@ class ExportEmergencyCard {
         ] else ...[
           pw.Text(
             'No known allergies',
-            style: pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
+            style: const pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
           ),
         ],
       ],
@@ -209,7 +209,7 @@ class ExportEmergencyCard {
         pw.SizedBox(height: 1),
         pw.Text(
           profile.medicalNotes!,
-          style: pw.TextStyle(fontSize: bodySize),
+          style: const pw.TextStyle(fontSize: bodySize),
         ),
       ]);
     }
@@ -218,7 +218,7 @@ class ExportEmergencyCard {
       rows.add(
         pw.Text(
           'No additional medical information.',
-          style: pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
+          style: const pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
         ),
       );
     }

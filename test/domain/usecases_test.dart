@@ -14,12 +14,11 @@ class MockProfileRepository extends Mock implements ProfileRepository {}
 void main() {
   late MockProfileRepository mockRepo;
 
-  final now = DateTime(2025, 1, 1);
+  final now = DateTime(2025);
   final testProfile = Profile(
     id: 'uuid-1',
     name: 'Test User',
     dateOfBirth: DateTime(1990),
-    isOrganDonor: false,
     createdAt: now,
     updatedAt: now,
   );
@@ -48,7 +47,7 @@ void main() {
           .thenAnswer((_) async => const Right('uuid-1'));
       final usecase = CreateProfile(mockRepo);
       final result = await usecase(testProfile);
-      expect(result, const Right('uuid-1'));
+      expect(result, const Right<Failure, String>('uuid-1'));
     });
 
     test('returns failure on error', () async {
@@ -56,7 +55,7 @@ void main() {
           .thenAnswer((_) async => const Left(DatabaseFailure()));
       final usecase = CreateProfile(mockRepo);
       final result = await usecase(testProfile);
-      expect(result, isA<Left>());
+      expect(result, isA<Left<Failure, String>>());
     });
   });
 

@@ -33,7 +33,7 @@ void main() {
     double? weightKg,
     String? primaryLanguage,
   }) {
-    final now = DateTime(2025, 1, 1);
+    final now = DateTime(2025);
     return Profile(
       id: 'id-1',
       name: name,
@@ -81,36 +81,35 @@ void main() {
         isTrue,
       );
       expect(
-        generate(makeProfile(isOrganDonor: false)).data.contains('DONOR:N'),
+        generate(makeProfile()).data.contains('DONOR:N'),
         isTrue,
       );
     });
 
     test('special chars in name are percent-encoded', () {
-      final result = generate(makeProfile(name: 'O\'Brien, Jr.'));
-      expect(result.data.contains('N:O\'Brien%2C Jr.'), isTrue);
+      final result = generate(makeProfile(name: "O'Brien, Jr."));
+      expect(result.data.contains("N:O'Brien%2C Jr."), isTrue);
     });
 
     test('typical profile fits within QR capacity without truncation', () {
-      final allergy = Allergy(
+      const allergy = Allergy(
         id: 'a1',
         name: 'Penicillin',
         severity: AllergySeverity.severe,
         reaction: 'Anaphylaxis',
       );
-      final med = Medication(
+      const med = Medication(
         id: 'm1',
         name: 'Metformin',
         dosage: '500mg',
         frequency: '2x daily',
       );
-      final cond = MedicalCondition(id: 'c1', name: 'Type 2 Diabetes');
-      final contact = EmergencyContact(
+      const cond = MedicalCondition(id: 'c1', name: 'Type 2 Diabetes');
+      const contact = EmergencyContact(
         id: 'ec1',
         name: 'Jane Smith',
         phone: '+15551234567',
         relationship: 'Spouse',
-        priority: 1,
       );
 
       final result = generate(makeProfile(
@@ -257,33 +256,30 @@ void main() {
     });
 
     test('roundtrip: all fields survive encode → decode', () {
-      final allergy = Allergy(
+      const allergy = Allergy(
         id: 'a1',
         name: 'Shellfish',
         severity: AllergySeverity.moderate,
         reaction: 'Hives',
       );
-      final med = Medication(
+      const med = Medication(
         id: 'm1',
         name: 'Lisinopril',
         dosage: '10mg',
         frequency: '1x daily',
       );
-      final cond = MedicalCondition(id: 'c1', name: 'Hypertension');
-      final contact = EmergencyContact(
+      const cond = MedicalCondition(id: 'c1', name: 'Hypertension');
+      const contact = EmergencyContact(
         id: 'ec1',
         name: 'Bob Smith',
         phone: '+15559876543',
         relationship: 'Brother',
-        priority: 1,
       );
 
       final profile = makeProfile(
-        name: 'Alice Smith',
-        bloodType: BloodType.oPos,
         biologicalSex: BiologicalSex.female,
-        heightCm: 165.0,
-        weightKg: 60.0,
+        heightCm: 165,
+        weightKg: 60,
         isOrganDonor: true,
         primaryLanguage: 'en',
         allergies: [allergy],
@@ -355,7 +351,6 @@ void main() {
         id: 'x',
         name: 'Minimal User',
         dateOfBirth: DateTime(2000),
-        isOrganDonor: false,
         createdAt: now,
         updatedAt: now,
       );

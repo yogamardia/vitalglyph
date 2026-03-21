@@ -4,22 +4,21 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 /// A reusable widget that provides animated scale feedback on press.
 class AnimatedPress extends StatefulWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final double scaleDown;
-  final bool enableGlow;
-  final HitTestBehavior behavior;
 
   const AnimatedPress({
-    super.key,
-    required this.child,
+    required this.child, super.key,
     this.onTap,
     this.onLongPress,
     this.scaleDown = 0.97,
     this.enableGlow = false,
     this.behavior = HitTestBehavior.opaque,
   });
+  final Widget child;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final double scaleDown;
+  final bool enableGlow;
+  final HitTestBehavior behavior;
 
   @override
   State<AnimatedPress> createState() => _AnimatedPressState();
@@ -38,7 +37,7 @@ class _AnimatedPressState extends State<AnimatedPress>
       duration: AppDuration.fast,
     );
     _scaleAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: widget.scaleDown,
     ).animate(CurvedAnimation(
       parent: _controller,

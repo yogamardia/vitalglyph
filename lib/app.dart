@@ -88,8 +88,8 @@ class _AppContent extends StatelessWidget {
 
 /// Handles [AppLifecycleState] changes to trigger auto-lock.
 class _LifecycleObserver extends StatefulWidget {
-  final Widget child;
   const _LifecycleObserver({required this.child});
+  final Widget child;
 
   @override
   State<_LifecycleObserver> createState() => _LifecycleObserverState();

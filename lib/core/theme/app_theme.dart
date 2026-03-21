@@ -10,12 +10,6 @@ class AppTheme {
   static const Color _seedColorDark = Color(0xFFF8FAFC);
   static const Color _errorColor = Color(0xFFB91C1C);
 
-  // Static design tokens for use inside ThemeData construction
-  static const Color _glassBackgroundLight = Color(0x050F172A);
-  static const Color _glassBackgroundDark = Color(0x1AF8FAFC);
-  static const Color _glassBorderLight = Color(0x0F0F172A);
-  static const Color _glassBorderDark = Color(0x33F8FAFC);
-
   static ThemeData get light {
     final cs = ColorScheme.fromSeed(
       seedColor: _seedColorLight,
@@ -24,7 +18,6 @@ class AppTheme {
       surface: Colors.white,
       onSurface: _seedColorLight,
       error: _errorColor,
-      brightness: Brightness.light,
     );
     return ThemeData(
       useMaterial3: true,
@@ -52,7 +45,7 @@ class AppTheme {
         color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          side: const BorderSide(color: Color(0xFFF1F5F9), width: 1),
+          side: const BorderSide(color: Color(0xFFF1F5F9)),
         ),
       ),
       inputDecorationTheme: InputDecorationThemeData(
@@ -61,11 +54,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -183,7 +176,7 @@ class AppTheme {
         color: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          side: const BorderSide(color: Color(0xFF1E293B), width: 1),
+          side: const BorderSide(color: Color(0xFF1E293B)),
         ),
       ),
       inputDecorationTheme: InputDecorationThemeData(
@@ -192,11 +185,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: Color(0xFF1E293B), width: 1),
+          borderSide: const BorderSide(color: Color(0xFF1E293B)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: Color(0xFF1E293B), width: 1),
+          borderSide: const BorderSide(color: Color(0xFF1E293B)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),

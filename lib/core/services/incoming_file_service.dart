@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:vitalglyph/presentation/screens/backup/backup_screen.dart' show BackupScreen;
 
 /// Handles `.medid` files opened from outside the app (e.g. email, AirDrop,
 /// file manager). Platform code sends the file path through a [MethodChannel].
 class IncomingFileService {
+
+  IncomingFileService() {
+    _channel.setMethodCallHandler(_handlePlatformCall);
+  }
   static const _channel = MethodChannel('com.example.vitalglyph/file_open');
 
   final _controller = StreamController<String>.broadcast();
@@ -12,10 +17,6 @@ class IncomingFileService {
 
   /// Stream that emits a file path each time a `.medid` file is opened.
   Stream<String> get onFileOpen => _controller.stream;
-
-  IncomingFileService() {
-    _channel.setMethodCallHandler(_handlePlatformCall);
-  }
 
   /// Call once after DI is ready to check whether the app was cold-launched
   /// with a `.medid` file.

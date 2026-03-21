@@ -6,25 +6,9 @@ import 'package:vitalglyph/l10n/l10n.dart';
 
 /// A shared text input widget with glassmorphism styling and focus animations.
 class AppTextField extends StatefulWidget {
-  final String label;
-  final TextEditingController? controller;
-  final String? Function(String?)? validator;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final TextInputType? keyboardType;
-  final int? maxLines;
-  final int? minLines;
-  final ValueChanged<String>? onChanged;
-  final String? initialValue;
-  final bool enabled;
-  final TextCapitalization textCapitalization;
-  final List<TextInputFormatter>? inputFormatters;
-  final FocusNode? focusNode;
-  final String? hintText;
 
   const AppTextField({
-    super.key,
-    required this.label,
+    required this.label, super.key,
     this.controller,
     this.validator,
     this.obscureText = false,
@@ -40,6 +24,21 @@ class AppTextField extends StatefulWidget {
     this.focusNode,
     this.hintText,
   });
+  final String label;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final TextInputType? keyboardType;
+  final int? maxLines;
+  final int? minLines;
+  final ValueChanged<String>? onChanged;
+  final String? initialValue;
+  final bool enabled;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatters;
+  final FocusNode? focusNode;
+  final String? hintText;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -89,7 +88,6 @@ class _AppTextFieldState extends State<AppTextField> {
             BoxShadow(
               color: cs.primary.withValues(alpha: 0.1),
               blurRadius: 16,
-              spreadRadius: 0,
               offset: const Offset(0, 4),
             ),
         ],

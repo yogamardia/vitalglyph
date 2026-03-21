@@ -3,14 +3,13 @@ import 'package:vitalglyph/core/constants/enums.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
 
 void main() {
-  final now = DateTime(2025, 1, 1);
+  final now = DateTime(2025);
 
   Profile makeProfile({String name = 'Alice'}) => Profile(
         id: 'id-1',
         name: name,
         dateOfBirth: DateTime(1990, 6, 15),
         bloodType: BloodType.oPos,
-        isOrganDonor: false,
         createdAt: now,
         updatedAt: now,
       );
@@ -31,7 +30,7 @@ void main() {
     });
 
     test('two profiles with different names are not equal', () {
-      expect(makeProfile(name: 'Alice'), isNot(equals(makeProfile(name: 'Bob'))));
+      expect(makeProfile(), isNot(equals(makeProfile(name: 'Bob'))));
     });
 
     test('empty lists default correctly', () {

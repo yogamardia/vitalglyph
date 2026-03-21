@@ -17,27 +17,27 @@ class ProfileLoading extends ProfileState {
 }
 
 class ProfileLoaded extends ProfileState {
-  final List<Profile> profiles;
 
   const ProfileLoaded(this.profiles);
+  final List<Profile> profiles;
 
   @override
   List<Object?> get props => [profiles];
 }
 
 class ProfileError extends ProfileState {
-  final String message;
 
   const ProfileError(this.message);
+  final String message;
 
   @override
   List<Object?> get props => [message];
 }
 
 class ProfileActionSuccess extends ProfileState {
-  final List<Profile> profiles;
 
   const ProfileActionSuccess(this.profiles);
+  final List<Profile> profiles;
 
   @override
   List<Object?> get props => [profiles];

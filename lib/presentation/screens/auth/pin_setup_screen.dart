@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/injection.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/app_button.dart';
 import 'package:vitalglyph/presentation/widgets/app_text_field.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Two-step PIN setup: enter → confirm → save.
@@ -163,8 +163,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 }
 
 class _StepIndicator extends StatelessWidget {
-  final int currentStep;
   const _StepIndicator({required this.currentStep});
+  final int currentStep;
 
   @override
   Widget build(BuildContext context) {

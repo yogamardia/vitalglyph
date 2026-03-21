@@ -14,9 +14,9 @@ const _kiOSWidgetName = 'VitalglyphWidget';
 /// Data is intentionally unencrypted — first responders must read it
 /// without unlocking the phone.
 class WidgetService {
-  final GenerateQrData _generateQrData;
 
   WidgetService(this._generateQrData);
+  final GenerateQrData _generateQrData;
 
   /// Sets the iOS App Group ID so the widget extension can share data.
   /// Must be called once at app startup before any save/update calls.
@@ -45,13 +45,11 @@ class WidgetService {
     await HomeWidget.renderFlutterWidget(
       QrImageView(
         data: qrData,
-        version: QrVersions.auto,
         backgroundColor: Colors.white,
         padding: const EdgeInsets.all(8),
       ),
       key: 'qr_widget',
-      logicalSize: const Size(200, 200),
-      pixelRatio: 3.0,
+      pixelRatio: 3,
     );
 
     await HomeWidget.updateWidget(

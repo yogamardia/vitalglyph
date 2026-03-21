@@ -1,11 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class EmergencyContact extends Equatable {
-  final String id;
-  final String name;
-  final String phone;
-  final String? relationship;
-  final int priority;
 
   const EmergencyContact({
     required this.id,
@@ -14,6 +9,11 @@ class EmergencyContact extends Equatable {
     this.relationship,
     this.priority = 1,
   });
+  final String id;
+  final String name;
+  final String phone;
+  final String? relationship;
+  final int priority;
 
   @override
   List<Object?> get props => [id, name, phone, relationship, priority];

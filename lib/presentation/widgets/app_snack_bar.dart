@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
-import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 /// Consistent app-wide SnackBar helpers with premium glassmorphism styling.
 class AppSnackBar {
@@ -52,7 +51,6 @@ class AppSnackBar {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final colors = Theme.of(context).extension<VitalGlyphColors>()!;
     final glassBg = isDark 
         ? const Color(0xFFF8FAFC)
         : const Color(0xFF0F172A);
@@ -76,7 +74,6 @@ class AppSnackBar {
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
                 color: borderColor,
-                width: 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -93,7 +90,7 @@ class AppSnackBar {
             child: Row(
               children: [
                 TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
+                  tween: Tween(begin: 0, end: 1),
                   duration: const Duration(milliseconds: 600),
                   curve: Curves.elasticOut,
                   builder: (context, value, child) => Transform.scale(

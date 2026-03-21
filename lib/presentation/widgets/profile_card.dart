@@ -1,32 +1,27 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vitalglyph/core/theme/app_colors.dart';
 import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/domain/entities/allergy.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
-import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/l10n/l10n.dart';
+import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
-import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 class ProfileCard extends StatefulWidget {
+
+  const ProfileCard({
+    required this.profile, required this.onDelete, required this.onShowQr, required this.onEdit, required this.onEmergencyCard, super.key,
+    this.isPrimary = false,
+  });
   final Profile profile;
   final bool isPrimary;
   final VoidCallback onDelete;
   final VoidCallback onShowQr;
   final VoidCallback onEdit;
   final VoidCallback onEmergencyCard;
-
-  const ProfileCard({
-    super.key,
-    required this.profile,
-    this.isPrimary = false,
-    required this.onDelete,
-    required this.onShowQr,
-    required this.onEdit,
-    required this.onEmergencyCard,
-  });
 
   @override
   State<ProfileCard> createState() => _ProfileCardState();
@@ -44,7 +39,7 @@ class _ProfileCardState extends State<ProfileCard>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.03).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -58,7 +53,6 @@ class _ProfileCardState extends State<ProfileCard>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
 
     return MergeSemantics(
@@ -77,7 +71,6 @@ class _ProfileCardState extends State<ProfileCard>
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
                 color: colors.cardBorder,
-                width: 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -130,7 +123,7 @@ class _ProfileCardState extends State<ProfileCard>
 
   void _showActionsSheet(BuildContext context) {
     HapticFeedback.mediumImpact();
-    AppBottomSheet.show(
+    AppBottomSheet.show<void>(
       context,
       title: widget.profile.name,
       child: Column(
@@ -168,7 +161,7 @@ class _ProfileCardState extends State<ProfileCard>
       message: context.l10n.profileCardDeleteMessage(widget.profile.name),
       confirmLabel: context.l10n.delete,
     ).then((confirmed) {
-      if (confirmed == true) {
+      if (confirmed ?? false) {
         HapticFeedback.mediumImpact();
         widget.onDelete();
       }
@@ -177,9 +170,9 @@ class _ProfileCardState extends State<ProfileCard>
 }
 
 class _TopAccentBar extends StatelessWidget {
-  final Profile profile;
 
   const _TopAccentBar({required this.profile});
+  final Profile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -202,21 +195,20 @@ class _TopAccentBar extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final Profile profile;
-  final bool isPrimary;
-  final VoidCallback onActionsPressed;
 
   const _ProfileHeader({
     required this.profile,
     required this.isPrimary,
     required this.onActionsPressed,
   });
+  final Profile profile;
+  final bool isPrimary;
+  final VoidCallback onActionsPressed;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final colors = theme.extension<VitalGlyphColors>()!;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,15 +270,14 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileAvatar extends StatelessWidget {
-  final String profileId;
-  final String? photoPath;
-  final bool isPrimary;
 
   const _ProfileAvatar({
     required this.profileId,
-    this.photoPath,
-    required this.isPrimary,
+    required this.isPrimary, this.photoPath,
   });
+  final String profileId;
+  final String? photoPath;
+  final bool isPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -357,10 +348,10 @@ class _ProfileAvatar extends StatelessWidget {
 }
 
 class _StatusBadge extends StatelessWidget {
-  final String label;
-  final bool isPrimary;
 
   const _StatusBadge({required this.label, required this.isPrimary});
+  final String label;
+  final bool isPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -388,9 +379,9 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class _BloodTypeBadge extends StatelessWidget {
-  final String bloodType;
 
   const _BloodTypeBadge({required this.bloodType});
+  final String bloodType;
 
   @override
   Widget build(BuildContext context) {
@@ -425,9 +416,9 @@ class _BloodTypeBadge extends StatelessWidget {
 }
 
 class _AllergyList extends StatelessWidget {
-  final List<Allergy> allergies;
 
   const _AllergyList({required this.allergies});
+  final List<Allergy> allergies;
 
   @override
   Widget build(BuildContext context) {
@@ -465,13 +456,13 @@ class _AllergyList extends StatelessWidget {
 }
 
 class _EmergencyActionButton extends StatelessWidget {
-  final Animation<double> pulseAnimation;
-  final VoidCallback onPressed;
 
   const _EmergencyActionButton({
     required this.pulseAnimation,
     required this.onPressed,
   });
+  final Animation<double> pulseAnimation;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -525,9 +516,9 @@ class _EmergencyActionButton extends StatelessWidget {
 }
 
 class _FooterInfo extends StatelessWidget {
-  final Profile profile;
 
   const _FooterInfo({required this.profile});
+  final Profile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -586,9 +577,9 @@ class _FooterInfo extends StatelessWidget {
 }
 
 class _AllergyTag extends StatelessWidget {
-  final Allergy allergy;
 
   const _AllergyTag({required this.allergy});
+  final Allergy allergy;
 
   @override
   Widget build(BuildContext context) {

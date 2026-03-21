@@ -30,24 +30,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         companions: [Icons.water_drop_rounded, Icons.medication_rounded],
         title: l10n.onboardingTitle1,
         body: l10n.onboardingBody1,
-        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+        gradient: [const Color(0xFFF8FAFC), const Color(0xFFF1F5F9)],
+        darkGradient: [const Color(0xFF020617), const Color(0xFF0F172A)],
       ),
       _PageData(
         icon: Icons.qr_code_scanner_rounded,
         companions: [Icons.phone_iphone_rounded, Icons.local_hospital_rounded],
         title: l10n.onboardingTitle2,
         body: l10n.onboardingBody2,
-        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+        gradient: [const Color(0xFFF8FAFC), const Color(0xFFF1F5F9)],
+        darkGradient: [const Color(0xFF020617), const Color(0xFF0F172A)],
       ),
       _PageData(
         icon: Icons.shield_rounded,
         companions: [Icons.lock_rounded, Icons.wifi_off_rounded],
         title: l10n.onboardingTitle3,
         body: l10n.onboardingBody3,
-        gradient: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-        darkGradient: [Color(0xFF020617), Color(0xFF0F172A)],
+        gradient: [const Color(0xFFF8FAFC), const Color(0xFFF1F5F9)],
+        darkGradient: [const Color(0xFF020617), const Color(0xFF0F172A)],
       ),
     ];
   }
@@ -225,12 +225,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 class _PageData {
-  final IconData icon;
-  final List<IconData> companions;
-  final String title;
-  final String body;
-  final List<Color> gradient;
-  final List<Color> darkGradient;
 
   const _PageData({
     required this.icon,
@@ -240,12 +234,18 @@ class _PageData {
     required this.gradient,
     required this.darkGradient,
   });
+  final IconData icon;
+  final List<IconData> companions;
+  final String title;
+  final String body;
+  final List<Color> gradient;
+  final List<Color> darkGradient;
 }
 
 class _OnboardingPageView extends StatefulWidget {
-  final _PageData data;
 
   const _OnboardingPageView({required this.data});
+  final _PageData data;
 
   @override
   State<_OnboardingPageView> createState() => _OnboardingPageViewState();
@@ -367,12 +367,6 @@ class _OnboardingPageViewState extends State<_OnboardingPageView>
 }
 
 class _FloatingCompanion extends StatefulWidget {
-  final IconData icon;
-  final Offset offset;
-  final double angle;
-  final int delay;
-  final VitalGlyphColors colors;
-  final ColorScheme cs;
 
   const _FloatingCompanion({
     required this.icon,
@@ -382,6 +376,12 @@ class _FloatingCompanion extends StatefulWidget {
     required this.colors,
     required this.cs,
   });
+  final IconData icon;
+  final Offset offset;
+  final double angle;
+  final int delay;
+  final VitalGlyphColors colors;
+  final ColorScheme cs;
 
   @override
   State<_FloatingCompanion> createState() => _FloatingCompanionState();

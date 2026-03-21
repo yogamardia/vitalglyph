@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +68,6 @@ class _BackupViewState extends State<_BackupView> {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['medid'],
-      allowMultiple: false,
     );
     if (result == null || result.files.isEmpty) return;
     final file = result.files.single;
@@ -100,9 +101,11 @@ class _BackupViewState extends State<_BackupView> {
     );
 
     if (confirmed != true || !context.mounted) return;
-    context
-        .read<BackupCubit>()
-        .importFromFile(_selectedFilePath!, _importPassCtrl.text.trim());
+    unawaited(
+      context
+          .read<BackupCubit>()
+          .importFromFile(_selectedFilePath!, _importPassCtrl.text.trim()),
+    );
   }
 
   @override
@@ -261,10 +264,10 @@ class _BackupViewState extends State<_BackupView> {
 }
 
 class _FilePickerButton extends StatelessWidget {
-  final String? fileName;
-  final VoidCallback? onTap;
 
   const _FilePickerButton({this.fileName, this.onTap});
+  final String? fileName;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -279,10 +282,10 @@ class _FilePickerButton extends StatelessWidget {
 
 /// Soft info banner with a gradient accent bar and glass background.
 class _InfoBanner extends StatelessWidget {
-  final IconData icon;
-  final String text;
 
   const _InfoBanner({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +300,6 @@ class _InfoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: colors.cardBorder,
-          width: 1,
         ),
       ),
       child: Row(

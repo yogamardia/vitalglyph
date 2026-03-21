@@ -5,13 +5,13 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 
 /// Result of QR data generation, including whether data was truncated to fit.
 class QrPayload {
+
+  const QrPayload(this.data, {this.truncated = false});
   /// The QR payload string.
   final String data;
 
   /// Whether the payload was truncated to fit within QR capacity limits.
   final bool truncated;
-
-  const QrPayload(this.data, {this.truncated = false});
 }
 
 /// Encodes a [Profile] into a compact, versioned QR payload string.
@@ -22,7 +22,7 @@ class QrPayload {
 /// indicates when this has occurred.
 ///
 /// Format (newlines added for readability — actual payload is one line):
-/// ```
+/// ```text
 /// MEDID|v1|N:<name>|DOB:<date>|BT:<blood_type>|SEX:<sex>|
 /// HT:<height>|WT:<weight>|
 /// ALG:<name/severity/reaction>,<...>|
@@ -35,13 +35,13 @@ class QrPayload {
 /// Special characters `,`, `/`, and `|` inside text values are
 /// percent-encoded to avoid delimiter collisions.
 class GenerateQrData {
+
+  GenerateQrData(this._hmac);
   final HmacService _hmac;
 
   /// Maximum QR payload size in bytes. QR Version 40 with Error Correction
   /// Level L supports 2,953 bytes; we use 2,900 as a safety margin.
   static const maxPayloadBytes = 2900;
-
-  GenerateQrData(this._hmac);
 
   QrPayload call(Profile profile) {
     // Try full payload first.

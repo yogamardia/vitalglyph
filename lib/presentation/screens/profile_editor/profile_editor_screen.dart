@@ -2,37 +2,36 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:vitalglyph/core/theme/app_colors.dart';
-import 'package:vitalglyph/l10n/l10n.dart';
-import 'package:vitalglyph/core/theme/app_spacing.dart';
-import 'package:vitalglyph/presentation/widgets/app_button.dart';
-import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
-import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
-import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
+import 'package:vitalglyph/core/theme/app_colors.dart';
+import 'package:vitalglyph/core/theme/app_spacing.dart';
 import 'package:vitalglyph/domain/entities/allergy.dart';
 import 'package:vitalglyph/domain/entities/emergency_contact.dart';
 import 'package:vitalglyph/domain/entities/medical_condition.dart';
 import 'package:vitalglyph/domain/entities/medication.dart';
 import 'package:vitalglyph/domain/entities/profile.dart';
+import 'package:vitalglyph/l10n/l10n.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_bloc.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
-import 'package:vitalglyph/presentation/widgets/glass_container.dart';
+import 'package:vitalglyph/presentation/widgets/app_button.dart';
+import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
+import 'package:vitalglyph/presentation/widgets/app_section_card.dart';
+import 'package:vitalglyph/presentation/widgets/app_snack_bar.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 const _uuid = Uuid();
 
 class ProfileEditorScreen extends StatefulWidget {
-  final Profile? profile;
 
   const ProfileEditorScreen({super.key, this.profile});
+  final Profile? profile;
 
   @override
   State<ProfileEditorScreen> createState() => _ProfileEditorScreenState();
@@ -450,7 +449,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 label: context.l10n.profileEditorBloodType,
                 prefixIcon: Icons.water_drop_rounded,
                 items: [
-                  DropdownMenuItem(value: null, child: Text(context.l10n.profileEditorBloodTypeUnknown)),
+                  DropdownMenuItem(child: Text(context.l10n.profileEditorBloodTypeUnknown)),
                   ...BloodType.values.map(
                     (b) => DropdownMenuItem(
                       value: b,
@@ -469,7 +468,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 prefixIcon: Icons.people_rounded,
                 items: [
                   DropdownMenuItem(
-                      value: null, child: Text(context.l10n.profileEditorSexNotSet)),
+                      child: Text(context.l10n.profileEditorSexNotSet)),
                   ...BiologicalSex.values.map(
                     (s) => DropdownMenuItem(
                       value: s,
@@ -503,7 +502,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                  FilteringTextInputFormatter.allow(RegExp('[0-9.]'))
                 ],
               ),
             ),
@@ -759,18 +758,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
 
 class _CustomTextField extends StatefulWidget {
-  final TextEditingController controller;
-  final String label;
-  final IconData? prefixIcon;
-  final bool readOnly;
-  final bool isRequired;
-  final VoidCallback? onTap;
-  final String? Function(String?)? validator;
-  final TextInputType? keyboardType;
-  final List<TextInputFormatter>? inputFormatters;
-  final TextCapitalization textCapitalization;
-  final int? maxLines;
-  final int? minLines;
 
   const _CustomTextField({
     required this.controller,
@@ -786,6 +773,18 @@ class _CustomTextField extends StatefulWidget {
     this.maxLines = 1,
     this.minLines,
   });
+  final TextEditingController controller;
+  final String label;
+  final IconData? prefixIcon;
+  final bool readOnly;
+  final bool isRequired;
+  final VoidCallback? onTap;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextCapitalization textCapitalization;
+  final int? maxLines;
+  final int? minLines;
 
   @override
   State<_CustomTextField> createState() => _CustomTextFieldState();
@@ -888,19 +887,17 @@ class _CustomTextFieldState extends State<_CustomTextField> {
 }
 
 class _CustomDropdown<T> extends StatelessWidget {
+
+  const _CustomDropdown({
+    required this.value,
+    required this.label,
+    required this.items, required this.onChanged, this.prefixIcon,
+  });
   final T value;
   final String label;
   final IconData? prefixIcon;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
-
-  const _CustomDropdown({
-    required this.value,
-    required this.label,
-    this.prefixIcon,
-    required this.items,
-    required this.onChanged,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -934,17 +931,15 @@ class _CustomDropdown<T> extends StatelessWidget {
 }
 
 class _SubEntityTile extends StatelessWidget {
+
+  const _SubEntityTile({
+    required this.title,
+    required this.onEdit, required this.onDelete, this.subtitle,
+  });
   final String title;
   final String? subtitle;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-
-  const _SubEntityTile({
-    required this.title,
-    this.subtitle,
-    required this.onEdit,
-    required this.onDelete,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -957,7 +952,6 @@ class _SubEntityTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: colors.cardBorder,
-          width: 1,
         ),
       ),
       child: Row(
@@ -1015,8 +1009,8 @@ class _SubEntityTile extends StatelessWidget {
 }
 
 class _AddButton extends StatelessWidget {
-  final VoidCallback onPressed;
   const _AddButton({required this.onPressed});
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -1036,8 +1030,8 @@ class _AddButton extends StatelessWidget {
 }
 
 class _AllergyDialog extends StatefulWidget {
-  final Allergy? existing;
   const _AllergyDialog({this.existing});
+  final Allergy? existing;
 
   @override
   State<_AllergyDialog> createState() => _AllergyDialogState();
@@ -1159,8 +1153,8 @@ class _AllergyDialogState extends State<_AllergyDialog> {
 }
 
 class _MedicationDialog extends StatefulWidget {
-  final Medication? existing;
   const _MedicationDialog({this.existing});
+  final Medication? existing;
 
   @override
   State<_MedicationDialog> createState() => _MedicationDialogState();
@@ -1295,8 +1289,8 @@ class _MedicationDialogState extends State<_MedicationDialog> {
 }
 
 class _ConditionDialog extends StatefulWidget {
-  final MedicalCondition? existing;
   const _ConditionDialog({this.existing});
+  final MedicalCondition? existing;
 
   @override
   State<_ConditionDialog> createState() => _ConditionDialogState();
@@ -1415,9 +1409,9 @@ class _ConditionDialogState extends State<_ConditionDialog> {
 }
 
 class _ContactDialog extends StatefulWidget {
+  const _ContactDialog({this.existing, this.nextPriority = 1});
   final EmergencyContact? existing;
   final int nextPriority;
-  const _ContactDialog({this.existing, this.nextPriority = 1});
 
   @override
   State<_ContactDialog> createState() => _ContactDialogState();

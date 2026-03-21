@@ -8,18 +8,9 @@ import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 /// Custom dialog that replaces AlertDialog throughout the app.
 class AppDialog extends StatelessWidget {
-  final String title;
-  final String? message;
-  final Widget? content;
-  final String? confirmLabel;
-  final String? cancelLabel;
-  final bool isDestructive;
-  final VoidCallback? onConfirm;
-  final VoidCallback? onCancel;
 
   const AppDialog({
-    super.key,
-    required this.title,
+    required this.title, super.key,
     this.message,
     this.content,
     this.confirmLabel,
@@ -28,6 +19,14 @@ class AppDialog extends StatelessWidget {
     this.onConfirm,
     this.onCancel,
   });
+  final String title;
+  final String? message;
+  final Widget? content;
+  final String? confirmLabel;
+  final String? cancelLabel;
+  final bool isDestructive;
+  final VoidCallback? onConfirm;
+  final VoidCallback? onCancel;
 
   /// Show a standard confirmation dialog. Returns true if confirmed.
   static Future<bool?> show(
@@ -155,22 +154,20 @@ class AppDialog extends StatelessWidget {
 
 /// A modern bottom sheet widget for actions and forms.
 class AppBottomSheet extends StatelessWidget {
+
+  const AppBottomSheet({
+    required this.child, super.key,
+    this.title,
+    this.padding,
+  });
   final String? title;
   final Widget child;
   final EdgeInsetsGeometry? padding;
 
-  const AppBottomSheet({
-    super.key,
-    this.title,
-    required this.child,
-    this.padding,
-  });
-
   /// Show as a modal bottom sheet. Returns the result value T.
   static Future<T?> show<T>(
     BuildContext context, {
-    String? title,
-    required Widget child,
+    required Widget child, String? title,
     bool isScrollControlled = true,
     EdgeInsetsGeometry? padding,
   }) {
@@ -268,22 +265,19 @@ class AppBottomSheet extends StatelessWidget {
 
 /// A selectable row inside an AppBottomSheet (e.g., for option pickers).
 class BottomSheetOption<T> extends StatelessWidget {
+
+  const BottomSheetOption({
+    required this.value, required this.label, required this.onTap, super.key,
+    this.icon,
+    this.isSelected = false,
+    this.isDestructive = false,
+  });
   final T value;
   final String label;
   final IconData? icon;
   final bool isSelected;
   final bool isDestructive;
   final ValueChanged<T> onTap;
-
-  const BottomSheetOption({
-    super.key,
-    required this.value,
-    required this.label,
-    this.icon,
-    this.isSelected = false,
-    this.isDestructive = false,
-    required this.onTap,
-  });
 
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,14 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 /// A consistent, architected section card for forms and settings.
 class AppSectionCard extends StatelessWidget {
+
+  const AppSectionCard({
+    required this.title, required this.icon, required this.children, super.key,
+    this.margin,
+    this.padding,
+    this.iconColor,
+    this.showDividers = false,
+  });
   final String title;
   final IconData icon;
   final List<Widget> children;
@@ -11,17 +19,6 @@ class AppSectionCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Color? iconColor;
   final bool showDividers;
-
-  const AppSectionCard({
-    super.key,
-    required this.title,
-    required this.icon,
-    required this.children,
-    this.margin,
-    this.padding,
-    this.iconColor,
-    this.showDividers = false,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +34,6 @@ class AppSectionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
             color: colors.cardBorder,
-            width: 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -61,7 +57,6 @@ class AppSectionCard extends StatelessWidget {
                 border: Border(
                   bottom: BorderSide(
                     color: colors.cardBorder,
-                    width: 1,
                   ),
                 ),
               ),
@@ -105,7 +100,7 @@ class AppSectionCard extends StatelessWidget {
     if (!showDividers) return children;
 
     final result = <Widget>[];
-    for (int i = 0; i < children.length; i++) {
+    for (var i = 0; i < children.length; i++) {
       result.add(children[i]);
       if (i < children.length - 1) {
         result.add(Divider(
