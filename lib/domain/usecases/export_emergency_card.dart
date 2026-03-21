@@ -8,7 +8,6 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/usecases/generate_qr_data.dart';
 
 class ExportEmergencyCard {
-
   ExportEmergencyCard(this._generateQrData);
   final GenerateQrData _generateQrData;
 
@@ -27,17 +26,21 @@ class ExportEmergencyCard {
         title: 'Emergency Medical Card — ${profile.name}',
       );
 
-      doc.addPage(pw.Page(
-        pageFormat: _cardFormat,
-        margin: const pw.EdgeInsets.all(6),
-        build: (ctx) => _buildFront(profile, qrData),
-      ));
+      doc.addPage(
+        pw.Page(
+          pageFormat: _cardFormat,
+          margin: const pw.EdgeInsets.all(6),
+          build: (ctx) => _buildFront(profile, qrData),
+        ),
+      );
 
-      doc.addPage(pw.Page(
-        pageFormat: _cardFormat,
-        margin: const pw.EdgeInsets.all(6),
-        build: (ctx) => _buildBack(profile),
-      ));
+      doc.addPage(
+        pw.Page(
+          pageFormat: _cardFormat,
+          margin: const pw.EdgeInsets.all(6),
+          build: (ctx) => _buildBack(profile),
+        ),
+      );
 
       return Right(await doc.save());
     } catch (e) {
@@ -131,8 +134,9 @@ class ExportEmergencyCard {
                 ),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.red700, width: 0.5),
-                  borderRadius:
-                      const pw.BorderRadius.all(pw.Radius.circular(2)),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(2),
+                  ),
                 ),
                 child: pw.Text(
                   '${a.name} (${a.severity.displayName})',
@@ -147,7 +151,10 @@ class ExportEmergencyCard {
         ] else ...[
           pw.Text(
             'No known allergies',
-            style: const pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
+            style: const pw.TextStyle(
+              fontSize: bodySize,
+              color: PdfColors.grey600,
+            ),
           ),
         ],
       ],
@@ -179,9 +186,10 @@ class ExportEmergencyCard {
         _sectionHeader('MEDICATIONS', sectionSize),
         pw.SizedBox(height: 1),
         ...profile.medications.map((m) {
-          final detail = [m.dosage, m.frequency]
-              .where((s) => s != null && s.isNotEmpty)
-              .join(' ');
+          final detail = [
+            m.dosage,
+            m.frequency,
+          ].where((s) => s != null && s.isNotEmpty).join(' ');
           return _bulletText(
             '${m.name}${detail.isNotEmpty ? " — $detail" : ""}',
             bodySize,
@@ -218,7 +226,10 @@ class ExportEmergencyCard {
       rows.add(
         pw.Text(
           'No additional medical information.',
-          style: const pw.TextStyle(fontSize: bodySize, color: PdfColors.grey600),
+          style: const pw.TextStyle(
+            fontSize: bodySize,
+            color: PdfColors.grey600,
+          ),
         ),
       );
     }
@@ -230,14 +241,12 @@ class ExportEmergencyCard {
   }
 
   pw.Widget _sectionHeader(String text, double size) => pw.Text(
-        text,
-        style: pw.TextStyle(fontSize: size, fontWeight: pw.FontWeight.bold),
-      );
+    text,
+    style: pw.TextStyle(fontSize: size, fontWeight: pw.FontWeight.bold),
+  );
 
-  pw.Widget _bulletText(String text, double size) => pw.Text(
-        '• $text',
-        style: pw.TextStyle(fontSize: size),
-      );
+  pw.Widget _bulletText(String text, double size) =>
+      pw.Text('• $text', style: pw.TextStyle(fontSize: size));
 
   String _formatDate(DateTime date) =>
       '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';

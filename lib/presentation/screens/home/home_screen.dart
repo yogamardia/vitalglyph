@@ -121,16 +121,14 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
               if (state is ProfileLoading || state is ProfileInitial)
-                const SliverFillRemaining(
-                  child: _ShimmerLoading(),
-                )
+                const SliverFillRemaining(child: _ShimmerLoading())
               else if (state is ProfileError)
                 SliverFillRemaining(
                   child: _ErrorState(
                     message: state.message,
-                    onRetry: () => context
-                        .read<ProfileBloc>()
-                        .add(const ProfilesWatchStarted()),
+                    onRetry: () => context.read<ProfileBloc>().add(
+                      const ProfilesWatchStarted(),
+                    ),
                   ),
                 )
               else if (state is ProfileLoaded && state.profiles.isEmpty)
@@ -149,54 +147,54 @@ class _HomeScreenState extends State<HomeScreen>
                     120, // Increased bottom padding for nav bar clearance
                   ),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final profiles = state.profiles;
-                        final itemStart = (index * 0.1).clamp(0.0, 0.7);
-                        final itemEnd = (itemStart + 0.4).clamp(0.0, 1.0);
-                        final animation = CurvedAnimation(
-                          parent: _listController,
-                          curve: Interval(itemStart, itemEnd,
-                              curve: Curves.easeOutCubic),
-                        );
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final profiles = state.profiles;
+                      final itemStart = (index * 0.1).clamp(0.0, 0.7);
+                      final itemEnd = (itemStart + 0.4).clamp(0.0, 1.0);
+                      final animation = CurvedAnimation(
+                        parent: _listController,
+                        curve: Interval(
+                          itemStart,
+                          itemEnd,
+                          curve: Curves.easeOutCubic,
+                        ),
+                      );
 
-                        return AnimatedBuilder(
-                          animation: animation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, 30 * (1.0 - animation.value)),
-                              child: Opacity(
-                                opacity: animation.value,
-                                child: child,
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                            child: ProfileCard(
-                              profile: profiles[index],
-                              isPrimary: index == 0,
-                              onDelete: () => context
-                                  .read<ProfileBloc>()
-                                  .add(ProfileDeleteRequested(profiles[index].id)),
-                              onShowQr: () => context.push(
-                                AppRouter.qrDisplay,
-                                extra: profiles[index],
-                              ),
-                              onEdit: () => context.push(
-                                AppRouter.profileEdit,
-                                extra: profiles[index],
-                              ),
-                              onEmergencyCard: () => context.push(
-                                AppRouter.emergencyCard,
-                                extra: profiles[index],
-                              ),
+                      return AnimatedBuilder(
+                        animation: animation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 30 * (1.0 - animation.value)),
+                            child: Opacity(
+                              opacity: animation.value,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                          child: ProfileCard(
+                            profile: profiles[index],
+                            isPrimary: index == 0,
+                            onDelete: () => context.read<ProfileBloc>().add(
+                              ProfileDeleteRequested(profiles[index].id),
+                            ),
+                            onShowQr: () => context.push(
+                              AppRouter.qrDisplay,
+                              extra: profiles[index],
+                            ),
+                            onEdit: () => context.push(
+                              AppRouter.profileEdit,
+                              extra: profiles[index],
+                            ),
+                            onEmergencyCard: () => context.push(
+                              AppRouter.emergencyCard,
+                              extra: profiles[index],
                             ),
                           ),
-                        );
-                      },
-                      childCount: state.profiles.length,
-                    ),
+                        ),
+                      );
+                    }, childCount: state.profiles.length),
                   ),
                 ),
             ],
@@ -212,11 +210,7 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
 class _ModernBottomNavBar extends StatelessWidget {
-
-  const _ModernBottomNavBar({
-    required this.onTap,
-    required this.colors,
-  });
+  const _ModernBottomNavBar({required this.onTap, required this.colors});
   final ValueChanged<int> onTap;
   final VitalGlyphColors colors;
 
@@ -228,12 +222,7 @@ class _ModernBottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.glassSurface,
-        border: Border(
-          top: BorderSide(
-            color: colors.cardBorder,
-            width: 1.5,
-          ),
-        ),
+        border: Border(top: BorderSide(color: colors.cardBorder, width: 1.5)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -278,7 +267,6 @@ class _ModernBottomNavBar extends StatelessWidget {
 }
 
 class _NavBarItem extends StatelessWidget {
-
   const _NavBarItem({
     required this.icon,
     required this.label,
@@ -295,7 +283,7 @@ class _NavBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = cs.onSurfaceVariant.withValues(alpha: 0.5);
-    
+
     return Semantics(
       label: label,
       button: true,
@@ -322,18 +310,10 @@ class _NavBarItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    icon,
-                    color: cs.onPrimary,
-                    size: 28,
-                  ),
+                  child: Icon(icon, color: cs.onPrimary, size: 28),
                 )
               else ...[
-                Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
+                Icon(icon, color: color, size: 24),
                 const SizedBox(height: 6),
                 Text(
                   label,
@@ -352,7 +332,6 @@ class _NavBarItem extends StatelessWidget {
     );
   }
 }
-
 
 class _ShimmerLoading extends StatefulWidget {
   const _ShimmerLoading();
@@ -373,9 +352,10 @@ class _ShimmerLoadingState extends State<_ShimmerLoading>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1, end: 2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: -1,
+      end: 2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -427,7 +407,6 @@ class _SlidingGradientTransform extends GradientTransform {
 }
 
 class _ShimmerSkeleton extends StatelessWidget {
-
   const _ShimmerSkeleton({required this.gradient, required this.colors});
   final Gradient gradient;
   final VitalGlyphColors colors;
@@ -499,7 +478,6 @@ class _ShimmerSkeleton extends StatelessWidget {
 }
 
 class _ErrorState extends StatelessWidget {
-
   const _ErrorState({required this.message, required this.onRetry});
   final String message;
   final VoidCallback onRetry;
@@ -518,13 +496,18 @@ class _ErrorState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded,
-                  size: 48, color: theme.colorScheme.error),
+              Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
               FilledButton.icon(
@@ -541,7 +524,6 @@ class _ErrorState extends StatelessWidget {
 }
 
 class _EmptyState extends StatefulWidget {
-
   const _EmptyState({required this.onAddProfile});
   final VoidCallback onAddProfile;
 
@@ -549,7 +531,8 @@ class _EmptyState extends StatefulWidget {
   State<_EmptyState> createState() => _EmptyStateState();
 }
 
-class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin {
+class _EmptyStateState extends State<_EmptyState>
+    with TickerProviderStateMixin {
   late AnimationController _floatController;
   late Animation<double> _floatAnimation;
 
@@ -599,7 +582,7 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
                   // Decorative pulsing dots
                   for (int i = 0; i < 3; i++)
                     _PulsingDot(index: i, colors: colors),
-                  
+
                   Transform.rotate(
                     angle: -0.12,
                     child: Container(
@@ -608,9 +591,7 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
                       decoration: BoxDecoration(
                         color: cs.primary.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(AppRadius.md),
-                        border: Border.all(
-                          color: colors.cardBorder,
-                        ),
+                        border: Border.all(color: colors.cardBorder),
                       ),
                     ),
                   ),
@@ -685,7 +666,6 @@ class _EmptyStateState extends State<_EmptyState> with TickerProviderStateMixin 
 }
 
 class _PulsingDot extends StatefulWidget {
-
   const _PulsingDot({required this.index, required this.colors});
   final int index;
   final VitalGlyphColors colors;
@@ -694,7 +674,8 @@ class _PulsingDot extends StatefulWidget {
   State<_PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -705,15 +686,16 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
+
     // Delay each dot
     Future.delayed(Duration(milliseconds: widget.index * 600), () {
       if (mounted) _controller.forward();
     });
 
-    _animation = Tween<double>(begin: 0.3, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -739,7 +721,9 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: widget.colors.glowPrimary.withValues(alpha: _animation.value),
+              color: widget.colors.glowPrimary.withValues(
+                alpha: _animation.value,
+              ),
               shape: BoxShape.circle,
             ),
           ),

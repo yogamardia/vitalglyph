@@ -15,7 +15,6 @@ import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 /// Serializes all profiles to JSON, encrypts with PBKDF2+AES-256-CBC,
 /// writes to a temp `.medid` file, and returns the file path for sharing.
 class ExportBackup {
-
   ExportBackup(this._repository, this._crypto);
   final ProfileRepository _repository;
   final BackupCryptoService _crypto;
@@ -26,10 +25,7 @@ class ExportBackup {
 
       Failure? failure;
       List<Profile>? profiles;
-      streamResult.match(
-        (f) => failure = f,
-        (p) => profiles = p,
-      );
+      streamResult.match((f) => failure = f, (p) => profiles = p);
       if (failure != null) return Left(failure!);
 
       final json = _buildJson(profiles!);
@@ -37,7 +33,8 @@ class ExportBackup {
 
       final dir = await getTemporaryDirectory();
       final now = DateTime.now().toUtc();
-      final ts = '${now.year}'
+      final ts =
+          '${now.year}'
           '${now.month.toString().padLeft(2, '0')}'
           '${now.day.toString().padLeft(2, '0')}'
           '_${now.hour.toString().padLeft(2, '0')}'
@@ -63,52 +60,51 @@ class ExportBackup {
   }
 
   Map<String, dynamic> _profileToJson(Profile p) => {
-        'id': p.id,
-        'name': p.name,
-        'date_of_birth': p.dateOfBirth.toIso8601String(),
-        'blood_type': p.bloodType?.name,
-        'biological_sex': p.biologicalSex?.name,
-        'height_cm': p.heightCm,
-        'weight_kg': p.weightKg,
-        'is_organ_donor': p.isOrganDonor,
-        'medical_notes': p.medicalNotes,
-        'primary_language': p.primaryLanguage,
-        'created_at': p.createdAt.toIso8601String(),
-        'updated_at': p.updatedAt.toIso8601String(),
-        'allergies': p.allergies.map(_allergyToJson).toList(),
-        'medications': p.medications.map(_medicationToJson).toList(),
-        'conditions': p.conditions.map(_conditionToJson).toList(),
-        'emergency_contacts':
-            p.emergencyContacts.map(_contactToJson).toList(),
-      };
+    'id': p.id,
+    'name': p.name,
+    'date_of_birth': p.dateOfBirth.toIso8601String(),
+    'blood_type': p.bloodType?.name,
+    'biological_sex': p.biologicalSex?.name,
+    'height_cm': p.heightCm,
+    'weight_kg': p.weightKg,
+    'is_organ_donor': p.isOrganDonor,
+    'medical_notes': p.medicalNotes,
+    'primary_language': p.primaryLanguage,
+    'created_at': p.createdAt.toIso8601String(),
+    'updated_at': p.updatedAt.toIso8601String(),
+    'allergies': p.allergies.map(_allergyToJson).toList(),
+    'medications': p.medications.map(_medicationToJson).toList(),
+    'conditions': p.conditions.map(_conditionToJson).toList(),
+    'emergency_contacts': p.emergencyContacts.map(_contactToJson).toList(),
+  };
 
   Map<String, dynamic> _allergyToJson(Allergy a) => {
-        'id': a.id,
-        'name': a.name,
-        'severity': a.severity.name,
-        'reaction': a.reaction,
-      };
+    'id': a.id,
+    'name': a.name,
+    'severity': a.severity.name,
+    'reaction': a.reaction,
+  };
 
   Map<String, dynamic> _medicationToJson(Medication m) => {
-        'id': m.id,
-        'name': m.name,
-        'dosage': m.dosage,
-        'frequency': m.frequency,
-        'prescribed_for': m.prescribedFor,
-      };
+    'id': m.id,
+    'name': m.name,
+    'dosage': m.dosage,
+    'frequency': m.frequency,
+    'prescribed_for': m.prescribedFor,
+  };
 
   Map<String, dynamic> _conditionToJson(MedicalCondition c) => {
-        'id': c.id,
-        'name': c.name,
-        'diagnosed_date': c.diagnosedDate,
-        'notes': c.notes,
-      };
+    'id': c.id,
+    'name': c.name,
+    'diagnosed_date': c.diagnosedDate,
+    'notes': c.notes,
+  };
 
   Map<String, dynamic> _contactToJson(EmergencyContact ec) => {
-        'id': ec.id,
-        'name': ec.name,
-        'phone': ec.phone,
-        'relationship': ec.relationship,
-        'priority': ec.priority,
-      };
+    'id': ec.id,
+    'name': ec.name,
+    'phone': ec.phone,
+    'relationship': ec.relationship,
+    'priority': ec.priority,
+  };
 }

@@ -3,9 +3,9 @@ import 'package:vitalglyph/core/theme/app_colors.dart';
 
 /// A Scaffold wrapper with a gradient background.
 class GradientScaffold extends StatelessWidget {
-
   const GradientScaffold({
-    required this.body, super.key,
+    required this.body,
+    super.key,
     this.appBar,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
@@ -36,18 +36,12 @@ class GradientScaffold extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  colors.gradientStart,
-                  colors.gradientEnd,
-                ],
+                colors: [colors.gradientStart, colors.gradientEnd],
                 stops: const [0.0, 1.0],
               ),
             ),
           ),
-          SafeArea(
-            top: !extendBodyBehindAppBar,
-            child: body,
-          ),
+          SafeArea(top: !extendBodyBehindAppBar, child: body),
         ],
       ),
     );

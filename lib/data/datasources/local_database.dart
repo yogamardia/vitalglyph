@@ -23,8 +23,7 @@ class Profiles extends Table {
   TextColumn get biologicalSex => text().nullable()();
   RealColumn get heightCm => real().nullable()();
   RealColumn get weightKg => real().nullable()();
-  BoolColumn get isOrganDonor =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isOrganDonor => boolean().withDefault(const Constant(false))();
   TextColumn get medicalNotes => text().nullable()();
   TextColumn get primaryLanguage => text().nullable()();
   TextColumn get photoPath => text().nullable()();
@@ -105,8 +104,7 @@ class EmergencyContacts extends Table {
 class ProfileDao extends DatabaseAccessor<AppDatabase> with _$ProfileDaoMixin {
   ProfileDao(super.db);
 
-  Stream<List<ProfileRecord>> watchAllProfiles() =>
-      select(profiles).watch();
+  Stream<List<ProfileRecord>> watchAllProfiles() => select(profiles).watch();
 
   Future<ProfileRecord?> getProfile(String id) =>
       (select(profiles)..where((t) => t.id.equals(id))).getSingleOrNull();
@@ -134,9 +132,7 @@ class ProfileDao extends DatabaseAccessor<AppDatabase> with _$ProfileDaoMixin {
   // ── Medications ──
 
   Future<List<MedicationRecord>> getMedicationsForProfile(String profileId) =>
-      (select(medications)
-            ..where((t) => t.profileId.equals(profileId)))
-          .get();
+      (select(medications)..where((t) => t.profileId.equals(profileId))).get();
 
   Future<void> insertMedication(MedicationsCompanion entry) =>
       into(medications).insert(entry);
@@ -147,23 +143,23 @@ class ProfileDao extends DatabaseAccessor<AppDatabase> with _$ProfileDaoMixin {
   // ── Medical Conditions ──
 
   Future<List<MedicalConditionRecord>> getConditionsForProfile(
-          String profileId) =>
-      (select(medicalConditions)
-            ..where((t) => t.profileId.equals(profileId)))
-          .get();
+    String profileId,
+  ) => (select(
+    medicalConditions,
+  )..where((t) => t.profileId.equals(profileId))).get();
 
   Future<void> insertCondition(MedicalConditionsCompanion entry) =>
       into(medicalConditions).insert(entry);
 
-  Future<void> deleteConditionsForProfile(String profileId) =>
-      (delete(medicalConditions)
-            ..where((t) => t.profileId.equals(profileId)))
-          .go();
+  Future<void> deleteConditionsForProfile(String profileId) => (delete(
+    medicalConditions,
+  )..where((t) => t.profileId.equals(profileId))).go();
 
   // ── Emergency Contacts ──
 
   Future<List<EmergencyContactRecord>> getContactsForProfile(
-          String profileId) =>
+    String profileId,
+  ) =>
       (select(emergencyContacts)
             ..where((t) => t.profileId.equals(profileId))
             ..orderBy([(t) => OrderingTerm.asc(t.priority)]))
@@ -172,10 +168,9 @@ class ProfileDao extends DatabaseAccessor<AppDatabase> with _$ProfileDaoMixin {
   Future<void> insertContact(EmergencyContactsCompanion entry) =>
       into(emergencyContacts).insert(entry);
 
-  Future<void> deleteContactsForProfile(String profileId) =>
-      (delete(emergencyContacts)
-            ..where((t) => t.profileId.equals(profileId)))
-          .go();
+  Future<void> deleteContactsForProfile(String profileId) => (delete(
+    emergencyContacts,
+  )..where((t) => t.profileId.equals(profileId))).go();
 }
 
 // ──────────────────────────────────────────────
@@ -203,18 +198,18 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          throw Exception(
-            'Missing migration from v$from to v$to. '
-            'Database version $to is not supported by this app version.',
-          );
-        },
-        beforeOpen: (details) async {
-          // Enable foreign key enforcement on every connection.
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      throw Exception(
+        'Missing migration from v$from to v$to. '
+        'Database version $to is not supported by this app version.',
       );
+    },
+    beforeOpen: (details) async {
+      // Enable foreign key enforcement on every connection.
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }
 
 LazyDatabase _openDatabase(String encryptionKey) {

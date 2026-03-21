@@ -40,15 +40,10 @@ class AppRouter {
     routes: [
       GoRoute(
         path: onboarding,
-        pageBuilder: (context, state) => PageTransitions.fade(
-          state: state,
-          child: const OnboardingScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            PageTransitions.fade(state: state, child: const OnboardingScreen()),
       ),
-      GoRoute(
-        path: home,
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: home, builder: (context, state) => const HomeScreen()),
       // Immersive fade — QR display takeover
       GoRoute(
         path: qrDisplay,
@@ -63,10 +58,8 @@ class AppRouter {
       // Fade for scanner + shared-axis for result
       GoRoute(
         path: scanner,
-        pageBuilder: (context, state) => PageTransitions.fade(
-          state: state,
-          child: const QrScannerScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            PageTransitions.fade(state: state, child: const QrScannerScreen()),
         routes: [
           GoRoute(
             path: 'result',

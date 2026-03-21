@@ -37,12 +37,8 @@ void main() {
     allergies: const [
       Allergy(id: 'a1', name: 'Peanuts', severity: AllergySeverity.severe),
     ],
-    medications: const [
-      Medication(id: 'm1', name: 'Ibuprofen'),
-    ],
-    conditions: const [
-      MedicalCondition(id: 'c1', name: 'Asthma'),
-    ],
+    medications: const [Medication(id: 'm1', name: 'Ibuprofen')],
+    conditions: const [MedicalCondition(id: 'c1', name: 'Asthma')],
     emergencyContacts: const [
       EmergencyContact(id: 'ec1', name: 'Bob', phone: '555-0100'),
     ],
@@ -57,53 +53,61 @@ void main() {
   }
 
   Map<String, dynamic> profileToJson(Profile p) => {
-        'id': p.id,
-        'name': p.name,
-        'date_of_birth': p.dateOfBirth.toIso8601String(),
-        'blood_type': p.bloodType?.name,
-        'biological_sex': p.biologicalSex?.name,
-        'height_cm': p.heightCm,
-        'weight_kg': p.weightKg,
-        'is_organ_donor': p.isOrganDonor,
-        'medical_notes': p.medicalNotes,
-        'primary_language': p.primaryLanguage,
-        'created_at': p.createdAt.toIso8601String(),
-        'updated_at': p.updatedAt.toIso8601String(),
-        'allergies': p.allergies
-            .map((a) => {
-                  'id': a.id,
-                  'name': a.name,
-                  'severity': a.severity.name,
-                  'reaction': a.reaction,
-                })
-            .toList(),
-        'medications': p.medications
-            .map((m) => {
-                  'id': m.id,
-                  'name': m.name,
-                  'dosage': m.dosage,
-                  'frequency': m.frequency,
-                  'prescribed_for': m.prescribedFor,
-                })
-            .toList(),
-        'conditions': p.conditions
-            .map((c) => {
-                  'id': c.id,
-                  'name': c.name,
-                  'diagnosed_date': c.diagnosedDate,
-                  'notes': c.notes,
-                })
-            .toList(),
-        'emergency_contacts': p.emergencyContacts
-            .map((ec) => {
-                  'id': ec.id,
-                  'name': ec.name,
-                  'phone': ec.phone,
-                  'relationship': ec.relationship,
-                  'priority': ec.priority,
-                })
-            .toList(),
-      };
+    'id': p.id,
+    'name': p.name,
+    'date_of_birth': p.dateOfBirth.toIso8601String(),
+    'blood_type': p.bloodType?.name,
+    'biological_sex': p.biologicalSex?.name,
+    'height_cm': p.heightCm,
+    'weight_kg': p.weightKg,
+    'is_organ_donor': p.isOrganDonor,
+    'medical_notes': p.medicalNotes,
+    'primary_language': p.primaryLanguage,
+    'created_at': p.createdAt.toIso8601String(),
+    'updated_at': p.updatedAt.toIso8601String(),
+    'allergies': p.allergies
+        .map(
+          (a) => {
+            'id': a.id,
+            'name': a.name,
+            'severity': a.severity.name,
+            'reaction': a.reaction,
+          },
+        )
+        .toList(),
+    'medications': p.medications
+        .map(
+          (m) => {
+            'id': m.id,
+            'name': m.name,
+            'dosage': m.dosage,
+            'frequency': m.frequency,
+            'prescribed_for': m.prescribedFor,
+          },
+        )
+        .toList(),
+    'conditions': p.conditions
+        .map(
+          (c) => {
+            'id': c.id,
+            'name': c.name,
+            'diagnosed_date': c.diagnosedDate,
+            'notes': c.notes,
+          },
+        )
+        .toList(),
+    'emergency_contacts': p.emergencyContacts
+        .map(
+          (ec) => {
+            'id': ec.id,
+            'name': ec.name,
+            'phone': ec.phone,
+            'relationship': ec.relationship,
+            'priority': ec.priority,
+          },
+        )
+        .toList(),
+  };
 
   File writeBackupFile(String content) {
     final file = File('${tmpDir.path}/test.medid');
@@ -133,45 +137,41 @@ void main() {
       final json = buildBackupJson([profileToJson(testProfile)]);
       final file = writeBackupFile('encrypted_content');
 
-      when(() => mockCrypto.decryptJson('encrypted_content', 'pass'))
-          .thenReturn(json);
-      when(() => mockRepo.getProfile('p1')).thenAnswer(
-        (_) async => const Left(NotFoundFailure()),
-      );
-      when(() => mockRepo.createProfile(any())).thenAnswer(
-        (_) async => const Right('p1'),
-      );
+      when(
+        () => mockCrypto.decryptJson('encrypted_content', 'pass'),
+      ).thenReturn(json);
+      when(
+        () => mockRepo.getProfile('p1'),
+      ).thenAnswer((_) async => const Left(NotFoundFailure()));
+      when(
+        () => mockRepo.createProfile(any()),
+      ).thenAnswer((_) async => const Right('p1'));
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (f) => fail('Expected Right, got Left: ${f.message}'),
-        (importResult) {
-          expect(importResult.imported, 1);
-          expect(importResult.skipped, 0);
-        },
-      );
+      result.match((f) => fail('Expected Right, got Left: ${f.message}'), (
+        importResult,
+      ) {
+        expect(importResult.imported, 1);
+        expect(importResult.skipped, 0);
+      });
     });
 
     test('skips profiles whose ID already exists', () async {
       final json = buildBackupJson([profileToJson(testProfile)]);
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenReturn(json);
-      when(() => mockRepo.getProfile('p1')).thenAnswer(
-        (_) async => Right(testProfile),
-      );
+      when(() => mockCrypto.decryptJson('encrypted', 'pass')).thenReturn(json);
+      when(
+        () => mockRepo.getProfile('p1'),
+      ).thenAnswer((_) async => Right(testProfile));
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (f) => fail('Expected Right'),
-        (importResult) {
-          expect(importResult.imported, 0);
-          expect(importResult.skipped, 1);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (importResult) {
+        expect(importResult.imported, 0);
+        expect(importResult.skipped, 1);
+      });
       verifyNever(() => mockRepo.createProfile(any()));
     });
 
@@ -183,27 +183,23 @@ void main() {
       ]);
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenReturn(json);
-      when(() => mockRepo.getProfile('p1')).thenAnswer(
-        (_) async => Right(testProfile),
-      );
-      when(() => mockRepo.getProfile('p2')).thenAnswer(
-        (_) async => const Left(NotFoundFailure()),
-      );
-      when(() => mockRepo.createProfile(any())).thenAnswer(
-        (_) async => const Right('p2'),
-      );
+      when(() => mockCrypto.decryptJson('encrypted', 'pass')).thenReturn(json);
+      when(
+        () => mockRepo.getProfile('p1'),
+      ).thenAnswer((_) async => Right(testProfile));
+      when(
+        () => mockRepo.getProfile('p2'),
+      ).thenAnswer((_) async => const Left(NotFoundFailure()));
+      when(
+        () => mockRepo.createProfile(any()),
+      ).thenAnswer((_) async => const Right('p2'));
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (f) => fail('Expected Right'),
-        (importResult) {
-          expect(importResult.imported, 1);
-          expect(importResult.skipped, 1);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (importResult) {
+        expect(importResult.imported, 1);
+        expect(importResult.skipped, 1);
+      });
     });
 
     test('continues import when individual create fails', () async {
@@ -214,11 +210,10 @@ void main() {
       ]);
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenReturn(json);
-      when(() => mockRepo.getProfile(any())).thenAnswer(
-        (_) async => const Left(NotFoundFailure()),
-      );
+      when(() => mockCrypto.decryptJson('encrypted', 'pass')).thenReturn(json);
+      when(
+        () => mockRepo.getProfile(any()),
+      ).thenAnswer((_) async => const Left(NotFoundFailure()));
       // First create fails, second succeeds.
       var callCount = 0;
       when(() => mockRepo.createProfile(any())).thenAnswer((_) async {
@@ -231,32 +226,25 @@ void main() {
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (f) => fail('Expected Right'),
-        (importResult) {
-          // First failed silently (not counted), second succeeded.
-          expect(importResult.imported, 1);
-          expect(importResult.skipped, 0);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (importResult) {
+        // First failed silently (not counted), second succeeded.
+        expect(importResult.imported, 1);
+        expect(importResult.skipped, 0);
+      });
     });
 
     test('handles empty profiles list', () async {
       final json = buildBackupJson([]);
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenReturn(json);
+      when(() => mockCrypto.decryptJson('encrypted', 'pass')).thenReturn(json);
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (f) => fail('Expected Right'),
-        (importResult) {
-          expect(importResult.imported, 0);
-          expect(importResult.skipped, 0);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (importResult) {
+        expect(importResult.imported, 0);
+        expect(importResult.skipped, 0);
+      });
     });
 
     test('handles JSON with null/missing lists gracefully', () async {
@@ -276,14 +264,13 @@ void main() {
       });
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenReturn(json);
-      when(() => mockRepo.getProfile('p-null')).thenAnswer(
-        (_) async => const Left(NotFoundFailure()),
-      );
-      when(() => mockRepo.createProfile(any())).thenAnswer(
-        (_) async => const Right('p-null'),
-      );
+      when(() => mockCrypto.decryptJson('encrypted', 'pass')).thenReturn(json);
+      when(
+        () => mockRepo.getProfile('p-null'),
+      ).thenAnswer((_) async => const Left(NotFoundFailure()));
+      when(
+        () => mockRepo.createProfile(any()),
+      ).thenAnswer((_) async => const Right('p-null'));
 
       final result = await useCase(file.path, 'pass');
 
@@ -298,54 +285,48 @@ void main() {
     test('returns BackupFailure when file does not exist', () async {
       final result = await useCase('/nonexistent/file.medid', 'pass');
 
-      result.match(
-        (failure) {
-          expect(failure, isA<BackupFailure>());
-          expect(failure.message, 'Backup file not found.');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.match((failure) {
+        expect(failure, isA<BackupFailure>());
+        expect(failure.message, 'Backup file not found.');
+      }, (_) => fail('Expected Left'));
     });
 
     test('returns BackupFailure on wrong passphrase', () async {
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'wrong'))
-          .thenThrow(BackupWrongPassphraseException());
+      when(
+        () => mockCrypto.decryptJson('encrypted', 'wrong'),
+      ).thenThrow(BackupWrongPassphraseException());
 
       final result = await useCase(file.path, 'wrong');
 
-      result.match(
-        (failure) {
-          expect(failure, isA<BackupFailure>());
-          expect(failure.message, contains('Wrong passphrase'));
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.match((failure) {
+        expect(failure, isA<BackupFailure>());
+        expect(failure.message, contains('Wrong passphrase'));
+      }, (_) => fail('Expected Left'));
     });
 
     test('returns BackupFailure on invalid format', () async {
       final file = writeBackupFile('not a backup');
 
-      when(() => mockCrypto.decryptJson('not a backup', 'pass'))
-          .thenThrow(const BackupFormatException('Invalid format'));
+      when(
+        () => mockCrypto.decryptJson('not a backup', 'pass'),
+      ).thenThrow(const BackupFormatException('Invalid format'));
 
       final result = await useCase(file.path, 'pass');
 
-      result.match(
-        (failure) {
-          expect(failure, isA<BackupFailure>());
-          expect(failure.message, contains('Invalid format'));
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.match((failure) {
+        expect(failure, isA<BackupFailure>());
+        expect(failure.message, contains('Invalid format'));
+      }, (_) => fail('Expected Left'));
     });
 
     test('returns BackupFailure on unexpected error', () async {
       final file = writeBackupFile('encrypted');
 
-      when(() => mockCrypto.decryptJson('encrypted', 'pass'))
-          .thenThrow(Exception('unexpected'));
+      when(
+        () => mockCrypto.decryptJson('encrypted', 'pass'),
+      ).thenThrow(Exception('unexpected'));
 
       final result = await useCase(file.path, 'pass');
 

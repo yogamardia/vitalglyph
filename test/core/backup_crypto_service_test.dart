@@ -53,7 +53,10 @@ void main() {
     test('roundtrip with large payload', () {
       final largeData = jsonEncode({
         'medid_version': 1,
-        'profiles': List.generate(50, (i) => {'id': 'profile-$i', 'name': 'User $i'}),
+        'profiles': List.generate(
+          50,
+          (i) => {'id': 'profile-$i', 'name': 'User $i'},
+        ),
       });
       final encrypted = crypto.encryptJson(largeData, 'secret');
       final decrypted = crypto.decryptJson(encrypted, 'secret');
@@ -104,7 +107,24 @@ void main() {
       final encrypted = crypto.encryptJson(json, 'pass');
       final parts = encrypted.split('|');
       // Corrupt the ciphertext
-      parts[4] = base64.encode([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+      parts[4] = base64.encode([
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+      ]);
       final corrupted = parts.join('|');
 
       expect(
@@ -113,16 +133,19 @@ void main() {
       );
     });
 
-    test('valid decrypt but missing medid_version throws BackupWrongPassphraseException', () {
-      // Encrypt JSON that doesn't have medid_version
-      const json = '{"no_version":true}';
-      final encrypted = crypto.encryptJson(json, 'pass');
+    test(
+      'valid decrypt but missing medid_version throws BackupWrongPassphraseException',
+      () {
+        // Encrypt JSON that doesn't have medid_version
+        const json = '{"no_version":true}';
+        final encrypted = crypto.encryptJson(json, 'pass');
 
-      expect(
-        () => crypto.decryptJson(encrypted, 'pass'),
-        throwsA(isA<BackupWrongPassphraseException>()),
-      );
-    });
+        expect(
+          () => crypto.decryptJson(encrypted, 'pass'),
+          throwsA(isA<BackupWrongPassphraseException>()),
+        );
+      },
+    );
   });
 
   group('BackupFormatException', () {

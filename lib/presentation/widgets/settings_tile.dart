@@ -6,9 +6,9 @@ import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 
 /// A modern settings row that replaces stock ListTile.
 class SettingsTile extends StatelessWidget {
-
   const SettingsTile({
-    required this.title, super.key,
+    required this.title,
+    super.key,
     this.subtitle,
     this.leading,
     this.trailing,
@@ -115,9 +115,11 @@ class SettingsTile extends StatelessWidget {
 /// A settings row with an integrated toggle switch.
 /// Replaces SwitchListTile.
 class SettingsToggleTile extends StatelessWidget {
-
   const SettingsToggleTile({
-    required this.title, required this.value, required this.onChanged, super.key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    super.key,
     this.subtitle,
     this.leading,
   });
@@ -158,9 +160,7 @@ class SettingsToggleTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(AppRadius.md),
                       color: colors.surfaceSubtle,
-                      border: Border.all(
-                        color: colors.cardBorder,
-                      ),
+                      border: Border.all(color: colors.cardBorder),
                     ),
                     child: Icon(leading, size: 20, color: cs.primary),
                   ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 /// Access via: `Theme.of(context).extension<VitalGlyphColors>()!`
 @immutable
 class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
-
   const VitalGlyphColors({
     required this.bloodTypeBadge,
     required this.bloodTypeBadgeBackground,
@@ -204,14 +203,26 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
     return VitalGlyphColors(
       bloodTypeBadge: Color.lerp(bloodTypeBadge, other.bloodTypeBadge, t)!,
       bloodTypeBadgeBackground: Color.lerp(
-          bloodTypeBadgeBackground, other.bloodTypeBadgeBackground, t)!,
-      bloodTypeBadgeBorder:
-          Color.lerp(bloodTypeBadgeBorder, other.bloodTypeBadgeBorder, t)!,
+        bloodTypeBadgeBackground,
+        other.bloodTypeBadgeBackground,
+        t,
+      )!,
+      bloodTypeBadgeBorder: Color.lerp(
+        bloodTypeBadgeBorder,
+        other.bloodTypeBadgeBorder,
+        t,
+      )!,
       allergyTag: Color.lerp(allergyTag, other.allergyTag, t)!,
-      allergyTagBackground:
-          Color.lerp(allergyTagBackground, other.allergyTagBackground, t)!,
-      allergyTagBorder:
-          Color.lerp(allergyTagBorder, other.allergyTagBorder, t)!,
+      allergyTagBackground: Color.lerp(
+        allergyTagBackground,
+        other.allergyTagBackground,
+        t,
+      )!,
+      allergyTagBorder: Color.lerp(
+        allergyTagBorder,
+        other.allergyTagBorder,
+        t,
+      )!,
       lifeThreatening: Color.lerp(lifeThreatening, other.lifeThreatening, t)!,
       severe: Color.lerp(severe, other.severe, t)!,
       moderate: Color.lerp(moderate, other.moderate, t)!,
@@ -222,7 +233,10 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       dividerSubtle: Color.lerp(dividerSubtle, other.dividerSubtle, t)!,
       tamperWarning: Color.lerp(tamperWarning, other.tamperWarning, t)!,
       tamperWarningBackground: Color.lerp(
-          tamperWarningBackground, other.tamperWarningBackground, t)!,
+        tamperWarningBackground,
+        other.tamperWarningBackground,
+        t,
+      )!,
       cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
       surfaceSubtle: Color.lerp(surfaceSubtle, other.surfaceSubtle, t)!,
       inputFill: Color.lerp(inputFill, other.inputFill, t)!,
@@ -233,8 +247,11 @@ class VitalGlyphColors extends ThemeExtension<VitalGlyphColors> {
       gradientEnd: Color.lerp(gradientEnd, other.gradientEnd, t)!,
       glowPrimary: Color.lerp(glowPrimary, other.glowPrimary, t)!,
       shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,
-      shimmerHighlight:
-          Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,
+      shimmerHighlight: Color.lerp(
+        shimmerHighlight,
+        other.shimmerHighlight,
+        t,
+      )!,
     );
   }
 }

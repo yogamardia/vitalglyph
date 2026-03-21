@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class EmergencyContact extends Equatable {
-
   const EmergencyContact({
     required this.id,
     required this.name,

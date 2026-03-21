@@ -9,7 +9,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// The PIN is never stored in plaintext. Only the salt and the derived hash
 /// are persisted in secure storage.
 class PinService {
-
   PinService(this._storage);
   static const _pinHashKey = 'vitalglyph_pin_hash';
   static const _pinSaltKey = 'vitalglyph_pin_salt';

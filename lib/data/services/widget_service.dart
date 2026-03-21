@@ -14,7 +14,6 @@ const _kiOSWidgetName = 'VitalglyphWidget';
 /// Data is intentionally unencrypted — first responders must read it
 /// without unlocking the phone.
 class WidgetService {
-
   WidgetService(this._generateQrData);
   final GenerateQrData _generateQrData;
 

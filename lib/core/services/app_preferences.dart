@@ -2,7 +2,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Persistent app-level preferences (non-sensitive).
 class AppPreferences {
-
   const AppPreferences(this._storage);
   final FlutterSecureStorage _storage;
   static const _onboardingKey = 'has_seen_onboarding';

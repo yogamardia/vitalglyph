@@ -21,10 +21,8 @@ void main() {
     mockImport = MockImportBackup();
   });
 
-  BackupCubit buildCubit() => BackupCubit(
-        exportBackup: mockExport,
-        importBackup: mockImport,
-      );
+  BackupCubit buildCubit() =>
+      BackupCubit(exportBackup: mockExport, importBackup: mockImport);
 
   group('initial state', () {
     test('is BackupInitial', () {
@@ -38,16 +36,13 @@ void main() {
     blocTest<BackupCubit, BackupState>(
       'emits [Loading, Error] when export fails',
       setUp: () {
-        when(() => mockExport('pass')).thenAnswer(
-          (_) async => const Left(BackupFailure('Export failed')),
-        );
+        when(
+          () => mockExport('pass'),
+        ).thenAnswer((_) async => const Left(BackupFailure('Export failed')));
       },
       build: buildCubit,
       act: (cubit) => cubit.export('pass'),
-      expect: () => [
-        const BackupLoading(),
-        const BackupError('Export failed'),
-      ],
+      expect: () => [const BackupLoading(), const BackupError('Export failed')],
     );
 
     // Note: testing the success path requires mocking SharePlus.instance

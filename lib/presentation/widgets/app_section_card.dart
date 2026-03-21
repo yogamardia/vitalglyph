@@ -4,9 +4,11 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 /// A consistent, architected section card for forms and settings.
 class AppSectionCard extends StatelessWidget {
-
   const AppSectionCard({
-    required this.title, required this.icon, required this.children, super.key,
+    required this.title,
+    required this.icon,
+    required this.children,
+    super.key,
     this.margin,
     this.padding,
     this.iconColor,
@@ -32,9 +34,7 @@ class AppSectionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.glassSurface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(
-            color: colors.cardBorder,
-          ),
+          border: Border.all(color: colors.cardBorder),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -54,19 +54,11 @@ class AppSectionCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(AppRadius.lg),
                 ),
-                border: Border(
-                  bottom: BorderSide(
-                    color: colors.cardBorder,
-                  ),
-                ),
+                border: Border(bottom: BorderSide(color: colors.cardBorder)),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    icon,
-                    size: 20,
-                    color: iconColor ?? cs.primary,
-                  ),
+                  Icon(icon, size: 20, color: iconColor ?? cs.primary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -83,7 +75,11 @@ class AppSectionCard extends StatelessWidget {
             ),
             // Section Content
             Padding(
-              padding: padding ?? (showDividers ? EdgeInsets.zero : const EdgeInsets.fromLTRB(20, 20, 20, 24)),
+              padding:
+                  padding ??
+                  (showDividers
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.fromLTRB(20, 20, 20, 24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _buildChildren(colors),
@@ -103,12 +99,14 @@ class AppSectionCard extends StatelessWidget {
     for (var i = 0; i < children.length; i++) {
       result.add(children[i]);
       if (i < children.length - 1) {
-        result.add(Divider(
-          height: 1,
-          thickness: 1,
-          color: colors.cardBorder.withValues(alpha: 0.5),
-          indent: 20,
-        ));
+        result.add(
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: colors.cardBorder.withValues(alpha: 0.5),
+            indent: 20,
+          ),
+        );
       }
     }
     return result;

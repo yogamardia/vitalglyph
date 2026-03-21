@@ -16,15 +16,17 @@ void main() {
 
   group('hasPin', () {
     test('returns true when hash key exists', () async {
-      when(() => storage.containsKey(key: 'vitalglyph_pin_hash'))
-          .thenAnswer((_) async => true);
+      when(
+        () => storage.containsKey(key: 'vitalglyph_pin_hash'),
+      ).thenAnswer((_) async => true);
 
       expect(await pinService.hasPin(), isTrue);
     });
 
     test('returns false when hash key does not exist', () async {
-      when(() => storage.containsKey(key: 'vitalglyph_pin_hash'))
-          .thenAnswer((_) async => false);
+      when(
+        () => storage.containsKey(key: 'vitalglyph_pin_hash'),
+      ).thenAnswer((_) async => false);
 
       expect(await pinService.hasPin(), isFalse);
     });
@@ -35,8 +37,12 @@ void main() {
     late String capturedHash;
 
     setUp(() {
-      when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
-          .thenAnswer((invocation) async {
+      when(
+        () => storage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
         if (key == 'vitalglyph_pin_salt') capturedSalt = value;
@@ -47,10 +53,12 @@ void main() {
     test('verifyPin returns true for correct PIN after setPin', () async {
       await pinService.setPin('123456');
 
-      when(() => storage.read(key: 'vitalglyph_pin_salt'))
-          .thenAnswer((_) async => capturedSalt);
-      when(() => storage.read(key: 'vitalglyph_pin_hash'))
-          .thenAnswer((_) async => capturedHash);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_salt'),
+      ).thenAnswer((_) async => capturedSalt);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_hash'),
+      ).thenAnswer((_) async => capturedHash);
 
       expect(await pinService.verifyPin('123456'), isTrue);
     });
@@ -58,10 +66,12 @@ void main() {
     test('verifyPin returns false for wrong PIN', () async {
       await pinService.setPin('123456');
 
-      when(() => storage.read(key: 'vitalglyph_pin_salt'))
-          .thenAnswer((_) async => capturedSalt);
-      when(() => storage.read(key: 'vitalglyph_pin_hash'))
-          .thenAnswer((_) async => capturedHash);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_salt'),
+      ).thenAnswer((_) async => capturedSalt);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_hash'),
+      ).thenAnswer((_) async => capturedHash);
 
       expect(await pinService.verifyPin('000000'), isFalse);
     });
@@ -70,16 +80,24 @@ void main() {
       String? hash1;
       String? hash2;
 
-      when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
-          .thenAnswer((invocation) async {
+      when(
+        () => storage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
         if (key == 'vitalglyph_pin_hash') hash1 = value;
       });
       await pinService.setPin('111111');
 
-      when(() => storage.write(key: any(named: 'key'), value: any(named: 'value')))
-          .thenAnswer((invocation) async {
+      when(
+        () => storage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
         if (key == 'vitalglyph_pin_hash') hash2 = value;
@@ -94,10 +112,12 @@ void main() {
 
   group('verifyPin', () {
     test('returns false when no PIN is stored', () async {
-      when(() => storage.read(key: 'vitalglyph_pin_salt'))
-          .thenAnswer((_) async => null);
-      when(() => storage.read(key: 'vitalglyph_pin_hash'))
-          .thenAnswer((_) async => null);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_salt'),
+      ).thenAnswer((_) async => null);
+      when(
+        () => storage.read(key: 'vitalglyph_pin_hash'),
+      ).thenAnswer((_) async => null);
 
       expect(await pinService.verifyPin('123456'), isFalse);
     });
@@ -105,8 +125,9 @@ void main() {
 
   group('clearPin', () {
     test('deletes both hash and salt keys', () async {
-      when(() => storage.delete(key: any(named: 'key')))
-          .thenAnswer((_) async {});
+      when(
+        () => storage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
 
       await pinService.clearPin();
 

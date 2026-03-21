@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class MedicalCondition extends Equatable {
-
   const MedicalCondition({
     required this.id,
     required this.name,

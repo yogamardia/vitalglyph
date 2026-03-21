@@ -6,13 +6,13 @@ void main() {
   final now = DateTime(2025);
 
   Profile makeProfile({String name = 'Alice'}) => Profile(
-        id: 'id-1',
-        name: name,
-        dateOfBirth: DateTime(1990, 6, 15),
-        bloodType: BloodType.oPos,
-        createdAt: now,
-        updatedAt: now,
-      );
+    id: 'id-1',
+    name: name,
+    dateOfBirth: DateTime(1990, 6, 15),
+    bloodType: BloodType.oPos,
+    createdAt: now,
+    updatedAt: now,
+  );
 
   group('Profile entity', () {
     test('equality holds for same data', () {

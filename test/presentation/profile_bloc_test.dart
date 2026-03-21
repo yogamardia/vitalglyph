@@ -43,19 +43,19 @@ void main() {
   });
 
   ProfileBloc buildBloc() => ProfileBloc(
-        watchAllProfiles: mockWatch,
-        createProfile: mockCreate,
-        updateProfile: mockUpdate,
-        deleteProfile: mockDelete,
-      );
+    watchAllProfiles: mockWatch,
+    createProfile: mockCreate,
+    updateProfile: mockUpdate,
+    deleteProfile: mockDelete,
+  );
 
   group('ProfilesWatchStarted', () {
     blocTest<ProfileBloc, ProfileState>(
       'emits [Loading, Loaded] when watch returns profiles',
       setUp: () {
-        when(() => mockWatch()).thenAnswer(
-          (_) => Stream.value(Right([testProfile])),
-        );
+        when(
+          () => mockWatch(),
+        ).thenAnswer((_) => Stream.value(Right([testProfile])));
       },
       build: buildBloc,
       act: (bloc) => bloc.add(const ProfilesWatchStarted()),
@@ -69,16 +69,12 @@ void main() {
       'emits [Loading, Error] when watch returns failure',
       setUp: () {
         when(() => mockWatch()).thenAnswer(
-          (_) =>
-              Stream.value(const Left(DatabaseFailure('db error'))),
+          (_) => Stream.value(const Left(DatabaseFailure('db error'))),
         );
       },
       build: buildBloc,
       act: (bloc) => bloc.add(const ProfilesWatchStarted()),
-      expect: () => [
-        const ProfileLoading(),
-        const ProfileError('db error'),
-      ],
+      expect: () => [const ProfileLoading(), const ProfileError('db error')],
     );
   });
 
@@ -86,8 +82,9 @@ void main() {
     blocTest<ProfileBloc, ProfileState>(
       'calls createProfile use case and does not emit on success',
       setUp: () {
-        when(() => mockCreate(testProfile))
-            .thenAnswer((_) async => const Right('id-1'));
+        when(
+          () => mockCreate(testProfile),
+        ).thenAnswer((_) async => const Right('id-1'));
       },
       build: buildBloc,
       act: (bloc) => bloc.add(ProfileCreateRequested(testProfile)),
@@ -97,9 +94,9 @@ void main() {
     blocTest<ProfileBloc, ProfileState>(
       'emits ProfileError when create fails',
       setUp: () {
-        when(() => mockCreate(testProfile)).thenAnswer(
-          (_) async => const Left(DatabaseFailure('create failed')),
-        );
+        when(
+          () => mockCreate(testProfile),
+        ).thenAnswer((_) async => const Left(DatabaseFailure('create failed')));
       },
       build: buildBloc,
       act: (bloc) => bloc.add(ProfileCreateRequested(testProfile)),
@@ -111,8 +108,9 @@ void main() {
     blocTest<ProfileBloc, ProfileState>(
       'calls deleteProfile and does not emit on success',
       setUp: () {
-        when(() => mockDelete('id-1'))
-            .thenAnswer((_) async => const Right(null));
+        when(
+          () => mockDelete('id-1'),
+        ).thenAnswer((_) async => const Right(null));
       },
       build: buildBloc,
       act: (bloc) => bloc.add(const ProfileDeleteRequested('id-1')),

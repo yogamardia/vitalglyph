@@ -6,9 +6,9 @@ import 'package:vitalglyph/l10n/l10n.dart';
 
 /// A shared text input widget with glassmorphism styling and focus animations.
 class AppTextField extends StatefulWidget {
-
   const AppTextField({
-    required this.label, super.key,
+    required this.label,
+    super.key,
     this.controller,
     this.validator,
     this.obscureText = false,
@@ -112,7 +112,9 @@ class _AppTextFieldState extends State<AppTextField> {
         decoration: InputDecoration(
           labelText: widget.label,
           hintText: widget.hintText,
-          fillColor: widget.enabled ? colors.inputFill : colors.inputFill.withValues(alpha: 0.5),
+          fillColor: widget.enabled
+              ? colors.inputFill
+              : colors.inputFill.withValues(alpha: 0.5),
           labelStyle: theme.textTheme.bodyMedium?.copyWith(
             color: _isFocused ? cs.primary : cs.onSurfaceVariant,
             fontWeight: _isFocused ? FontWeight.w700 : FontWeight.w500,
@@ -120,7 +122,9 @@ class _AppTextFieldState extends State<AppTextField> {
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(
-                    _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscureText
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 20,
                     color: cs.onSurfaceVariant,
                   ),
@@ -134,17 +138,11 @@ class _AppTextFieldState extends State<AppTextField> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: BorderSide(
-              color: cs.primary,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: cs.primary, width: 1.5),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: BorderSide(
-              color: colors.cardBorder,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: colors.cardBorder, width: 1.5),
           ),
         ),
       ),

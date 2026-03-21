@@ -5,8 +5,8 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 
 /// Result of QR data generation, including whether data was truncated to fit.
 class QrPayload {
-
   const QrPayload(this.data, {this.truncated = false});
+
   /// The QR payload string.
   final String data;
 
@@ -35,7 +35,6 @@ class QrPayload {
 /// Special characters `,`, `/`, and `|` inside text values are
 /// percent-encoded to avoid delimiter collisions.
 class GenerateQrData {
-
   GenerateQrData(this._hmac);
   final HmacService _hmac;
 
@@ -123,23 +122,30 @@ class GenerateQrData {
 
     // Allergies: name/severity[/reaction]
     if (profile.allergies.isNotEmpty) {
-      final algParts = profile.allergies.map((a) {
-        final reaction =
-            includeReactions && a.reaction != null ? _enc(a.reaction!) : '';
-        return '${_enc(a.name)}/${_enc(a.severity.name)}/$reaction';
-      }).join(',');
+      final algParts = profile.allergies
+          .map((a) {
+            final reaction = includeReactions && a.reaction != null
+                ? _enc(a.reaction!)
+                : '';
+            return '${_enc(a.name)}/${_enc(a.severity.name)}/$reaction';
+          })
+          .join(',');
       buffer.write('|ALG:$algParts');
     }
 
     // Medications: name[/dosage/frequency]
     if (profile.medications.isNotEmpty) {
-      final medParts = profile.medications.map((m) {
-        final dosage =
-            includeMedDetails && m.dosage != null ? _enc(m.dosage!) : '';
-        final freq =
-            includeMedDetails && m.frequency != null ? _enc(m.frequency!) : '';
-        return '${_enc(m.name)}/$dosage/$freq';
-      }).join(',');
+      final medParts = profile.medications
+          .map((m) {
+            final dosage = includeMedDetails && m.dosage != null
+                ? _enc(m.dosage!)
+                : '';
+            final freq = includeMedDetails && m.frequency != null
+                ? _enc(m.frequency!)
+                : '';
+            return '${_enc(m.name)}/$dosage/$freq';
+          })
+          .join(',');
       buffer.write('|MED:$medParts');
     }
 
@@ -160,10 +166,12 @@ class GenerateQrData {
       sortedContacts = sortedContacts.take(maxContacts).toList();
     }
     if (sortedContacts.isNotEmpty) {
-      final ecParts = sortedContacts.map((ec) {
-        final rel = ec.relationship != null ? _enc(ec.relationship!) : '';
-        return '${_enc(ec.name)}/${_enc(ec.phone)}/$rel';
-      }).join(',');
+      final ecParts = sortedContacts
+          .map((ec) {
+            final rel = ec.relationship != null ? _enc(ec.relationship!) : '';
+            return '${_enc(ec.name)}/${_enc(ec.phone)}/$rel';
+          })
+          .join(',');
       buffer.write('|EC:$ecParts');
     }
 

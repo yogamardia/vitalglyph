@@ -38,12 +38,15 @@ Future<void> configureDependencies() async {
   // ── Crypto Services ───────────────────────────
   sl.registerLazySingleton<HmacService>(HmacService.new);
   sl.registerLazySingleton<PinService>(
-      () => PinService(sl<FlutterSecureStorage>()));
+    () => PinService(sl<FlutterSecureStorage>()),
+  );
   sl.registerLazySingleton<AuthSettingsService>(
-      () => AuthSettingsService(sl<FlutterSecureStorage>()));
+    () => AuthSettingsService(sl<FlutterSecureStorage>()),
+  );
   sl.registerLazySingleton<LocalAuthentication>(LocalAuthentication.new);
   sl.registerLazySingleton<EncryptionService>(
-      () => EncryptionService(sl<FlutterSecureStorage>()));
+    () => EncryptionService(sl<FlutterSecureStorage>()),
+  );
 
   // ── Database ──────────────────────────────────
   final dbKey = await sl<EncryptionService>().getOrCreateDatabaseKey();
@@ -68,8 +71,12 @@ Future<void> configureDependencies() async {
 
   // ── Backup ────────────────────────────────────
   sl.registerLazySingleton<BackupCryptoService>(BackupCryptoService.new);
-  sl.registerFactory(() => ExportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
-  sl.registerFactory(() => ImportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()));
+  sl.registerFactory(
+    () => ExportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()),
+  );
+  sl.registerFactory(
+    () => ImportBackup(sl<ProfileRepository>(), sl<BackupCryptoService>()),
+  );
   sl.registerFactory(
     () => BackupCubit(
       exportBackup: sl<ExportBackup>(),

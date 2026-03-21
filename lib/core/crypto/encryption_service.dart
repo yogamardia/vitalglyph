@@ -13,7 +13,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// the key protects the database file at rest, even if the device is seized
 /// without unlocking the app.
 class EncryptionService {
-
   EncryptionService(this._storage);
   static const _dbKeyStorageKey = 'vitalglyph_db_master_key';
 

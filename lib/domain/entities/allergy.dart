@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:vitalglyph/core/constants/enums.dart';
 
 class Allergy extends Equatable {
-
   const Allergy({
     required this.id,
     required this.name,

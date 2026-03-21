@@ -8,9 +8,9 @@ import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 
 /// Custom dialog that replaces AlertDialog throughout the app.
 class AppDialog extends StatelessWidget {
-
   const AppDialog({
-    required this.title, super.key,
+    required this.title,
+    super.key,
     this.message,
     this.content,
     this.confirmLabel,
@@ -81,7 +81,8 @@ class AppDialog extends StatelessWidget {
     final cs = theme.colorScheme;
     final colors = theme.extension<VitalGlyphColors>()!;
     final l10n = context.l10n;
-    final resolvedConfirmLabel = confirmLabel ??
+    final resolvedConfirmLabel =
+        confirmLabel ??
         (isDestructive ? l10n.dialogDelete : l10n.dialogConfirm);
     final resolvedCancelLabel = cancelLabel ?? l10n.dialogCancel;
 
@@ -93,10 +94,7 @@ class AppDialog extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.glassSurface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(
-            color: colors.cardBorder,
-            width: 1.5,
-          ),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
@@ -154,9 +152,9 @@ class AppDialog extends StatelessWidget {
 
 /// A modern bottom sheet widget for actions and forms.
 class AppBottomSheet extends StatelessWidget {
-
   const AppBottomSheet({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.title,
     this.padding,
   });
@@ -167,7 +165,8 @@ class AppBottomSheet extends StatelessWidget {
   /// Show as a modal bottom sheet. Returns the result value T.
   static Future<T?> show<T>(
     BuildContext context, {
-    required Widget child, String? title,
+    required Widget child,
+    String? title,
     bool isScrollControlled = true,
     EdgeInsetsGeometry? padding,
   }) {
@@ -177,11 +176,8 @@ class AppBottomSheet extends StatelessWidget {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.2),
-      builder: (_) => AppBottomSheet(
-        title: title,
-        padding: padding,
-        child: child,
-      ),
+      builder: (_) =>
+          AppBottomSheet(title: title, padding: padding, child: child),
     );
   }
 
@@ -247,7 +243,8 @@ class AppBottomSheet extends StatelessWidget {
               ),
             ],
             Padding(
-              padding: padding ??
+              padding:
+                  padding ??
                   const EdgeInsets.fromLTRB(
                     AppSpacing.lg,
                     AppSpacing.sm,
@@ -265,9 +262,11 @@ class AppBottomSheet extends StatelessWidget {
 
 /// A selectable row inside an AppBottomSheet (e.g., for option pickers).
 class BottomSheetOption<T> extends StatelessWidget {
-
   const BottomSheetOption({
-    required this.value, required this.label, required this.onTap, super.key,
+    required this.value,
+    required this.label,
+    required this.onTap,
+    super.key,
     this.icon,
     this.isSelected = false,
     this.isDestructive = false,
@@ -287,8 +286,8 @@ class BottomSheetOption<T> extends StatelessWidget {
     final color = isDestructive
         ? cs.error
         : isSelected
-            ? cs.primary
-            : cs.onSurface;
+        ? cs.primary
+        : cs.onSurface;
 
     return Semantics(
       label: label,

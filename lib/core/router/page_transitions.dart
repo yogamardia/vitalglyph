@@ -16,20 +16,14 @@ class PageTransitions {
       child: child,
       transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final position = Tween<Offset>(
-          begin: const Offset(0, 1),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutBack,
-        ));
+        final position =
+            Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+            );
 
         return SlideTransition(
           position: position,
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         );
       },
     );
@@ -47,10 +41,7 @@ class PageTransitions {
         final scale = Tween<double>(begin: 0.97, end: 1).animate(animation);
         return FadeTransition(
           opacity: animation,
-          child: ScaleTransition(
-            scale: scale,
-            child: child,
-          ),
+          child: ScaleTransition(scale: scale, child: child),
         );
       },
     );
@@ -65,16 +56,12 @@ class PageTransitions {
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scale = Tween<double>(begin: 0.9, end: 1).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutBack,
-        ));
+        final scale = Tween<double>(begin: 0.9, end: 1).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+        );
         return ScaleTransition(
           scale: scale,
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         );
       },
     );
@@ -90,21 +77,21 @@ class PageTransitions {
       child: child,
       transitionDuration: const Duration(milliseconds: 400),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final enterTween = Tween<Offset>(
-          begin: const Offset(1, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-        ));
+        final enterTween =
+            Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            );
 
-        final exitTween = Tween<Offset>(
-          begin: Offset.zero,
-          end: const Offset(-0.15, 0),
-        ).animate(CurvedAnimation(
-          parent: secondaryAnimation,
-          curve: Curves.easeOut,
-        ));
+        final exitTween =
+            Tween<Offset>(
+              begin: Offset.zero,
+              end: const Offset(-0.15, 0),
+            ).animate(
+              CurvedAnimation(
+                parent: secondaryAnimation,
+                curve: Curves.easeOut,
+              ),
+            );
 
         final exitOpacity = Tween<double>(
           begin: 1,
@@ -115,10 +102,7 @@ class PageTransitions {
           position: enterTween,
           child: SlideTransition(
             position: exitTween,
-            child: FadeTransition(
-              opacity: exitOpacity,
-              child: child,
-            ),
+            child: FadeTransition(opacity: exitOpacity, child: child),
           ),
         );
       },
@@ -147,10 +131,7 @@ class PageTransitions {
               filter: ImageFilter.blur(sigmaX: blur.value, sigmaY: blur.value),
               child: FadeTransition(
                 opacity: animation,
-                child: ScaleTransition(
-                  scale: scale,
-                  child: child,
-                ),
+                child: ScaleTransition(scale: scale, child: child),
               ),
             );
           },

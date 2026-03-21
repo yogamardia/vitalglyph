@@ -60,9 +60,7 @@ class BackupCryptoService {
   /// Throws [BackupWrongPassphraseException] if decryption or JSON parsing fails.
   String decryptJson(String payload, String passphrase) {
     final parts = payload.trim().split('|');
-    if (parts.length != 5 ||
-        parts[0] != _header ||
-        parts[1] != _version) {
+    if (parts.length != 5 || parts[0] != _header || parts[1] != _version) {
       throw const BackupFormatException(
         'Not a valid Medical ID backup file.\n'
         'Make sure you selected a .medid file exported from this app.',

@@ -15,7 +15,6 @@ import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 
 /// Result of a successful import operation.
 class ImportResult extends Equatable {
-
   const ImportResult({required this.imported, required this.skipped});
   final int imported;
   final int skipped;
@@ -29,7 +28,6 @@ class ImportResult extends Equatable {
 /// Merge strategy: profiles whose ID already exists in the database are
 /// skipped; all others are created as new profiles.
 class ImportBackup {
-
   ImportBackup(this._repository, this._crypto);
   final ProfileRepository _repository;
   final BackupCryptoService _crypto;
@@ -63,10 +61,9 @@ class ImportBackup {
         }
 
         final createResult = await _repository.createProfile(profile);
-        createResult.match(
-          (_) {/* silent: individual failure doesn't abort the whole import */},
-          (_) => imported++,
-        );
+        createResult.match((_) {
+          /* silent: individual failure doesn't abort the whole import */
+        }, (_) => imported++);
       }
 
       return Right(ImportResult(imported: imported, skipped: skipped));
@@ -113,7 +110,8 @@ class ImportBackup {
       return Allergy(
         id: m['id'] as String,
         name: m['name'] as String,
-        severity: AllergySeverity.fromString(m['severity'] as String) ??
+        severity:
+            AllergySeverity.fromString(m['severity'] as String) ??
             AllergySeverity.mild,
         reaction: m['reaction'] as String?,
       );

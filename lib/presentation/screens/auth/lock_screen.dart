@@ -14,9 +14,10 @@ import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Overlay shown when [AuthRequired] — user must authenticate to proceed.
 class LockScreen extends StatefulWidget {
-
   const LockScreen({
-    required this.canUseBiometric, required this.hasPinSet, super.key,
+    required this.canUseBiometric,
+    required this.hasPinSet,
+    super.key,
   });
   final bool canUseBiometric;
   final bool hasPinSet;
@@ -25,8 +26,7 @@ class LockScreen extends StatefulWidget {
   State<LockScreen> createState() => _LockScreenState();
 }
 
-class _LockScreenState extends State<LockScreen>
-    with TickerProviderStateMixin {
+class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   static const _pinLength = 6;
 
   String _entered = '';
@@ -47,13 +47,10 @@ class _LockScreenState extends State<LockScreen>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    _shakeAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0.02, 0),
-    ).animate(CurvedAnimation(
-      parent: _shakeController,
-      curve: Curves.elasticIn,
-    ));
+    _shakeAnimation =
+        Tween<Offset>(begin: Offset.zero, end: const Offset(0.02, 0)).animate(
+          CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn),
+        );
 
     _pulseController = AnimationController(
       vsync: this,
@@ -231,7 +228,11 @@ class _LockScreenState extends State<LockScreen>
                 if (widget.hasPinSet) ...[
                   SlideTransition(
                     position: _shakeAnimation,
-                    child: _PinDots(entered: _entered.length, total: _pinLength, colors: colors),
+                    child: _PinDots(
+                      entered: _entered.length,
+                      total: _pinLength,
+                      colors: colors,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   AnimatedSize(
@@ -255,14 +256,18 @@ class _LockScreenState extends State<LockScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: GlassContainer(
                         padding: const EdgeInsets.all(16),
-                        backgroundColor: cs.errorContainer.withValues(alpha: 0.1),
+                        backgroundColor: cs.errorContainer.withValues(
+                          alpha: 0.1,
+                        ),
                         borderColor: cs.error.withValues(alpha: 0.3),
                         child: Column(
                           children: [
                             Icon(Icons.timer_rounded, color: cs.error),
                             const SizedBox(height: 8),
                             Text(
-                              context.l10n.lockScreenTooManyAttempts(_formatDuration(_lockoutRemaining!)),
+                              context.l10n.lockScreenTooManyAttempts(
+                                _formatDuration(_lockoutRemaining!),
+                              ),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: cs.error,
@@ -277,8 +282,9 @@ class _LockScreenState extends State<LockScreen>
                   _NumPad(
                     onDigit: _onDigit,
                     onDelete: _onDelete,
-                    onBiometric:
-                        widget.canUseBiometric ? _triggerBiometric : null,
+                    onBiometric: widget.canUseBiometric
+                        ? _triggerBiometric
+                        : null,
                     disabled: _lockoutRemaining != null,
                     colors: colors,
                   ),
@@ -317,8 +323,11 @@ class _LockScreenState extends State<LockScreen>
 }
 
 class _PinDots extends StatelessWidget {
-
-  const _PinDots({required this.entered, required this.total, required this.colors});
+  const _PinDots({
+    required this.entered,
+    required this.total,
+    required this.colors,
+  });
   final int entered;
   final int total;
   final VitalGlyphColors colors;
@@ -367,11 +376,11 @@ class _PinDots extends StatelessWidget {
 }
 
 class _NumPad extends StatelessWidget {
-
   const _NumPad({
     required this.onDigit,
     required this.onDelete,
-    required this.colors, this.onBiometric,
+    required this.colors,
+    this.onBiometric,
     this.disabled = false,
   });
   final void Function(String) onDigit;
@@ -472,7 +481,6 @@ class _NumPad extends StatelessWidget {
 }
 
 class _PadButton extends StatelessWidget {
-
   const _PadButton({
     required this.child,
     required this.onTap,
@@ -495,10 +503,7 @@ class _PadButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surfaceSubtle,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(
-            color: colors.cardBorder,
-            width: 1.5,
-          ),
+          border: Border.all(color: colors.cardBorder, width: 1.5),
         ),
         child: Center(child: child),
       ),
@@ -507,7 +512,6 @@ class _PadButton extends StatelessWidget {
 }
 
 class _HeaderAction extends StatelessWidget {
-
   const _HeaderAction({
     required this.icon,
     required this.onPressed,
@@ -533,7 +537,11 @@ class _HeaderAction extends StatelessWidget {
         borderColor: colors.glassBorder,
         borderRadius: BorderRadius.circular(size / 2),
         child: Center(
-          child: Icon(icon, size: iconSize, color: Theme.of(context).colorScheme.primary),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
     );

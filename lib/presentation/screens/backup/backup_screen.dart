@@ -72,7 +72,8 @@ class _BackupViewState extends State<_BackupView> {
     if (result == null || result.files.isEmpty) return;
     final file = result.files.single;
     if (file.path == null) {
-      if (mounted) AppSnackBar.error(context, context.l10n.backupFileAccessError);
+      if (mounted)
+        AppSnackBar.error(context, context.l10n.backupFileAccessError);
       return;
     }
     setState(() {
@@ -102,9 +103,10 @@ class _BackupViewState extends State<_BackupView> {
 
     if (confirmed != true || !context.mounted) return;
     unawaited(
-      context
-          .read<BackupCubit>()
-          .importFromFile(_selectedFilePath!, _importPassCtrl.text.trim()),
+      context.read<BackupCubit>().importFromFile(
+        _selectedFilePath!,
+        _importPassCtrl.text.trim(),
+      ),
     );
   }
 
@@ -134,8 +136,11 @@ class _BackupViewState extends State<_BackupView> {
             final msg = r.imported == 0 && r.skipped == 0
                 ? context.l10n.backupImportEmpty
                 : r.skipped > 0
-                    ? context.l10n.backupImportResultWithSkipped(r.imported, r.skipped)
-                    : context.l10n.backupImportResult(r.imported);
+                ? context.l10n.backupImportResultWithSkipped(
+                    r.imported,
+                    r.skipped,
+                  )
+                : context.l10n.backupImportResult(r.imported);
             AppSnackBar.success(context, msg);
           } else if (state is BackupError) {
             context.read<BackupCubit>().reset();
@@ -158,7 +163,10 @@ class _BackupViewState extends State<_BackupView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg,
+                      AppSpacing.lg,
+                      0,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
                     ),
                     child: Form(
                       key: _exportFormKey,
@@ -192,7 +200,9 @@ class _BackupViewState extends State<_BackupView> {
                           ),
                           const SizedBox(height: AppSpacing.lg),
                           AppButton.primary(
-                            onPressed: loading ? null : () => _onExport(context),
+                            onPressed: loading
+                                ? null
+                                : () => _onExport(context),
                             isLoading: loading,
                             icon: Icons.ios_share_rounded,
                             label: context.l10n.backupExportAction,
@@ -216,7 +226,10 @@ class _BackupViewState extends State<_BackupView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg,
+                      AppSpacing.lg,
+                      0,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
                     ),
                     child: Form(
                       key: _importFormKey,
@@ -234,14 +247,18 @@ class _BackupViewState extends State<_BackupView> {
                             obscureText: true,
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return context.l10n.backupRestorePassphraseRequired;
+                                return context
+                                    .l10n
+                                    .backupRestorePassphraseRequired;
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: AppSpacing.lg),
                           AppButton.primary(
-                            onPressed: loading ? null : () => _onImport(context),
+                            onPressed: loading
+                                ? null
+                                : () => _onImport(context),
                             isLoading: loading,
                             icon: Icons.restore_rounded,
                             label: context.l10n.backupImportBackupAction,
@@ -264,7 +281,6 @@ class _BackupViewState extends State<_BackupView> {
 }
 
 class _FilePickerButton extends StatelessWidget {
-
   const _FilePickerButton({this.fileName, this.onTap});
   final String? fileName;
   final VoidCallback? onTap;
@@ -282,7 +298,6 @@ class _FilePickerButton extends StatelessWidget {
 
 /// Soft info banner with a gradient accent bar and glass background.
 class _InfoBanner extends StatelessWidget {
-
   const _InfoBanner({required this.icon, required this.text});
   final IconData icon;
   final String text;
@@ -298,9 +313,7 @@ class _InfoBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.inputFill,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: colors.cardBorder,
-        ),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

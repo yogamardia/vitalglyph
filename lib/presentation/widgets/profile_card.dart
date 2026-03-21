@@ -11,9 +11,13 @@ import 'package:vitalglyph/presentation/widgets/animated_press.dart';
 import 'package:vitalglyph/presentation/widgets/app_dialog.dart';
 
 class ProfileCard extends StatefulWidget {
-
   const ProfileCard({
-    required this.profile, required this.onDelete, required this.onShowQr, required this.onEdit, required this.onEmergencyCard, super.key,
+    required this.profile,
+    required this.onDelete,
+    required this.onShowQr,
+    required this.onEdit,
+    required this.onEmergencyCard,
+    super.key,
     this.isPrimary = false,
   });
   final Profile profile;
@@ -69,9 +73,7 @@ class _ProfileCardState extends State<ProfileCard>
             decoration: BoxDecoration(
               color: colors.glassSurface,
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: colors.cardBorder,
-              ),
+              border: Border.all(color: colors.cardBorder),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -96,14 +98,14 @@ class _ProfileCardState extends State<ProfileCard>
                         isPrimary: widget.isPrimary,
                         onActionsPressed: () => _showActionsSheet(context),
                       ),
-                      
+
                       if (widget.profile.allergies.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.xl),
                         _AllergyList(allergies: widget.profile.allergies),
                       ],
 
                       const SizedBox(height: AppSpacing.xxl),
-                      
+
                       _EmergencyActionButton(
                         pulseAnimation: _pulseAnimation,
                         onPressed: widget.onShowQr,
@@ -170,7 +172,6 @@ class _ProfileCardState extends State<ProfileCard>
 }
 
 class _TopAccentBar extends StatelessWidget {
-
   const _TopAccentBar({required this.profile});
   final Profile profile;
 
@@ -183,9 +184,7 @@ class _TopAccentBar extends StatelessWidget {
     return Container(
       height: 4,
       decoration: BoxDecoration(
-        color: profile.bloodType != null
-            ? colors.bloodTypeBadge
-            : cs.primary,
+        color: profile.bloodType != null ? colors.bloodTypeBadge : cs.primary,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppRadius.lg),
         ),
@@ -195,7 +194,6 @@ class _TopAccentBar extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-
   const _ProfileHeader({
     required this.profile,
     required this.isPrimary,
@@ -238,7 +236,9 @@ class _ProfileHeader extends StatelessWidget {
               Row(
                 children: [
                   _StatusBadge(
-                    label: isPrimary ? context.l10n.profileCardPrimary : context.l10n.profileCardSecondary,
+                    label: isPrimary
+                        ? context.l10n.profileCardPrimary
+                        : context.l10n.profileCardSecondary,
                     isPrimary: isPrimary,
                   ),
                   if (profile.bloodType != null) ...[
@@ -259,10 +259,7 @@ class _ProfileHeader extends StatelessWidget {
           onPressed: onActionsPressed,
           tooltip: context.l10n.a11yMoreActions,
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(
-            minWidth: 48,
-            minHeight: 48,
-          ),
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
         ),
       ],
     );
@@ -270,10 +267,10 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileAvatar extends StatelessWidget {
-
   const _ProfileAvatar({
     required this.profileId,
-    required this.isPrimary, this.photoPath,
+    required this.isPrimary,
+    this.photoPath,
   });
   final String profileId;
   final String? photoPath;
@@ -299,7 +296,9 @@ class _ProfileAvatar extends StatelessWidget {
               ),
           ],
           border: Border.all(
-            color: isPrimary ? cs.primary.withValues(alpha: 0.5) : cs.outlineVariant.withValues(alpha: 0.3),
+            color: isPrimary
+                ? cs.primary.withValues(alpha: 0.5)
+                : cs.outlineVariant.withValues(alpha: 0.3),
             width: 2,
           ),
         ),
@@ -333,11 +332,7 @@ class _ProfileAvatar extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 10,
-                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 10),
                 ),
               ),
           ],
@@ -348,7 +343,6 @@ class _ProfileAvatar extends StatelessWidget {
 }
 
 class _StatusBadge extends StatelessWidget {
-
   const _StatusBadge({required this.label, required this.isPrimary});
   final String label;
   final bool isPrimary;
@@ -357,11 +351,11 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isPrimary 
+        color: isPrimary
             ? cs.primaryContainer.withValues(alpha: 0.5)
             : cs.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -379,7 +373,6 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class _BloodTypeBadge extends StatelessWidget {
-
   const _BloodTypeBadge({required this.bloodType});
   final String bloodType;
 
@@ -400,7 +393,11 @@ class _BloodTypeBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.water_drop_rounded, size: 10, color: colors.bloodTypeBadge),
+          Icon(
+            Icons.water_drop_rounded,
+            size: 10,
+            color: colors.bloodTypeBadge,
+          ),
           const SizedBox(width: 4),
           Text(
             bloodType,
@@ -416,7 +413,6 @@ class _BloodTypeBadge extends StatelessWidget {
 }
 
 class _AllergyList extends StatelessWidget {
-
   const _AllergyList({required this.allergies});
   final List<Allergy> allergies;
 
@@ -437,7 +433,9 @@ class _AllergyList extends StatelessWidget {
               context.l10n.profileCardCriticalAllergies,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -456,7 +454,6 @@ class _AllergyList extends StatelessWidget {
 }
 
 class _EmergencyActionButton extends StatelessWidget {
-
   const _EmergencyActionButton({
     required this.pulseAnimation,
     required this.onPressed,
@@ -468,7 +465,7 @@ class _EmergencyActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     return ScaleTransition(
       scale: pulseAnimation,
       child: Container(
@@ -516,7 +513,6 @@ class _EmergencyActionButton extends StatelessWidget {
 }
 
 class _FooterInfo extends StatelessWidget {
-
   const _FooterInfo({required this.profile});
   final Profile profile;
 
@@ -527,7 +523,10 @@ class _FooterInfo extends StatelessWidget {
     final colors = theme.extension<VitalGlyphColors>()!;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       decoration: BoxDecoration(
         color: colors.surfaceSubtle,
         borderRadius: const BorderRadius.vertical(
@@ -555,7 +554,9 @@ class _FooterInfo extends StatelessWidget {
             ],
           ),
           Text(
-            context.l10n.profileCardUpdated(_formatDate(context.l10n, profile.updatedAt)),
+            context.l10n.profileCardUpdated(
+              _formatDate(context.l10n, profile.updatedAt),
+            ),
             style: theme.textTheme.labelSmall?.copyWith(
               color: cs.onSurfaceVariant.withValues(alpha: 0.5),
               fontWeight: FontWeight.w500,
@@ -571,13 +572,13 @@ class _FooterInfo extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final dateOnly = DateTime(date.year, date.month, date.day);
     if (dateOnly == today) return l10n.profileCardToday;
-    if (dateOnly == today.subtract(const Duration(days: 1))) return l10n.profileCardYesterday;
+    if (dateOnly == today.subtract(const Duration(days: 1)))
+      return l10n.profileCardYesterday;
     return '${date.day}/${date.month}/${date.year}';
   }
 }
 
 class _AllergyTag extends StatelessWidget {
-
   const _AllergyTag({required this.allergy});
   final Allergy allergy;
 
@@ -587,7 +588,10 @@ class _AllergyTag extends StatelessWidget {
     final colors = theme.extension<VitalGlyphColors>()!;
 
     return Semantics(
-      label: context.l10n.a11yAllergyWithSeverity(allergy.name, allergy.severity.displayName),
+      label: context.l10n.a11yAllergyWithSeverity(
+        allergy.name,
+        allergy.severity.displayName,
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -600,11 +604,7 @@ class _AllergyTag extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              _getIcon(allergy.name),
-              size: 14,
-              color: colors.allergyTag,
-            ),
+            Icon(_getIcon(allergy.name), size: 14, color: colors.allergyTag),
             const SizedBox(width: 8),
             Text(
               allergy.name,

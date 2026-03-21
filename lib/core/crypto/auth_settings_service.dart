@@ -3,7 +3,6 @@ import 'package:vitalglyph/core/constants/enums.dart';
 
 /// Persists user preferences for the app-lock feature.
 class AuthSettingsService {
-
   AuthSettingsService(this._storage);
   static const _authEnabledKey = 'vitalglyph_auth_enabled';
   static const _biometricEnabledKey = 'vitalglyph_biometric_enabled';

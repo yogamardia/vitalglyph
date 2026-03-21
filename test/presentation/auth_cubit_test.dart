@@ -25,11 +25,8 @@ void main() {
     localAuth = MockLocalAuthentication();
   });
 
-  AuthCubit buildCubit() => AuthCubit(
-        pin: pin,
-        settings: settings,
-        localAuth: localAuth,
-      );
+  AuthCubit buildCubit() =>
+      AuthCubit(pin: pin, settings: settings, localAuth: localAuth);
 
   // ──────────────────────────────────────────────
   // checkAuthRequired
@@ -50,7 +47,9 @@ void main() {
       'emits AuthRequired with biometric=false, hasPin=true when bio disabled',
       setUp: () {
         when(() => settings.isAuthEnabled()).thenAnswer((_) async => true);
-        when(() => settings.isBiometricEnabled()).thenAnswer((_) async => false);
+        when(
+          () => settings.isBiometricEnabled(),
+        ).thenAnswer((_) async => false);
         when(() => localAuth.isDeviceSupported()).thenAnswer((_) async => true);
         when(() => localAuth.canCheckBiometrics).thenAnswer((_) async => true);
         when(() => pin.hasPin()).thenAnswer((_) async => true);
@@ -101,7 +100,11 @@ void main() {
       },
       build: buildCubit,
       act: (c) => c.authenticateWithPin('000000'),
-      expect: () => [const AuthFailure('Incorrect PIN. 4 attempts remaining before lockout.')],
+      expect: () => [
+        const AuthFailure(
+          'Incorrect PIN. 4 attempts remaining before lockout.',
+        ),
+      ],
     );
   });
 
@@ -117,7 +120,9 @@ void main() {
           () => localAuth.authenticate(
             localizedReason: any(named: 'localizedReason'),
             biometricOnly: any(named: 'biometricOnly'),
-            persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
+            persistAcrossBackgrounding: any(
+              named: 'persistAcrossBackgrounding',
+            ),
           ),
         ).thenAnswer((_) async => true);
       },
@@ -133,7 +138,9 @@ void main() {
           () => localAuth.authenticate(
             localizedReason: any(named: 'localizedReason'),
             biometricOnly: any(named: 'biometricOnly'),
-            persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
+            persistAcrossBackgrounding: any(
+              named: 'persistAcrossBackgrounding',
+            ),
           ),
         ).thenAnswer((_) async => false);
       },
@@ -149,7 +156,9 @@ void main() {
           () => localAuth.authenticate(
             localizedReason: any(named: 'localizedReason'),
             biometricOnly: any(named: 'biometricOnly'),
-            persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
+            persistAcrossBackgrounding: any(
+              named: 'persistAcrossBackgrounding',
+            ),
           ),
         ).thenThrow(Exception('hardware not available'));
       },
@@ -207,8 +216,9 @@ void main() {
       'does nothing when timeout is never',
       setUp: () {
         when(() => settings.isAuthEnabled()).thenAnswer((_) async => true);
-        when(() => settings.getLockTimeout())
-            .thenAnswer((_) async => LockTimeout.never);
+        when(
+          () => settings.getLockTimeout(),
+        ).thenAnswer((_) async => LockTimeout.never);
       },
       build: buildCubit,
       seed: () => const AuthAuthenticated(),
@@ -220,10 +230,15 @@ void main() {
       'locks when elapsed exceeds timeout',
       setUp: () {
         when(() => settings.isAuthEnabled()).thenAnswer((_) async => true);
-        when(() => settings.getLockTimeout())
-            .thenAnswer((_) async => LockTimeout.immediately);
-        when(() => settings.isBiometricEnabled()).thenAnswer((_) async => false);
-        when(() => localAuth.isDeviceSupported()).thenAnswer((_) async => false);
+        when(
+          () => settings.getLockTimeout(),
+        ).thenAnswer((_) async => LockTimeout.immediately);
+        when(
+          () => settings.isBiometricEnabled(),
+        ).thenAnswer((_) async => false);
+        when(
+          () => localAuth.isDeviceSupported(),
+        ).thenAnswer((_) async => false);
         when(() => localAuth.canCheckBiometrics).thenAnswer((_) async => false);
         when(() => pin.hasPin()).thenAnswer((_) async => true);
       },

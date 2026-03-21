@@ -14,7 +14,6 @@ import 'package:vitalglyph/domain/entities/scanned_profile.dart';
 /// check indicates corruption or a non-VitalGlyph source — not necessarily
 /// deliberate tampering.
 class ParseQrData {
-
   ParseQrData(this._hmac);
   final HmacService _hmac;
 
@@ -76,8 +75,7 @@ class ParseQrData {
     }).toList();
 
     // Parse conditions: comma-separated names
-    final conditions =
-        _parseList(fields['CON']).map(_dec).toList();
+    final conditions = _parseList(fields['CON']).map(_dec).toList();
 
     // Parse emergency contacts: comma-separated, each name/phone/relationship
     final contacts = _parseList(fields['EC']).map((item) {
@@ -96,21 +94,23 @@ class ParseQrData {
     if (fields['HT'] != null) heightCm = double.tryParse(fields['HT']!);
     if (fields['WT'] != null) weightKg = double.tryParse(fields['WT']!);
 
-    return Right(ScannedProfile(
-      name: name,
-      dateOfBirth: fields['DOB'],
-      bloodType: fields['BT'] != null ? _dec(fields['BT']!) : null,
-      biologicalSex: fields['SEX'],
-      heightCm: heightCm,
-      weightKg: weightKg,
-      allergies: allergies,
-      medications: medications,
-      conditions: conditions,
-      emergencyContacts: contacts,
-      isOrganDonor: fields['DONOR'] == 'Y',
-      language: fields['LANG'] != null ? _dec(fields['LANG']!) : null,
-      signatureValid: sigValid,
-    ));
+    return Right(
+      ScannedProfile(
+        name: name,
+        dateOfBirth: fields['DOB'],
+        bloodType: fields['BT'] != null ? _dec(fields['BT']!) : null,
+        biologicalSex: fields['SEX'],
+        heightCm: heightCm,
+        weightKg: weightKg,
+        allergies: allergies,
+        medications: medications,
+        conditions: conditions,
+        emergencyContacts: contacts,
+        isOrganDonor: fields['DONOR'] == 'Y',
+        language: fields['LANG'] != null ? _dec(fields['LANG']!) : null,
+        signatureValid: sigValid,
+      ),
+    );
   }
 
   /// Splits a comma-separated field value into parts, skipping empties.

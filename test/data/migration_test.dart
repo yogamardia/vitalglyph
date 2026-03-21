@@ -39,45 +39,67 @@ void main() {
       const profileId = 'test-profile-1';
       final now = DateTime.now();
 
-      await db.profileDao.insertProfile(ProfilesCompanion.insert(
-        id: profileId,
-        name: 'Test User',
-        dateOfBirth: now,
-        createdAt: now,
-        updatedAt: now,
-      ));
+      await db.profileDao.insertProfile(
+        ProfilesCompanion.insert(
+          id: profileId,
+          name: 'Test User',
+          dateOfBirth: now,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
 
-      await db.profileDao.insertAllergy(AllergiesCompanion.insert(
-        id: 'allergy-1',
-        profileId: profileId,
-        name: 'Peanuts',
-        severity: 'severe',
-      ));
+      await db.profileDao.insertAllergy(
+        AllergiesCompanion.insert(
+          id: 'allergy-1',
+          profileId: profileId,
+          name: 'Peanuts',
+          severity: 'severe',
+        ),
+      );
 
-      await db.profileDao.insertMedication(MedicationsCompanion.insert(
-        id: 'med-1',
-        profileId: profileId,
-        name: 'Ibuprofen',
-      ));
+      await db.profileDao.insertMedication(
+        MedicationsCompanion.insert(
+          id: 'med-1',
+          profileId: profileId,
+          name: 'Ibuprofen',
+        ),
+      );
 
-      await db.profileDao.insertCondition(MedicalConditionsCompanion.insert(
-        id: 'cond-1',
-        profileId: profileId,
-        name: 'Asthma',
-      ));
+      await db.profileDao.insertCondition(
+        MedicalConditionsCompanion.insert(
+          id: 'cond-1',
+          profileId: profileId,
+          name: 'Asthma',
+        ),
+      );
 
-      await db.profileDao.insertContact(EmergencyContactsCompanion.insert(
-        id: 'contact-1',
-        profileId: profileId,
-        name: 'Jane Doe',
-        phone: '555-0100',
-      ));
+      await db.profileDao.insertContact(
+        EmergencyContactsCompanion.insert(
+          id: 'contact-1',
+          profileId: profileId,
+          name: 'Jane Doe',
+          phone: '555-0100',
+        ),
+      );
 
       // Verify children exist.
-      expect(await db.profileDao.getAllergiesForProfile(profileId), hasLength(1));
-      expect(await db.profileDao.getMedicationsForProfile(profileId), hasLength(1));
-      expect(await db.profileDao.getConditionsForProfile(profileId), hasLength(1));
-      expect(await db.profileDao.getContactsForProfile(profileId), hasLength(1));
+      expect(
+        await db.profileDao.getAllergiesForProfile(profileId),
+        hasLength(1),
+      );
+      expect(
+        await db.profileDao.getMedicationsForProfile(profileId),
+        hasLength(1),
+      );
+      expect(
+        await db.profileDao.getConditionsForProfile(profileId),
+        hasLength(1),
+      );
+      expect(
+        await db.profileDao.getContactsForProfile(profileId),
+        hasLength(1),
+      );
 
       // Delete the profile — children should cascade.
       await db.profileDao.deleteProfile(profileId);
@@ -101,11 +123,13 @@ void main() {
           'Missing migration from v0 to v1. '
           'Database version 1 is not supported by this app version.',
         ),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Missing migration'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Missing migration'),
+          ),
+        ),
       );
     });
   });
@@ -125,20 +149,22 @@ void main() {
       final now = DateTime(2025, 6, 15, 10, 30);
       const id = 'round-trip-1';
 
-      await db.profileDao.insertProfile(ProfilesCompanion.insert(
-        id: id,
-        name: 'Alice Smith',
-        dateOfBirth: DateTime(1990, 3, 25),
-        bloodType: const Value('A+'),
-        biologicalSex: const Value('female'),
-        heightCm: const Value(165.5),
-        weightKg: const Value(60.2),
-        isOrganDonor: const Value(true),
-        medicalNotes: const Value('No known issues'),
-        primaryLanguage: const Value('en'),
-        createdAt: now,
-        updatedAt: now,
-      ));
+      await db.profileDao.insertProfile(
+        ProfilesCompanion.insert(
+          id: id,
+          name: 'Alice Smith',
+          dateOfBirth: DateTime(1990, 3, 25),
+          bloodType: const Value('A+'),
+          biologicalSex: const Value('female'),
+          heightCm: const Value(165.5),
+          weightKg: const Value(60.2),
+          isOrganDonor: const Value(true),
+          medicalNotes: const Value('No known issues'),
+          primaryLanguage: const Value('en'),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
 
       final profile = await db.profileDao.getProfile(id);
       expect(profile, isNotNull);
@@ -156,19 +182,23 @@ void main() {
       final now = DateTime.now();
 
       for (final pid in ['p1', 'p2']) {
-        await db.profileDao.insertProfile(ProfilesCompanion.insert(
-          id: pid,
-          name: 'Profile $pid',
-          dateOfBirth: now,
-          createdAt: now,
-          updatedAt: now,
-        ));
-        await db.profileDao.insertAllergy(AllergiesCompanion.insert(
-          id: 'allergy-$pid',
-          profileId: pid,
-          name: 'Allergy for $pid',
-          severity: 'mild',
-        ));
+        await db.profileDao.insertProfile(
+          ProfilesCompanion.insert(
+            id: pid,
+            name: 'Profile $pid',
+            dateOfBirth: now,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+        await db.profileDao.insertAllergy(
+          AllergiesCompanion.insert(
+            id: 'allergy-$pid',
+            profileId: pid,
+            name: 'Allergy for $pid',
+            severity: 'mild',
+          ),
+        );
       }
 
       // Delete p1 — p2's children should survive.

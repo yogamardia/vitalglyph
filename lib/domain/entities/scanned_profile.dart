@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:vitalglyph/domain/entities/profile.dart' show Profile;
 
 class ScannedAllergy extends Equatable {
-
   const ScannedAllergy({
     required this.name,
     required this.severity,
@@ -17,7 +16,6 @@ class ScannedAllergy extends Equatable {
 }
 
 class ScannedContact extends Equatable {
-
   const ScannedContact({
     required this.name,
     required this.phone,
@@ -35,10 +33,10 @@ class ScannedContact extends Equatable {
 /// Intentionally separate from [Profile] — it has no database ID
 /// and is only displayed, never persisted.
 class ScannedProfile extends Equatable {
-
   const ScannedProfile({
     required this.name,
-    required this.signatureValid, this.dateOfBirth,
+    required this.signatureValid,
+    this.dateOfBirth,
     this.bloodType,
     this.biologicalSex,
     this.heightCm,
@@ -62,6 +60,7 @@ class ScannedProfile extends Equatable {
   final List<ScannedContact> emergencyContacts;
   final bool isOrganDonor;
   final String? language;
+
   /// Whether the HMAC format-integrity check passed. A `false` value means
   /// the QR data may be corrupted or generated outside VitalGlyph — it does
   /// NOT imply cryptographic tamper-proofing (the key is public).
@@ -69,18 +68,18 @@ class ScannedProfile extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        dateOfBirth,
-        bloodType,
-        biologicalSex,
-        heightCm,
-        weightKg,
-        allergies,
-        medications,
-        conditions,
-        emergencyContacts,
-        isOrganDonor,
-        language,
-        signatureValid,
-      ];
+    name,
+    dateOfBirth,
+    bloodType,
+    biologicalSex,
+    heightCm,
+    weightKg,
+    allergies,
+    medications,
+    conditions,
+    emergencyContacts,
+    isOrganDonor,
+    language,
+    signatureValid,
+  ];
 }

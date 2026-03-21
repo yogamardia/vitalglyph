@@ -20,11 +20,7 @@ class AuthNotRequired extends AuthState {
 
 /// Auth is required — show the lock screen.
 class AuthRequired extends AuthState {
-
-  const AuthRequired({
-    required this.canUseBiometric,
-    required this.hasPinSet,
-  });
+  const AuthRequired({required this.canUseBiometric, required this.hasPinSet});
   final bool canUseBiometric;
   final bool hasPinSet;
 
@@ -41,7 +37,6 @@ class AuthAuthenticated extends AuthState {
 
 /// An auth attempt failed.
 class AuthFailure extends AuthState {
-
   const AuthFailure(this.message);
   final String message;
   @override
@@ -50,7 +45,6 @@ class AuthFailure extends AuthState {
 
 /// Too many failed attempts — locked out for [remaining] duration.
 class AuthLockedOut extends AuthState {
-
   const AuthLockedOut(this.remaining);
   final Duration remaining;
   @override

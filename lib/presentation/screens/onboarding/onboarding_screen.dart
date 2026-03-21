@@ -132,7 +132,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       HapticFeedback.selectionClick();
                       setState(() => _currentPage = i);
                     },
-                    itemBuilder: (context, i) => _OnboardingPageView(data: pages[i]),
+                    itemBuilder: (context, i) =>
+                        _OnboardingPageView(data: pages[i]),
                   ),
                 ),
 
@@ -169,7 +170,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                 // Next / Get Started button
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xxl,
+                  ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: isLast
@@ -225,7 +228,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 class _PageData {
-
   const _PageData({
     required this.icon,
     required this.companions,
@@ -243,7 +245,6 @@ class _PageData {
 }
 
 class _OnboardingPageView extends StatefulWidget {
-
   const _OnboardingPageView({required this.data});
   final _PageData data;
 
@@ -367,7 +368,6 @@ class _OnboardingPageViewState extends State<_OnboardingPageView>
 }
 
 class _FloatingCompanion extends StatefulWidget {
-
   const _FloatingCompanion({
     required this.icon,
     required this.offset,
@@ -404,9 +404,10 @@ class _FloatingCompanionState extends State<_FloatingCompanion>
       if (mounted) _controller.repeat(reverse: true);
     });
 
-    _animation = Tween<double>(begin: 0, end: -12).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: -12,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

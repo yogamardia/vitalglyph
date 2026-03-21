@@ -10,9 +10,10 @@ import 'package:vitalglyph/presentation/widgets/glass_container.dart';
 import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 class EmergencyCardScreen extends StatefulWidget {
-
   const EmergencyCardScreen({
-    required this.profile, required this.exportEmergencyCard, super.key,
+    required this.profile,
+    required this.exportEmergencyCard,
+    super.key,
   });
   final Profile profile;
   final ExportEmergencyCard exportEmergencyCard;
@@ -61,7 +62,10 @@ class _EmergencyCardScreenState extends State<EmergencyCardScreen> {
           }
           if (snapshot.hasError) {
             return _ErrorCard(
-              message: snapshot.error.toString().replaceFirst('Exception: ', ''),
+              message: snapshot.error.toString().replaceFirst(
+                'Exception: ',
+                '',
+              ),
               onRetry: () => setState(() => _pdfFuture = _buildPdf()),
             );
           }
@@ -87,7 +91,8 @@ class _LoadingSkeleton extends StatefulWidget {
   State<_LoadingSkeleton> createState() => _LoadingSkeletonState();
 }
 
-class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerProviderStateMixin {
+class _LoadingSkeletonState extends State<_LoadingSkeleton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -98,9 +103,10 @@ class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerPro
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1, end: 2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: -1,
+      end: 2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -143,21 +149,33 @@ class _LoadingSkeletonState extends State<_LoadingSkeleton> with SingleTickerPro
                     Text(
                       context.l10n.emergencyCardGenerating,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: cs.onSurface.withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w600,
-                          ),
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 48),
-              _SkeletonBlock(width: double.infinity, height: 32, gradient: gradient),
+              _SkeletonBlock(
+                width: double.infinity,
+                height: 32,
+                gradient: gradient,
+              ),
               const SizedBox(height: 16),
               _SkeletonBlock(width: 180, height: 20, gradient: gradient),
               const SizedBox(height: 32),
-              _SkeletonBlock(width: double.infinity, height: 140, gradient: gradient),
+              _SkeletonBlock(
+                width: double.infinity,
+                height: 140,
+                gradient: gradient,
+              ),
               const SizedBox(height: 16),
-              _SkeletonBlock(width: double.infinity, height: 100, gradient: gradient),
+              _SkeletonBlock(
+                width: double.infinity,
+                height: 100,
+                gradient: gradient,
+              ),
             ],
           ),
         );
@@ -177,7 +195,6 @@ class _SlidingGradientTransform extends GradientTransform {
 }
 
 class _SkeletonBlock extends StatelessWidget {
-
   const _SkeletonBlock({
     required this.width,
     required this.height,
@@ -207,7 +224,6 @@ class _SkeletonBlock extends StatelessWidget {
 }
 
 class _ErrorCard extends StatelessWidget {
-
   const _ErrorCard({required this.message, required this.onRetry});
   final String message;
   final VoidCallback onRetry;
@@ -232,7 +248,9 @@ class _ErrorCard extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 context.l10n.emergencyCardFailed,
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -250,7 +268,10 @@ class _ErrorCard extends StatelessWidget {
                 icon: const Icon(Icons.refresh_rounded),
                 label: Text(context.l10n.emergencyCardTryAgain),
                 style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],

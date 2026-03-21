@@ -80,10 +80,7 @@ void main() {
         generate(makeProfile(isOrganDonor: true)).data.contains('DONOR:Y'),
         isTrue,
       );
-      expect(
-        generate(makeProfile()).data.contains('DONOR:N'),
-        isTrue,
-      );
+      expect(generate(makeProfile()).data.contains('DONOR:N'), isTrue);
     });
 
     test('special chars in name are percent-encoded', () {
@@ -112,12 +109,14 @@ void main() {
         relationship: 'Spouse',
       );
 
-      final result = generate(makeProfile(
-        allergies: [allergy],
-        medications: [med],
-        conditions: [cond],
-        emergencyContacts: [contact],
-      ));
+      final result = generate(
+        makeProfile(
+          allergies: [allergy],
+          medications: [med],
+          conditions: [cond],
+          emergencyContacts: [contact],
+        ),
+      );
 
       expect(result.data.length, lessThanOrEqualTo(2953));
       expect(result.truncated, isFalse);
@@ -160,13 +159,15 @@ void main() {
         ),
       );
 
-      final result = generate(makeProfile(
-        name: 'Patient With A Reasonably Long Full Name',
-        allergies: allergies,
-        medications: medications,
-        conditions: conditions,
-        emergencyContacts: contacts,
-      ));
+      final result = generate(
+        makeProfile(
+          name: 'Patient With A Reasonably Long Full Name',
+          allergies: allergies,
+          medications: medications,
+          conditions: conditions,
+          emergencyContacts: contacts,
+        ),
+      );
 
       expect(result.truncated, isTrue);
       expect(
@@ -212,25 +213,24 @@ void main() {
         ),
       );
 
-      final result = generate(makeProfile(
-        allergies: allergies,
-        medications: medications,
-        emergencyContacts: contacts,
-      ));
+      final result = generate(
+        makeProfile(
+          allergies: allergies,
+          medications: medications,
+          emergencyContacts: contacts,
+        ),
+      );
 
       // Payload should still parse successfully
       final parsed = parse(result.data);
       expect(parsed.isRight(), isTrue);
-      parsed.match(
-        (_) => fail('Should parse'),
-        (scanned) {
-          expect(scanned.name, 'Alice Smith');
-          // Allergy names survive truncation (only reactions are dropped)
-          for (final a in scanned.allergies) {
-            expect(a.name, startsWith('Allergy'));
-          }
-        },
-      );
+      parsed.match((_) => fail('Should parse'), (scanned) {
+        expect(scanned.name, 'Alice Smith');
+        // Allergy names survive truncation (only reactions are dropped)
+        for (final a in scanned.allergies) {
+          expect(a.name, startsWith('Allergy'));
+        }
+      });
     });
   });
 
@@ -291,34 +291,31 @@ void main() {
       final qr = generate(profile).data;
       final result = parse(qr);
 
-      result.match(
-        (f) => fail('Expected Right, got: $f'),
-        (scanned) {
-          expect(scanned.name, 'Alice Smith');
-          expect(scanned.bloodType, 'O+');
-          expect(scanned.heightCm, 165.0);
-          expect(scanned.weightKg, 60.0);
-          expect(scanned.isOrganDonor, isTrue);
-          expect(scanned.language, 'en');
-          expect(scanned.signatureValid, isTrue);
+      result.match((f) => fail('Expected Right, got: $f'), (scanned) {
+        expect(scanned.name, 'Alice Smith');
+        expect(scanned.bloodType, 'O+');
+        expect(scanned.heightCm, 165.0);
+        expect(scanned.weightKg, 60.0);
+        expect(scanned.isOrganDonor, isTrue);
+        expect(scanned.language, 'en');
+        expect(scanned.signatureValid, isTrue);
 
-          expect(scanned.allergies.length, 1);
-          expect(scanned.allergies.first.name, 'Shellfish');
-          expect(scanned.allergies.first.severity, 'moderate');
-          expect(scanned.allergies.first.reaction, 'Hives');
+        expect(scanned.allergies.length, 1);
+        expect(scanned.allergies.first.name, 'Shellfish');
+        expect(scanned.allergies.first.severity, 'moderate');
+        expect(scanned.allergies.first.reaction, 'Hives');
 
-          expect(scanned.medications.length, 1);
-          expect(scanned.medications.first, contains('Lisinopril'));
+        expect(scanned.medications.length, 1);
+        expect(scanned.medications.first, contains('Lisinopril'));
 
-          expect(scanned.conditions.length, 1);
-          expect(scanned.conditions.first, 'Hypertension');
+        expect(scanned.conditions.length, 1);
+        expect(scanned.conditions.first, 'Hypertension');
 
-          expect(scanned.emergencyContacts.length, 1);
-          expect(scanned.emergencyContacts.first.name, 'Bob Smith');
-          expect(scanned.emergencyContacts.first.phone, '+15559876543');
-          expect(scanned.emergencyContacts.first.relationship, 'Brother');
-        },
-      );
+        expect(scanned.emergencyContacts.length, 1);
+        expect(scanned.emergencyContacts.first.name, 'Bob Smith');
+        expect(scanned.emergencyContacts.first.phone, '+15559876543');
+        expect(scanned.emergencyContacts.first.relationship, 'Brother');
+      });
     });
 
     test('signatureValid is false when payload is tampered', () {
@@ -326,13 +323,10 @@ void main() {
       // Tamper by replacing name in the raw string
       final tampered = qr.replaceFirst('N:Alice', 'N:Mallory');
       final result = parse(tampered);
-      result.match(
-        (f) => fail('Should parse but with invalid sig'),
-        (scanned) {
-          expect(scanned.name, 'Mallory');
-          expect(scanned.signatureValid, isFalse);
-        },
-      );
+      result.match((f) => fail('Should parse but with invalid sig'), (scanned) {
+        expect(scanned.name, 'Mallory');
+        expect(scanned.signatureValid, isFalse);
+      });
     });
 
     test('special chars in name roundtrip correctly', () {
@@ -355,15 +349,12 @@ void main() {
         updatedAt: now,
       );
       final result = parse(generate(profile).data);
-      result.match(
-        (f) => fail('Expected Right: $f'),
-        (scanned) {
-          expect(scanned.name, 'Minimal User');
-          expect(scanned.bloodType, isNull);
-          expect(scanned.allergies, isEmpty);
-          expect(scanned.medications, isEmpty);
-        },
-      );
+      result.match((f) => fail('Expected Right: $f'), (scanned) {
+        expect(scanned.name, 'Minimal User');
+        expect(scanned.bloodType, isNull);
+        expect(scanned.allergies, isEmpty);
+        expect(scanned.medications, isEmpty);
+      });
     });
   });
 }

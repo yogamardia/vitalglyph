@@ -13,7 +13,6 @@ class ProfilesWatchStarted extends ProfileEvent {
 }
 
 class ProfileCreateRequested extends ProfileEvent {
-
   const ProfileCreateRequested(this.profile);
   final Profile profile;
 
@@ -22,7 +21,6 @@ class ProfileCreateRequested extends ProfileEvent {
 }
 
 class ProfileUpdateRequested extends ProfileEvent {
-
   const ProfileUpdateRequested(this.profile);
   final Profile profile;
 
@@ -31,7 +29,6 @@ class ProfileUpdateRequested extends ProfileEvent {
 }
 
 class ProfileDeleteRequested extends ProfileEvent {
-
   const ProfileDeleteRequested(this.id);
   final String id;
 

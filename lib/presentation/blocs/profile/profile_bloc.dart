@@ -7,17 +7,16 @@ import 'package:vitalglyph/presentation/blocs/profile/profile_event.dart';
 import 'package:vitalglyph/presentation/blocs/profile/profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-
   ProfileBloc({
     required WatchAllProfiles watchAllProfiles,
     required CreateProfile createProfile,
     required UpdateProfile updateProfile,
     required DeleteProfile deleteProfile,
-  })  : _watchAllProfiles = watchAllProfiles,
-        _createProfile = createProfile,
-        _updateProfile = updateProfile,
-        _deleteProfile = deleteProfile,
-        super(const ProfileInitial()) {
+  }) : _watchAllProfiles = watchAllProfiles,
+       _createProfile = createProfile,
+       _updateProfile = updateProfile,
+       _deleteProfile = deleteProfile,
+       super(const ProfileInitial()) {
     on<ProfilesWatchStarted>(_onWatchStarted);
     on<ProfileCreateRequested>(_onCreateRequested);
     on<ProfileUpdateRequested>(_onUpdateRequested);
@@ -59,10 +58,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final result = await _updateProfile(event.profile);
-    result.match(
-      (failure) => emit(ProfileError(failure.message)),
-      (_) {},
-    );
+    result.match((failure) => emit(ProfileError(failure.message)), (_) {});
   }
 
   Future<void> _onDeleteRequested(
@@ -70,9 +66,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final result = await _deleteProfile(event.id);
-    result.match(
-      (failure) => emit(ProfileError(failure.message)),
-      (_) {},
-    );
+    result.match((failure) => emit(ProfileError(failure.message)), (_) {});
   }
 }

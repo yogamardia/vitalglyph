@@ -8,12 +8,13 @@ import 'package:vitalglyph/domain/entities/medication.dart';
 const _sentinel = Object();
 
 class Profile extends Equatable {
-
   const Profile({
     required this.id,
     required this.name,
     required this.dateOfBirth,
-    required this.createdAt, required this.updatedAt, this.bloodType,
+    required this.createdAt,
+    required this.updatedAt,
+    this.bloodType,
     this.biologicalSex,
     this.heightCm,
     this.weightKg,
@@ -100,22 +101,22 @@ class Profile extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        dateOfBirth,
-        bloodType,
-        biologicalSex,
-        heightCm,
-        weightKg,
-        isOrganDonor,
-        medicalNotes,
-        primaryLanguage,
-        photoPath,
-        allergies,
-        conditions,
-        medications,
-        emergencyContacts,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    dateOfBirth,
+    bloodType,
+    biologicalSex,
+    heightCm,
+    weightKg,
+    isOrganDonor,
+    medicalNotes,
+    primaryLanguage,
+    photoPath,
+    allergies,
+    conditions,
+    medications,
+    emergencyContacts,
+    createdAt,
+    updatedAt,
+  ];
 }

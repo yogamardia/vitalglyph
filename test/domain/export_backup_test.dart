@@ -45,9 +45,7 @@ void main() {
     medications: const [
       Medication(id: 'm1', name: 'Ibuprofen', dosage: '200mg'),
     ],
-    conditions: const [
-      MedicalCondition(id: 'c1', name: 'Asthma'),
-    ],
+    conditions: const [MedicalCondition(id: 'c1', name: 'Asthma')],
     emergencyContacts: const [
       EmergencyContact(id: 'ec1', name: 'Bob', phone: '555-0100'),
     ],
@@ -61,9 +59,9 @@ void main() {
 
   group('JSON serialization', () {
     test('serializes profiles with correct structure', () async {
-      when(() => mockRepo.watchAllProfiles()).thenAnswer(
-        (_) => Stream.value(Right([testProfile])),
-      );
+      when(
+        () => mockRepo.watchAllProfiles(),
+      ).thenAnswer((_) => Stream.value(Right([testProfile])));
 
       String? capturedJson;
       when(() => mockCrypto.encryptJson(any(), any())).thenAnswer((inv) {
@@ -117,9 +115,7 @@ void main() {
   group('error handling', () {
     test('returns Left when repository stream emits failure', () async {
       when(() => mockRepo.watchAllProfiles()).thenAnswer(
-        (_) => Stream.value(
-          const Left(DatabaseFailure('db error')),
-        ),
+        (_) => Stream.value(const Left(DatabaseFailure('db error'))),
       );
 
       final result = await useCase('pass');
@@ -128,11 +124,12 @@ void main() {
     });
 
     test('returns BackupFailure when crypto throws', () async {
-      when(() => mockRepo.watchAllProfiles()).thenAnswer(
-        (_) => Stream.value(Right([testProfile])),
-      );
-      when(() => mockCrypto.encryptJson(any(), any()))
-          .thenThrow(Exception('crypto error'));
+      when(
+        () => mockRepo.watchAllProfiles(),
+      ).thenAnswer((_) => Stream.value(Right([testProfile])));
+      when(
+        () => mockCrypto.encryptJson(any(), any()),
+      ).thenThrow(Exception('crypto error'));
 
       final result = await useCase('pass');
 
@@ -145,11 +142,12 @@ void main() {
 
   group('file output', () {
     test('writes encrypted payload to .medid file in temp dir', () async {
-      when(() => mockRepo.watchAllProfiles()).thenAnswer(
-        (_) => Stream.value(Right([testProfile])),
-      );
-      when(() => mockCrypto.encryptJson(any(), any()))
-          .thenReturn('MEDID_BACKUP|v1|s|i|c');
+      when(
+        () => mockRepo.watchAllProfiles(),
+      ).thenAnswer((_) => Stream.value(Right([testProfile])));
+      when(
+        () => mockCrypto.encryptJson(any(), any()),
+      ).thenReturn('MEDID_BACKUP|v1|s|i|c');
 
       final result = await useCase('pass');
 

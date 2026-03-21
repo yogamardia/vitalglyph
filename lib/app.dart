@@ -21,9 +21,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ThemeCubit>(
-          create: (_) => sl<ThemeCubit>()..load(),
-        ),
+        BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()..load()),
         BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
         BlocProvider<ProfileBloc>(create: (_) => sl<ProfileBloc>()),
       ],
@@ -64,10 +62,7 @@ class _AppContent extends StatelessWidget {
                     return Stack(
                       children: [
                         if (child != null)
-                          IgnorePointer(
-                            ignoring: isLocked,
-                            child: child,
-                          ),
+                          IgnorePointer(ignoring: isLocked, child: child),
                         if (isLocked)
                           LockScreen(
                             canUseBiometric: state.canUseBiometric,
@@ -125,8 +120,7 @@ class _LifecycleObserverState extends State<_LifecycleObserver>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       _backgroundedAt = DateTime.now();
-    } else if (state == AppLifecycleState.resumed &&
-        _backgroundedAt != null) {
+    } else if (state == AppLifecycleState.resumed && _backgroundedAt != null) {
       final elapsed = DateTime.now().difference(_backgroundedAt!);
       _backgroundedAt = null;
       context.read<AuthCubit>().onResumed(elapsed);

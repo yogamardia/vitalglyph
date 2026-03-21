@@ -8,7 +8,6 @@ import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 
 /// Emergency-optimised read-only view of a scanned Medical ID.
 class ScannedProfileView extends StatelessWidget {
-
   const ScannedProfileView({required this.profile, super.key});
   final ScannedProfile profile;
 
@@ -94,7 +93,8 @@ class _TamperWarning extends StatefulWidget {
   State<_TamperWarning> createState() => _TamperWarningState();
 }
 
-class _TamperWarningState extends State<_TamperWarning> with SingleTickerProviderStateMixin {
+class _TamperWarningState extends State<_TamperWarning>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -105,9 +105,10 @@ class _TamperWarningState extends State<_TamperWarning> with SingleTickerProvide
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -124,7 +125,9 @@ class _TamperWarningState extends State<_TamperWarning> with SingleTickerProvide
       builder: (context, child) {
         return GlassContainer(
           margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-          backgroundColor: colors.tamperWarningBackground.withValues(alpha: 0.4),
+          backgroundColor: colors.tamperWarningBackground.withValues(
+            alpha: 0.4,
+          ),
           borderColor: colors.tamperWarning.withValues(alpha: _animation.value),
           borderRadius: BorderRadius.circular(AppRadius.lg),
           child: Padding(
@@ -168,7 +171,6 @@ class _TamperWarningState extends State<_TamperWarning> with SingleTickerProvide
 }
 
 class _HeaderCard extends StatelessWidget {
-
   const _HeaderCard({required this.profile});
   final ScannedProfile profile;
 
@@ -182,10 +184,7 @@ class _HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.glassSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
-          color: colors.cardBorder,
-          width: 1.5,
-        ),
+        border: Border.all(color: colors.cardBorder, width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -209,7 +208,10 @@ class _HeaderCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             if (profile.dateOfBirth != null)
-              _InfoRow(label: context.l10n.scannedProfileBorn, value: profile.dateOfBirth!),
+              _InfoRow(
+                label: context.l10n.scannedProfileBorn,
+                value: profile.dateOfBirth!,
+              ),
             if (profile.bloodType != null)
               _InfoRow(
                 label: context.l10n.scannedProfileBloodType,
@@ -225,12 +227,20 @@ class _HeaderCard extends StatelessWidget {
                 value: _sexLabel(profile.biologicalSex!, context.l10n),
               ),
             if (profile.heightCm != null)
-              _InfoRow(label: context.l10n.scannedProfileHeight, value: '${profile.heightCm} cm'),
+              _InfoRow(
+                label: context.l10n.scannedProfileHeight,
+                value: '${profile.heightCm} cm',
+              ),
             if (profile.weightKg != null)
-              _InfoRow(label: context.l10n.scannedProfileWeight, value: '${profile.weightKg} kg'),
+              _InfoRow(
+                label: context.l10n.scannedProfileWeight,
+                value: '${profile.weightKg} kg',
+              ),
             _InfoRow(
               label: context.l10n.scannedProfileOrganDonor,
-              value: profile.isOrganDonor ? context.l10n.scannedProfileYes : context.l10n.scannedProfileNo,
+              value: profile.isOrganDonor
+                  ? context.l10n.scannedProfileYes
+                  : context.l10n.scannedProfileNo,
               valueStyle: TextStyle(
                 fontWeight: FontWeight.w900,
                 color: profile.isOrganDonor
@@ -244,7 +254,8 @@ class _HeaderCard extends StatelessWidget {
     );
   }
 
-  String _sexLabel(String code, AppLocalizations l10n) => switch (code.toUpperCase()) {
+  String _sexLabel(String code, AppLocalizations l10n) =>
+      switch (code.toUpperCase()) {
         'M' => l10n.biologicalSexMale,
         'F' => l10n.biologicalSexFemale,
         'O' => l10n.biologicalSexOther,
@@ -253,7 +264,6 @@ class _HeaderCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-
   const _InfoRow({required this.label, required this.value, this.valueStyle});
   final String label;
   final String value;
@@ -274,15 +284,17 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label.toUpperCase(),
               style: theme.textTheme.labelMedium?.copyWith(
-                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5),
+                color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: valueStyle ??
+              style:
+                  valueStyle ??
                   theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: cs.onSurface,
@@ -296,7 +308,6 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-
   const _SectionCard({
     required this.title,
     required this.icon,
@@ -321,10 +332,7 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.glassSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
-          color: colors.cardBorder,
-          width: 1.5,
-        ),
+        border: Border.all(color: colors.cardBorder, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +341,9 @@ class _SectionCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
               color: (titleColor ?? defaultColor).withValues(alpha: 0.05),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppRadius.lg),
+              ),
               border: Border(
                 bottom: BorderSide(
                   color: (titleColor ?? defaultColor).withValues(alpha: 0.1),
@@ -369,7 +379,6 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _AllergyRow extends StatelessWidget {
-
   const _AllergyRow({required this.allergy});
   final ScannedAllergy allergy;
 
@@ -406,7 +415,9 @@ class _AllergyRow extends StatelessWidget {
                   Text(
                     allergy.reaction!,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -421,7 +432,6 @@ class _AllergyRow extends StatelessWidget {
 }
 
 class _SeverityBadge extends StatelessWidget {
-
   const _SeverityBadge({required this.label, required this.color});
   final String label;
   final Color color;
@@ -432,9 +442,7 @@ class _SeverityBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Text(
@@ -451,7 +459,6 @@ class _SeverityBadge extends StatelessWidget {
 }
 
 class _BulletRow extends StatelessWidget {
-
   const _BulletRow({required this.text});
   final String text;
 
@@ -489,7 +496,6 @@ class _BulletRow extends StatelessWidget {
 }
 
 class _ContactRow extends StatelessWidget {
-
   const _ContactRow({required this.contact});
   final ScannedContact contact;
 

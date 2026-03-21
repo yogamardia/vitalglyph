@@ -11,7 +11,6 @@ import 'package:vitalglyph/domain/entities/profile.dart';
 import 'package:vitalglyph/domain/repositories/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-
   ProfileRepositoryImpl(this._dao);
   final ProfileDao _dao;
 
@@ -84,42 +83,50 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   Future<void> _insertRelated(Profile profile) async {
     for (final a in profile.allergies) {
-      await _dao.insertAllergy(AllergiesCompanion(
-        id: Value(a.id),
-        profileId: Value(profile.id),
-        name: Value(a.name),
-        severity: Value(a.severity.name),
-        reaction: Value(a.reaction),
-      ));
+      await _dao.insertAllergy(
+        AllergiesCompanion(
+          id: Value(a.id),
+          profileId: Value(profile.id),
+          name: Value(a.name),
+          severity: Value(a.severity.name),
+          reaction: Value(a.reaction),
+        ),
+      );
     }
     for (final m in profile.medications) {
-      await _dao.insertMedication(MedicationsCompanion(
-        id: Value(m.id),
-        profileId: Value(profile.id),
-        name: Value(m.name),
-        dosage: Value(m.dosage),
-        frequency: Value(m.frequency),
-        prescribedFor: Value(m.prescribedFor),
-      ));
+      await _dao.insertMedication(
+        MedicationsCompanion(
+          id: Value(m.id),
+          profileId: Value(profile.id),
+          name: Value(m.name),
+          dosage: Value(m.dosage),
+          frequency: Value(m.frequency),
+          prescribedFor: Value(m.prescribedFor),
+        ),
+      );
     }
     for (final c in profile.conditions) {
-      await _dao.insertCondition(MedicalConditionsCompanion(
-        id: Value(c.id),
-        profileId: Value(profile.id),
-        name: Value(c.name),
-        diagnosedDate: Value(c.diagnosedDate),
-        notes: Value(c.notes),
-      ));
+      await _dao.insertCondition(
+        MedicalConditionsCompanion(
+          id: Value(c.id),
+          profileId: Value(profile.id),
+          name: Value(c.name),
+          diagnosedDate: Value(c.diagnosedDate),
+          notes: Value(c.notes),
+        ),
+      );
     }
     for (final ec in profile.emergencyContacts) {
-      await _dao.insertContact(EmergencyContactsCompanion(
-        id: Value(ec.id),
-        profileId: Value(profile.id),
-        name: Value(ec.name),
-        phone: Value(ec.phone),
-        relationship: Value(ec.relationship),
-        priority: Value(ec.priority),
-      ));
+      await _dao.insertContact(
+        EmergencyContactsCompanion(
+          id: Value(ec.id),
+          profileId: Value(profile.id),
+          name: Value(ec.name),
+          phone: Value(ec.phone),
+          relationship: Value(ec.relationship),
+          priority: Value(ec.priority),
+        ),
+      );
     }
   }
 
@@ -133,8 +140,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
       id: row.id,
       name: row.name,
       dateOfBirth: row.dateOfBirth,
-      bloodType:
-          row.bloodType != null ? BloodType.fromString(row.bloodType!) : null,
+      bloodType: row.bloodType != null
+          ? BloodType.fromString(row.bloodType!)
+          : null,
       biologicalSex: row.biologicalSex != null
           ? BiologicalSex.fromString(row.biologicalSex!)
           : null,
@@ -154,36 +162,35 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   ProfilesCompanion _toProfileCompanion(Profile p) => ProfilesCompanion(
-        id: Value(p.id),
-        name: Value(p.name),
-        dateOfBirth: Value(p.dateOfBirth),
-        bloodType: Value(p.bloodType?.name),
-        biologicalSex: Value(p.biologicalSex?.name),
-        heightCm: Value(p.heightCm),
-        weightKg: Value(p.weightKg),
-        isOrganDonor: Value(p.isOrganDonor),
-        medicalNotes: Value(p.medicalNotes),
-        primaryLanguage: Value(p.primaryLanguage),
-        photoPath: Value(p.photoPath),
-        createdAt: Value(p.createdAt),
-        updatedAt: Value(p.updatedAt),
-      );
+    id: Value(p.id),
+    name: Value(p.name),
+    dateOfBirth: Value(p.dateOfBirth),
+    bloodType: Value(p.bloodType?.name),
+    biologicalSex: Value(p.biologicalSex?.name),
+    heightCm: Value(p.heightCm),
+    weightKg: Value(p.weightKg),
+    isOrganDonor: Value(p.isOrganDonor),
+    medicalNotes: Value(p.medicalNotes),
+    primaryLanguage: Value(p.primaryLanguage),
+    photoPath: Value(p.photoPath),
+    createdAt: Value(p.createdAt),
+    updatedAt: Value(p.updatedAt),
+  );
 
   Allergy _toAllergyEntity(AllergyRecord r) => Allergy(
-        id: r.id,
-        name: r.name,
-        severity:
-            AllergySeverity.fromString(r.severity) ?? AllergySeverity.mild,
-        reaction: r.reaction,
-      );
+    id: r.id,
+    name: r.name,
+    severity: AllergySeverity.fromString(r.severity) ?? AllergySeverity.mild,
+    reaction: r.reaction,
+  );
 
   Medication _toMedicationEntity(MedicationRecord r) => Medication(
-        id: r.id,
-        name: r.name,
-        dosage: r.dosage,
-        frequency: r.frequency,
-        prescribedFor: r.prescribedFor,
-      );
+    id: r.id,
+    name: r.name,
+    dosage: r.dosage,
+    frequency: r.frequency,
+    prescribedFor: r.prescribedFor,
+  );
 
   MedicalCondition _toConditionEntity(MedicalConditionRecord r) =>
       MedicalCondition(

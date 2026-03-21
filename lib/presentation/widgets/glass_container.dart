@@ -5,9 +5,9 @@ import 'package:vitalglyph/core/theme/app_spacing.dart';
 
 /// A reusable glassmorphism container that applies a blur effect and semi-transparent background.
 class GlassContainer extends StatelessWidget {
-
   const GlassContainer({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.blurSigma = 20,
     this.backgroundColor,
     this.borderColor,
@@ -48,10 +48,7 @@ class GlassContainer extends StatelessWidget {
         color: gradient == null ? effectiveBackgroundColor : null,
         gradient: gradient,
         borderRadius: effectiveBorderRadius,
-        border: Border.all(
-          color: effectiveBorderColor,
-          width: 1.5,
-        ),
+        border: Border.all(color: effectiveBorderColor, width: 1.5),
       ),
       child: child,
     );
@@ -65,10 +62,7 @@ class GlassContainer extends StatelessWidget {
         ),
       );
     } else {
-      current = ClipRRect(
-        borderRadius: effectiveBorderRadius,
-        child: current,
-      );
+      current = ClipRRect(borderRadius: effectiveBorderRadius, child: current);
     }
 
     return current;

@@ -93,11 +93,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ),
       body: Stack(
         children: [
-          MobileScanner(
-            controller: _controller,
-            onDetect: _onDetect,
-          ),
-          
+          MobileScanner(controller: _controller, onDetect: _onDetect),
+
           // Viewfinder with animations
           const _ScannerOverlay(),
 
@@ -112,11 +109,18 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 backgroundColor: Colors.black.withValues(alpha: 0.5),
                 borderColor: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(30),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.qr_code_rounded, color: Colors.white, size: 18),
+                    const Icon(
+                      Icons.qr_code_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                     const SizedBox(width: 10),
                     Text(
                       context.l10n.qrScannerInstruction,
@@ -170,7 +174,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 }
 
 class _CircleActionButton extends StatelessWidget {
-
   const _CircleActionButton({
     required this.icon,
     required this.onPressed,
@@ -211,7 +214,8 @@ class _ScannerOverlay extends StatefulWidget {
   State<_ScannerOverlay> createState() => _ScannerOverlayState();
 }
 
-class _ScannerOverlayState extends State<_ScannerOverlay> with SingleTickerProviderStateMixin {
+class _ScannerOverlayState extends State<_ScannerOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -222,9 +226,10 @@ class _ScannerOverlayState extends State<_ScannerOverlay> with SingleTickerProvi
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -265,7 +270,7 @@ class _ScannerOverlayState extends State<_ScannerOverlay> with SingleTickerProvi
             ],
           ),
         ),
-        
+
         // Animated scan line and corners
         Center(
           child: SizedBox(
@@ -295,7 +300,7 @@ class _ScannerOverlayState extends State<_ScannerOverlay> with SingleTickerProvi
                             colors: [
                               Colors.transparent,
                               Colors.white,
-                              Colors.transparent
+                              Colors.transparent,
                             ],
                           ),
                         ),
@@ -340,16 +345,36 @@ class _ViewfinderPainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
 
     const armLength = 30.0;
-    
+
     void drawCorner(Path path) {
       canvas.drawPath(path, shadowPaint);
       canvas.drawPath(path, paint);
     }
 
-    drawCorner(Path()..moveTo(0, armLength)..lineTo(0, 0)..lineTo(armLength, 0));
-    drawCorner(Path()..moveTo(size.width - armLength, 0)..lineTo(size.width, 0)..lineTo(size.width, armLength));
-    drawCorner(Path()..moveTo(0, size.height - armLength)..lineTo(0, size.height)..lineTo(armLength, size.height));
-    drawCorner(Path()..moveTo(size.width - armLength, size.height)..lineTo(size.width, size.height)..lineTo(size.width, size.height - armLength));
+    drawCorner(
+      Path()
+        ..moveTo(0, armLength)
+        ..lineTo(0, 0)
+        ..lineTo(armLength, 0),
+    );
+    drawCorner(
+      Path()
+        ..moveTo(size.width - armLength, 0)
+        ..lineTo(size.width, 0)
+        ..lineTo(size.width, armLength),
+    );
+    drawCorner(
+      Path()
+        ..moveTo(0, size.height - armLength)
+        ..lineTo(0, size.height)
+        ..lineTo(armLength, size.height),
+    );
+    drawCorner(
+      Path()
+        ..moveTo(size.width - armLength, size.height)
+        ..lineTo(size.width, size.height)
+        ..lineTo(size.width, size.height - armLength),
+    );
   }
 
   @override

@@ -18,65 +18,61 @@ void main() {
   final now = DateTime(2025, 6, 15, 10, 30);
 
   Profile fullProfile({String id = 'p1'}) => Profile(
-        id: id,
-        name: 'Alice Smith',
-        dateOfBirth: DateTime(1990, 3, 25),
-        bloodType: BloodType.aPos,
-        biologicalSex: BiologicalSex.female,
-        heightCm: 165.5,
-        weightKg: 60.2,
-        isOrganDonor: true,
-        medicalNotes: 'No known issues',
-        primaryLanguage: 'en',
-        createdAt: now,
-        updatedAt: now,
-        allergies: const [
-          Allergy(
-            id: 'a1',
-            name: 'Peanuts',
-            severity: AllergySeverity.severe,
-            reaction: 'Anaphylaxis',
-          ),
-          Allergy(
-            id: 'a2',
-            name: 'Penicillin',
-            severity: AllergySeverity.moderate,
-          ),
-        ],
-        medications: const [
-          Medication(
-            id: 'm1',
-            name: 'Ibuprofen',
-            dosage: '200mg',
-            frequency: 'twice daily',
-            prescribedFor: 'Pain',
-          ),
-        ],
-        conditions: const [
-          MedicalCondition(
-            id: 'c1',
-            name: 'Asthma',
-            diagnosedDate: '2015-01-01',
-            notes: 'Mild intermittent',
-          ),
-        ],
-        emergencyContacts: const [
-          EmergencyContact(
-            id: 'ec1',
-            name: 'Bob Smith',
-            phone: '555-0100',
-            relationship: 'Spouse',
-          ),
-        ],
-      );
+    id: id,
+    name: 'Alice Smith',
+    dateOfBirth: DateTime(1990, 3, 25),
+    bloodType: BloodType.aPos,
+    biologicalSex: BiologicalSex.female,
+    heightCm: 165.5,
+    weightKg: 60.2,
+    isOrganDonor: true,
+    medicalNotes: 'No known issues',
+    primaryLanguage: 'en',
+    createdAt: now,
+    updatedAt: now,
+    allergies: const [
+      Allergy(
+        id: 'a1',
+        name: 'Peanuts',
+        severity: AllergySeverity.severe,
+        reaction: 'Anaphylaxis',
+      ),
+      Allergy(id: 'a2', name: 'Penicillin', severity: AllergySeverity.moderate),
+    ],
+    medications: const [
+      Medication(
+        id: 'm1',
+        name: 'Ibuprofen',
+        dosage: '200mg',
+        frequency: 'twice daily',
+        prescribedFor: 'Pain',
+      ),
+    ],
+    conditions: const [
+      MedicalCondition(
+        id: 'c1',
+        name: 'Asthma',
+        diagnosedDate: '2015-01-01',
+        notes: 'Mild intermittent',
+      ),
+    ],
+    emergencyContacts: const [
+      EmergencyContact(
+        id: 'ec1',
+        name: 'Bob Smith',
+        phone: '555-0100',
+        relationship: 'Spouse',
+      ),
+    ],
+  );
 
   Profile minimalProfile({String id = 'p-min'}) => Profile(
-        id: id,
-        name: 'Minimal User',
-        dateOfBirth: DateTime(2000),
-        createdAt: now,
-        updatedAt: now,
-      );
+    id: id,
+    name: 'Minimal User',
+    dateOfBirth: DateTime(2000),
+    createdAt: now,
+    updatedAt: now,
+  );
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -98,28 +94,25 @@ void main() {
       await repo.createProfile(fullProfile());
       final result = await repo.getProfile('p1');
 
-      result.match(
-        (f) => fail('Expected Right, got Left: $f'),
-        (profile) {
-          expect(profile.name, 'Alice Smith');
-          expect(profile.bloodType, BloodType.aPos);
-          expect(profile.biologicalSex, BiologicalSex.female);
-          expect(profile.heightCm, 165.5);
-          expect(profile.weightKg, 60.2);
-          expect(profile.isOrganDonor, true);
-          expect(profile.medicalNotes, 'No known issues');
-          expect(profile.primaryLanguage, 'en');
-        },
-      );
+      result.match((f) => fail('Expected Right, got Left: $f'), (profile) {
+        expect(profile.name, 'Alice Smith');
+        expect(profile.bloodType, BloodType.aPos);
+        expect(profile.biologicalSex, BiologicalSex.female);
+        expect(profile.heightCm, 165.5);
+        expect(profile.weightKg, 60.2);
+        expect(profile.isOrganDonor, true);
+        expect(profile.medicalNotes, 'No known issues');
+        expect(profile.primaryLanguage, 'en');
+      });
     });
 
-    test('stores child records (allergies, meds, conditions, contacts)', () async {
-      await repo.createProfile(fullProfile());
-      final result = await repo.getProfile('p1');
+    test(
+      'stores child records (allergies, meds, conditions, contacts)',
+      () async {
+        await repo.createProfile(fullProfile());
+        final result = await repo.getProfile('p1');
 
-      result.match(
-        (f) => fail('Expected Right, got Left: $f'),
-        (profile) {
+        result.match((f) => fail('Expected Right, got Left: $f'), (profile) {
           expect(profile.allergies, hasLength(2));
           expect(profile.allergies[0].name, 'Peanuts');
           expect(profile.allergies[0].severity, AllergySeverity.severe);
@@ -141,29 +134,26 @@ void main() {
           expect(profile.emergencyContacts[0].phone, '555-0100');
           expect(profile.emergencyContacts[0].relationship, 'Spouse');
           expect(profile.emergencyContacts[0].priority, 1);
-        },
-      );
-    });
+        });
+      },
+    );
 
     test('stores minimal profile with no children', () async {
       await repo.createProfile(minimalProfile());
       final result = await repo.getProfile('p-min');
 
-      result.match(
-        (f) => fail('Expected Right, got Left: $f'),
-        (profile) {
-          expect(profile.name, 'Minimal User');
-          expect(profile.bloodType, isNull);
-          expect(profile.biologicalSex, isNull);
-          expect(profile.heightCm, isNull);
-          expect(profile.weightKg, isNull);
-          expect(profile.isOrganDonor, false);
-          expect(profile.allergies, isEmpty);
-          expect(profile.medications, isEmpty);
-          expect(profile.conditions, isEmpty);
-          expect(profile.emergencyContacts, isEmpty);
-        },
-      );
+      result.match((f) => fail('Expected Right, got Left: $f'), (profile) {
+        expect(profile.name, 'Minimal User');
+        expect(profile.bloodType, isNull);
+        expect(profile.biologicalSex, isNull);
+        expect(profile.heightCm, isNull);
+        expect(profile.weightKg, isNull);
+        expect(profile.isOrganDonor, false);
+        expect(profile.allergies, isEmpty);
+        expect(profile.medications, isEmpty);
+        expect(profile.conditions, isEmpty);
+        expect(profile.emergencyContacts, isEmpty);
+      });
     });
   });
 
@@ -179,15 +169,12 @@ void main() {
       final result = await repo.getProfile('p1');
 
       expect(result.isRight(), true);
-      result.match(
-        (f) => fail('Expected Right'),
-        (profile) {
-          expect(profile.allergies, hasLength(2));
-          expect(profile.medications, hasLength(1));
-          expect(profile.conditions, hasLength(1));
-          expect(profile.emergencyContacts, hasLength(1));
-        },
-      );
+      result.match((f) => fail('Expected Right'), (profile) {
+        expect(profile.allergies, hasLength(2));
+        expect(profile.medications, hasLength(1));
+        expect(profile.conditions, hasLength(1));
+        expect(profile.emergencyContacts, hasLength(1));
+      });
     });
   });
 
@@ -206,14 +193,11 @@ void main() {
 
       final result = await repo.watchAllProfiles().first;
 
-      result.match(
-        (f) => fail('Expected Right, got Left: $f'),
-        (profiles) {
-          expect(profiles, hasLength(1));
-          expect(profiles[0].name, 'Alice Smith');
-          expect(profiles[0].allergies, hasLength(2));
-        },
-      );
+      result.match((f) => fail('Expected Right, got Left: $f'), (profiles) {
+        expect(profiles, hasLength(1));
+        expect(profiles[0].name, 'Alice Smith');
+        expect(profiles[0].allergies, hasLength(2));
+      });
     });
 
     test('includes multiple profiles', () async {
@@ -241,13 +225,10 @@ void main() {
       await repo.updateProfile(updated);
 
       final result = await repo.getProfile('p1');
-      result.match(
-        (f) => fail('Expected Right'),
-        (profile) {
-          expect(profile.name, 'Alice Jones');
-          expect(profile.bloodType, BloodType.bNeg);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (profile) {
+        expect(profile.name, 'Alice Jones');
+        expect(profile.bloodType, BloodType.bNeg);
+      });
     });
 
     test('replaces child records on update', () async {
@@ -264,16 +245,13 @@ void main() {
       await repo.updateProfile(updated);
 
       final result = await repo.getProfile('p1');
-      result.match(
-        (f) => fail('Expected Right'),
-        (profile) {
-          expect(profile.allergies, hasLength(1));
-          expect(profile.allergies[0].name, 'Shellfish');
-          expect(profile.medications, isEmpty);
-          expect(profile.conditions, isEmpty);
-          expect(profile.emergencyContacts, isEmpty);
-        },
-      );
+      result.match((f) => fail('Expected Right'), (profile) {
+        expect(profile.allergies, hasLength(1));
+        expect(profile.allergies[0].name, 'Shellfish');
+        expect(profile.medications, isEmpty);
+        expect(profile.conditions, isEmpty);
+        expect(profile.emergencyContacts, isEmpty);
+      });
     });
   });
 

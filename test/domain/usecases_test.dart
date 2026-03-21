@@ -29,9 +29,9 @@ void main() {
 
   group('WatchAllProfiles', () {
     test('returns stream from repository', () async {
-      when(() => mockRepo.watchAllProfiles()).thenAnswer(
-        (_) => Stream.value(Right([testProfile])),
-      );
+      when(
+        () => mockRepo.watchAllProfiles(),
+      ).thenAnswer((_) => Stream.value(Right([testProfile])));
       final usecase = WatchAllProfiles(mockRepo);
       final result = await usecase().first;
       result.match(
@@ -43,16 +43,18 @@ void main() {
 
   group('CreateProfile', () {
     test('returns id on success', () async {
-      when(() => mockRepo.createProfile(testProfile))
-          .thenAnswer((_) async => const Right('uuid-1'));
+      when(
+        () => mockRepo.createProfile(testProfile),
+      ).thenAnswer((_) async => const Right('uuid-1'));
       final usecase = CreateProfile(mockRepo);
       final result = await usecase(testProfile);
       expect(result, const Right<Failure, String>('uuid-1'));
     });
 
     test('returns failure on error', () async {
-      when(() => mockRepo.createProfile(testProfile))
-          .thenAnswer((_) async => const Left(DatabaseFailure()));
+      when(
+        () => mockRepo.createProfile(testProfile),
+      ).thenAnswer((_) async => const Left(DatabaseFailure()));
       final usecase = CreateProfile(mockRepo);
       final result = await usecase(testProfile);
       expect(result, isA<Left<Failure, String>>());
@@ -61,8 +63,9 @@ void main() {
 
   group('UpdateProfile', () {
     test('calls repository and returns right on success', () async {
-      when(() => mockRepo.updateProfile(testProfile))
-          .thenAnswer((_) async => const Right(null));
+      when(
+        () => mockRepo.updateProfile(testProfile),
+      ).thenAnswer((_) async => const Right(null));
       final usecase = UpdateProfile(mockRepo);
       final result = await usecase(testProfile);
       expect(result.isRight(), isTrue);
@@ -71,8 +74,9 @@ void main() {
 
   group('DeleteProfile', () {
     test('calls repository with correct id', () async {
-      when(() => mockRepo.deleteProfile('uuid-1'))
-          .thenAnswer((_) async => const Right(null));
+      when(
+        () => mockRepo.deleteProfile('uuid-1'),
+      ).thenAnswer((_) async => const Right(null));
       final usecase = DeleteProfile(mockRepo);
       final result = await usecase('uuid-1');
       expect(result.isRight(), isTrue);

@@ -6,15 +6,14 @@ import 'package:vitalglyph/core/crypto/pin_service.dart';
 import 'package:vitalglyph/presentation/blocs/auth/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-
   AuthCubit({
     required PinService pin,
     required AuthSettingsService settings,
     required LocalAuthentication localAuth,
-  })  : _pin = pin,
-        _settings = settings,
-        _localAuth = localAuth,
-        super(const AuthInitial());
+  }) : _pin = pin,
+       _settings = settings,
+       _localAuth = localAuth,
+       super(const AuthInitial());
   final PinService _pin;
   final AuthSettingsService _settings;
   final LocalAuthentication _localAuth;
@@ -100,9 +99,11 @@ class AuthCubit extends Cubit<AuthState> {
         _lockoutUntil = DateTime.now().add(_softLockDuration);
         emit(const AuthLockedOut(_softLockDuration));
       } else {
-        emit(AuthFailure(
-          'Incorrect PIN. ${_softLockThreshold - _failedAttempts} attempts remaining before lockout.',
-        ));
+        emit(
+          AuthFailure(
+            'Incorrect PIN. ${_softLockThreshold - _failedAttempts} attempts remaining before lockout.',
+          ),
+        );
       }
     }
   }

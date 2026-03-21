@@ -4,15 +4,13 @@ import 'package:vitalglyph/domain/usecases/export_backup.dart';
 import 'package:vitalglyph/domain/usecases/import_backup.dart';
 import 'package:vitalglyph/presentation/blocs/backup/backup_state.dart';
 
-
 class BackupCubit extends Cubit<BackupState> {
-
   BackupCubit({
     required ExportBackup exportBackup,
     required ImportBackup importBackup,
-  })  : _exportBackup = exportBackup,
-        _importBackup = importBackup,
-        super(const BackupInitial());
+  }) : _exportBackup = exportBackup,
+       _importBackup = importBackup,
+       super(const BackupInitial());
   final ExportBackup _exportBackup;
   final ImportBackup _importBackup;
 
@@ -22,18 +20,14 @@ class BackupCubit extends Cubit<BackupState> {
     emit(const BackupLoading());
 
     final result = await _exportBackup(passphrase);
-    await result.match(
-      (failure) async => emit(BackupError(failure.message)),
-      (filePath) async {
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(filePath)],
-            subject: 'Medical ID Backup',
-          ),
-        );
-        emit(const BackupExportSuccess());
-      },
-    );
+    await result.match((failure) async => emit(BackupError(failure.message)), (
+      filePath,
+    ) async {
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(filePath)], subject: 'Medical ID Backup'),
+      );
+      emit(const BackupExportSuccess());
+    });
   }
 
   /// Decrypts the backup at [filePath] and merges its profiles into the DB.

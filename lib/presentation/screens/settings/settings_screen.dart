@@ -63,7 +63,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final bioEnabled = await _authSettings.isBiometricEnabled();
       final timeout = await _authSettings.getLockTimeout();
       final hasPin = await _pinService.hasPin();
-      final bioAvailable = await _localAuth.isDeviceSupported() &&
+      final bioAvailable =
+          await _localAuth.isDeviceSupported() &&
           await _localAuth.canCheckBiometrics;
       final packageInfo = await PackageInfo.fromPlatform();
 
@@ -90,9 +91,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _toggleAuth(bool enabled) async {
     if (enabled && !_hasPin) {
-      final set = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(builder: (_) => const PinSetupScreen()),
-      );
+      final set = await Navigator.of(
+        context,
+      ).push<bool>(MaterialPageRoute(builder: (_) => const PinSetupScreen()));
       if (set != true) return;
       setState(() => _hasPin = true);
     }
@@ -110,9 +111,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _changePin() async {
-    final set = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const PinSetupScreen()),
-    );
+    final set = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const PinSetupScreen()));
     if ((set ?? false) && mounted) {
       setState(() => _hasPin = true);
       AppSnackBar.success(context, context.l10n.settingsPinUpdated);
@@ -217,12 +218,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded,
-                  size: 48, color: Theme.of(context).colorScheme.error),
+              Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: Theme.of(context).colorScheme.error,
+              ),
               const SizedBox(height: AppSpacing.lg),
-              Text(_loadError!,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                _loadError!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: AppSpacing.lg),
               FilledButton.icon(
                 onPressed: _load,
@@ -236,7 +242,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxl),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.xxl,
+      ),
       children: [
         // Appearance
         BlocBuilder<ThemeCubit, ThemeMode>(
@@ -244,9 +255,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: context.l10n.settingsAppearance,
             icon: Icons.palette_outlined,
             padding: EdgeInsets.zero,
-            children: [
-              _ThemeSelectorInternal(mode: mode),
-            ],
+            children: [_ThemeSelectorInternal(mode: mode)],
           ),
         ),
 
@@ -273,7 +282,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: _showTimeoutPicker,
               ),
               SettingsTile(
-                title: _hasPin ? context.l10n.settingsChangePin : context.l10n.settingsSetPin,
+                title: _hasPin
+                    ? context.l10n.settingsChangePin
+                    : context.l10n.settingsSetPin,
                 leading: Icons.pin_outlined,
                 onTap: _changePin,
               ),
@@ -349,7 +360,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 class _ThemeSelectorInternal extends StatelessWidget {
-
   const _ThemeSelectorInternal({required this.mode});
   final ThemeMode mode;
 
@@ -363,9 +373,7 @@ class _ThemeSelectorInternal extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.inputFill,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
-          color: colors.cardBorder,
-        ),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Stack(
         children: [
@@ -432,7 +440,6 @@ class _ThemeSelectorInternal extends StatelessWidget {
 }
 
 class _ThemeOption extends StatelessWidget {
-
   const _ThemeOption({
     required this.label,
     required this.icon,
@@ -468,13 +475,17 @@ class _ThemeOption extends StatelessWidget {
                 Icon(
                   icon,
                   size: 20,
-                  color: selected ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.7),
+                  color: selected
+                      ? cs.primary
+                      : cs.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   label,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: selected ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: selected
+                        ? cs.primary
+                        : cs.onSurfaceVariant.withValues(alpha: 0.7),
                     fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                   ),
                 ),

@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:vitalglyph/presentation/screens/backup/backup_screen.dart' show BackupScreen;
+import 'package:vitalglyph/presentation/screens/backup/backup_screen.dart'
+    show BackupScreen;
 
 /// Handles `.medid` files opened from outside the app (e.g. email, AirDrop,
 /// file manager). Platform code sends the file path through a [MethodChannel].
 class IncomingFileService {
-
   IncomingFileService() {
     _channel.setMethodCallHandler(_handlePlatformCall);
   }

@@ -29,7 +29,6 @@ import 'package:vitalglyph/presentation/widgets/gradient_scaffold.dart';
 const _uuid = Uuid();
 
 class ProfileEditorScreen extends StatefulWidget {
-
   const ProfileEditorScreen({super.key, this.profile});
   final Profile? profile;
 
@@ -163,8 +162,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
       return;
     }
 
-    final source =
-        choice == 'camera' ? ImageSource.camera : ImageSource.gallery;
+    final source = choice == 'camera'
+        ? ImageSource.camera
+        : ImageSource.gallery;
 
     try {
       final picker = ImagePicker();
@@ -198,7 +198,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
       setState(() => _photoPath = destPath);
     } catch (e) {
-      if (mounted) AppSnackBar.error(context, context.l10n.profileEditorPhotoError);
+      if (mounted)
+        AppSnackBar.error(context, context.l10n.profileEditorPhotoError);
     }
   }
 
@@ -225,10 +226,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           ? null
           : double.tryParse(_weightCtrl.text.trim()),
       isOrganDonor: _isOrganDonor,
-      medicalNotes:
-          _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
-      primaryLanguage:
-          _langCtrl.text.trim().isEmpty ? null : _langCtrl.text.trim(),
+      medicalNotes: _notesCtrl.text.trim().isEmpty
+          ? null
+          : _notesCtrl.text.trim(),
+      primaryLanguage: _langCtrl.text.trim().isEmpty
+          ? null
+          : _langCtrl.text.trim(),
       photoPath: _photoPath,
       allergies: List.unmodifiable(_allergies),
       medications: List.unmodifiable(_medications),
@@ -289,7 +292,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           child: AppButton.primary(
             onPressed: _isSaving ? null : _save,
             isLoading: _isSaving,
-            label: _isEditing ? context.l10n.profileEditorUpdateProfile : context.l10n.profileEditorSaveProfile,
+            label: _isEditing
+                ? context.l10n.profileEditorUpdateProfile
+                : context.l10n.profileEditorSaveProfile,
             icon: Icons.check_rounded,
             fullWidth: true,
           ),
@@ -317,7 +322,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         ],
         centerTitle: true,
         title: Text(
-          _isEditing ? context.l10n.profileEditorTitleEdit : context.l10n.profileEditorTitleNew,
+          _isEditing
+              ? context.l10n.profileEditorTitleEdit
+              : context.l10n.profileEditorTitleNew,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w900,
             color: cs.onSurface,
@@ -332,10 +339,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    colors.surfaceSubtle,
-                    cs.surface,
-                  ],
+                  colors: [colors.surfaceSubtle, cs.surface],
                 ),
               ),
             ),
@@ -352,10 +356,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       height: 100,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: colors.cardBorder,
-                          width: 2,
-                        ),
+                        border: Border.all(color: colors.cardBorder, width: 2),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
@@ -388,10 +389,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                               decoration: BoxDecoration(
                                 color: cs.primary,
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: cs.surface,
-                                  width: 2,
-                                ),
+                                border: Border.all(color: cs.surface, width: 2),
                               ),
                               child: Icon(
                                 _photoPath != null
@@ -426,8 +424,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           prefixIcon: Icons.badge_rounded,
           isRequired: true,
           textCapitalization: TextCapitalization.words,
-          validator: (v) =>
-              (v == null || v.trim().isEmpty) ? context.l10n.profileEditorNameRequired : null,
+          validator: (v) => (v == null || v.trim().isEmpty)
+              ? context.l10n.profileEditorNameRequired
+              : null,
         ),
         const SizedBox(height: 20),
         _CustomTextField(
@@ -437,8 +436,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
           isRequired: true,
           readOnly: true,
           onTap: _pickDateOfBirth,
-          validator: (_) =>
-              _dateOfBirth == null ? context.l10n.profileEditorDobValidation : null,
+          validator: (_) => _dateOfBirth == null
+              ? context.l10n.profileEditorDobValidation
+              : null,
         ),
         const SizedBox(height: 20),
         Row(
@@ -449,12 +449,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 label: context.l10n.profileEditorBloodType,
                 prefixIcon: Icons.water_drop_rounded,
                 items: [
-                  DropdownMenuItem(child: Text(context.l10n.profileEditorBloodTypeUnknown)),
+                  DropdownMenuItem(
+                    child: Text(context.l10n.profileEditorBloodTypeUnknown),
+                  ),
                   ...BloodType.values.map(
-                    (b) => DropdownMenuItem(
-                      value: b,
-                      child: Text(b.displayName),
-                    ),
+                    (b) =>
+                        DropdownMenuItem(value: b, child: Text(b.displayName)),
                   ),
                 ],
                 onChanged: (v) => setState(() => _bloodType = v),
@@ -468,12 +468,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 prefixIcon: Icons.people_rounded,
                 items: [
                   DropdownMenuItem(
-                      child: Text(context.l10n.profileEditorSexNotSet)),
+                    child: Text(context.l10n.profileEditorSexNotSet),
+                  ),
                   ...BiologicalSex.values.map(
-                    (s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.displayName),
-                    ),
+                    (s) =>
+                        DropdownMenuItem(value: s, child: Text(s.displayName)),
                   ),
                 ],
                 onChanged: (v) => setState(() => _biologicalSex = v),
@@ -499,10 +498,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                 controller: _weightCtrl,
                 label: context.l10n.profileEditorWeight,
                 prefixIcon: Icons.monitor_weight_rounded,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9.]'))
+                  FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
                 ],
               ),
             ),
@@ -516,7 +516,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                   ? Icons.favorite_rounded
                   : Icons.favorite_border_rounded,
               size: 20,
-              color: _isOrganDonor ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
+              color: _isOrganDonor
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -654,10 +656,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             ),
           )
         else
-          ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: itemBuilder(item),
-              )),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: itemBuilder(item),
+            ),
+          ),
       ],
     );
   }
@@ -756,9 +760,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 }
 
-
 class _CustomTextField extends StatefulWidget {
-
   const _CustomTextField({
     required this.controller,
     required this.label,
@@ -873,13 +875,18 @@ class _CustomTextFieldState extends State<_CustomTextField> {
               ? Icon(
                   widget.prefixIcon,
                   size: 20,
-                  color: _isFocused ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.5),
+                  color: _isFocused
+                      ? cs.primary
+                      : cs.onSurfaceVariant.withValues(alpha: 0.5),
                 )
               : null,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
       ),
     );
@@ -887,11 +894,12 @@ class _CustomTextFieldState extends State<_CustomTextField> {
 }
 
 class _CustomDropdown<T> extends StatelessWidget {
-
   const _CustomDropdown({
     required this.value,
     required this.label,
-    required this.items, required this.onChanged, this.prefixIcon,
+    required this.items,
+    required this.onChanged,
+    this.prefixIcon,
   });
   final T value;
   final String label;
@@ -915,15 +923,24 @@ class _CustomDropdown<T> extends StatelessWidget {
         isExpanded: true,
         items: items,
         onChanged: onChanged,
-        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface),
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: cs.onSurface,
+        ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
+          labelStyle: theme.textTheme.bodyMedium?.copyWith(
+            color: cs.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
           prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 4,
+          ),
         ),
       ),
     );
@@ -931,10 +948,11 @@ class _CustomDropdown<T> extends StatelessWidget {
 }
 
 class _SubEntityTile extends StatelessWidget {
-
   const _SubEntityTile({
     required this.title,
-    required this.onEdit, required this.onDelete, this.subtitle,
+    required this.onEdit,
+    required this.onDelete,
+    this.subtitle,
   });
   final String title;
   final String? subtitle;
@@ -950,9 +968,7 @@ class _SubEntityTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surfaceSubtle,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: colors.cardBorder,
-        ),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Row(
         children: [
@@ -961,7 +977,9 @@ class _SubEntityTile extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: cs.primary,
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(2)),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(2),
+              ),
             ),
           ),
           Expanded(
@@ -990,13 +1008,23 @@ class _SubEntityTile extends StatelessWidget {
                     icon: Icon(Icons.edit_rounded, size: 20, color: cs.primary),
                     onPressed: onEdit,
                     tooltip: context.l10n.a11yEditItem(title),
-                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete_outline_rounded, size: 20, color: cs.error),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 20,
+                      color: cs.error,
+                    ),
                     onPressed: onDelete,
                     tooltip: context.l10n.a11yDeleteItem(title),
-                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
                   ),
                 ],
               ),
@@ -1023,7 +1051,9 @@ class _AddButton extends StatelessWidget {
         minimumSize: const Size(80, 32),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         side: BorderSide(color: colors.cardBorder, width: 1.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
       ),
     );
   }
@@ -1047,7 +1077,9 @@ class _AllergyDialogState extends State<_AllergyDialog> {
   void initState() {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
-    _reactionCtrl = TextEditingController(text: widget.existing?.reaction ?? '');
+    _reactionCtrl = TextEditingController(
+      text: widget.existing?.reaction ?? '',
+    );
     _severity = widget.existing?.severity ?? AllergySeverity.mild;
   }
 
@@ -1079,24 +1111,31 @@ class _AllergyDialogState extends State<_AllergyDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? context.l10n.profileEditorAddAllergy : context.l10n.profileEditorEditAllergy,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                  widget.existing == null
+                      ? context.l10n.profileEditorAddAllergy
+                      : context.l10n.profileEditorEditAllergy,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorAllergen),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorAllergen,
+                  ),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? context.l10n.required
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<AllergySeverity>(
                   initialValue: _severity,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorSeverity),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorSeverity,
+                  ),
                   items: AllergySeverity.values
                       .map(
                         (s) => DropdownMenuItem(
@@ -1173,8 +1212,9 @@ class _MedicationDialogState extends State<_MedicationDialog> {
     _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
     _dosageCtrl = TextEditingController(text: widget.existing?.dosage ?? '');
     _freqCtrl = TextEditingController(text: widget.existing?.frequency ?? '');
-    _forCtrl =
-        TextEditingController(text: widget.existing?.prescribedFor ?? '');
+    _forCtrl = TextEditingController(
+      text: widget.existing?.prescribedFor ?? '',
+    );
   }
 
   @override
@@ -1207,19 +1247,24 @@ class _MedicationDialogState extends State<_MedicationDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? context.l10n.profileEditorAddMedication : context.l10n.profileEditorEditMedication,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                  widget.existing == null
+                      ? context.l10n.profileEditorAddMedication
+                      : context.l10n.profileEditorEditMedication,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorMedicationName),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorMedicationName,
+                  ),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? context.l10n.required
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -1306,8 +1351,9 @@ class _ConditionDialogState extends State<_ConditionDialog> {
   void initState() {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
-    _dateCtrl =
-        TextEditingController(text: widget.existing?.diagnosedDate ?? '');
+    _dateCtrl = TextEditingController(
+      text: widget.existing?.diagnosedDate ?? '',
+    );
     _notesCtrl = TextEditingController(text: widget.existing?.notes ?? '');
   }
 
@@ -1340,19 +1386,24 @@ class _ConditionDialogState extends State<_ConditionDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? context.l10n.profileEditorAddCondition : context.l10n.profileEditorEditCondition,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                  widget.existing == null
+                      ? context.l10n.profileEditorAddCondition
+                      : context.l10n.profileEditorEditCondition,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorConditionName),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorConditionName,
+                  ),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? context.l10n.required
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -1365,7 +1416,9 @@ class _ConditionDialogState extends State<_ConditionDialog> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _notesCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorNotes),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorNotes,
+                  ),
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: 2,
                 ),
@@ -1460,27 +1513,35 @@ class _ContactDialogState extends State<_ContactDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.existing == null ? context.l10n.profileEditorAddContact : context.l10n.profileEditorEditContact,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                  widget.existing == null
+                      ? context.l10n.profileEditorAddContact
+                      : context.l10n.profileEditorEditContact,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorContactName),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorContactName,
+                  ),
                   textCapitalization: TextCapitalization.words,
                   autofocus: true,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? context.l10n.required
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneCtrl,
-                  decoration: InputDecoration(labelText: context.l10n.profileEditorContactPhone),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.profileEditorContactPhone,
+                  ),
                   keyboardType: TextInputType.phone,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? context.l10n.required : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? context.l10n.required
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -1512,7 +1573,9 @@ class _ContactDialogState extends State<_ContactDialog> {
                             relationship: _relCtrl.text.trim().isEmpty
                                 ? null
                                 : _relCtrl.text.trim(),
-                            priority: widget.existing?.priority ?? widget.nextPriority,
+                            priority:
+                                widget.existing?.priority ??
+                                widget.nextPriority,
                           ),
                         );
                       },

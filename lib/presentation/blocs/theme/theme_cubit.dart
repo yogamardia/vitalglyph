@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ThemeCubit extends Cubit<ThemeMode> {
-
   ThemeCubit(this._storage) : super(ThemeMode.system);
   final FlutterSecureStorage _storage;
   static const _key = 'theme_mode';

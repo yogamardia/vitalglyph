@@ -51,12 +51,10 @@ class AppSnackBar {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final glassBg = isDark 
-        ? const Color(0xFFF8FAFC)
-        : const Color(0xFF0F172A);
+    final glassBg = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
     final textColor = isDark ? const Color(0xFF020617) : Colors.white;
-    final borderColor = isDark 
-        ? Colors.black.withValues(alpha: 0.1) 
+    final borderColor = isDark
+        ? Colors.black.withValues(alpha: 0.1)
         : Colors.white.withValues(alpha: 0.1);
 
     ScaffoldMessenger.of(context)
@@ -68,13 +66,14 @@ class AppSnackBar {
           elevation: 0,
           padding: EdgeInsets.zero,
           content: Container(
-            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
             decoration: BoxDecoration(
               color: glassBg,
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: borderColor,
-              ),
+              border: Border.all(color: borderColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -93,10 +92,8 @@ class AppSnackBar {
                   tween: Tween(begin: 0, end: 1),
                   duration: const Duration(milliseconds: 600),
                   curve: Curves.elasticOut,
-                  builder: (context, value, child) => Transform.scale(
-                    scale: value,
-                    child: child,
-                  ),
+                  builder: (context, value, child) =>
+                      Transform.scale(scale: value, child: child),
                   child: Icon(icon, color: iconColor, size: 22),
                 ),
                 const SizedBox(width: 16),
