@@ -23,7 +23,7 @@ class SceneDelegate: FlutterSceneDelegate {
         if let controller = flutterViewController(for: scene) {
             channel = FlutterMethodChannel(
                 name: SceneDelegate.channelName,
-                binaryMessenger: controller.engine!.binaryMessenger
+                binaryMessenger: controller.engine.binaryMessenger
             )
             channel?.setMethodCallHandler { [weak self] call, result in
                 if call.method == "getInitialFile" {
