@@ -572,8 +572,9 @@ class _FooterInfo extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final dateOnly = DateTime(date.year, date.month, date.day);
     if (dateOnly == today) return l10n.profileCardToday;
-    if (dateOnly == today.subtract(const Duration(days: 1)))
+    if (dateOnly == today.subtract(const Duration(days: 1))) {
       return l10n.profileCardYesterday;
+    }
     return '${date.day}/${date.month}/${date.year}';
   }
 }

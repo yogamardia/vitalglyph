@@ -198,8 +198,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
       setState(() => _photoPath = destPath);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         AppSnackBar.error(context, context.l10n.profileEditorPhotoError);
+      }
     }
   }
 

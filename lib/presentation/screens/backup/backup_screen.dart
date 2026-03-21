@@ -72,8 +72,9 @@ class _BackupViewState extends State<_BackupView> {
     if (result == null || result.files.isEmpty) return;
     final file = result.files.single;
     if (file.path == null) {
-      if (mounted)
+      if (mounted) {
         AppSnackBar.error(context, context.l10n.backupFileAccessError);
+      }
       return;
     }
     setState(() {
